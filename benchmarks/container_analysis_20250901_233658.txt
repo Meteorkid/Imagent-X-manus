@@ -1,0 +1,56 @@
+# ImagentX 容器性能分析报告
+# 生成时间: Mon Sep  1 23:36:58 CST 2025
+
+## 系统资源概览
+
+## 系统资源信息
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          22        7         26.77GB   24.24GB (90%)
+Containers      7         7         106.5kB   0B (0%)
+Local Volumes   28        6         188.1MB   98.72MB (52%)
+Build Cache     34        0         1.006GB   1.006GB
+
+## 运行中的容器
+NAMES                      IMAGE                                   STATUS                          PORTS
+imagentx-redis-commander   rediscommander/redis-commander:latest   Up 14 minutes (healthy)         0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+imagentx-redis             redis:7-alpine                          Up 14 minutes (healthy)         0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+imagentx-grafana           grafana/grafana:latest                  Up About an hour                0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+imagentx-prometheus        prom/prometheus:latest                  Up About an hour                0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+imagentx-alertmanager      prom/alertmanager:latest                Restarting (1) 37 seconds ago   
+imagentx-postgres          docker.m.daocloud.io/postgres:15        Up 9 hours (healthy)            0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+imagentx-rabbitmq          rabbitmq:3.12-management-alpine         Up 9 hours (healthy)            0.0.0.0:5672->5672/tcp, [::]:5672->5672/tcp, 0.0.0.0:15672->15672/tcp, [::]:15672->15672/tcp
+
+## 容器资源使用情况
+CONTAINER      CPU %     MEM USAGE / LIMIT     NET I/O           BLOCK I/O
+0855835c939c   0.00%     36.95MiB / 7.653GiB   106kB / 4.47kB    0B / 4.1kB
+79079a24bbf3   0.82%     11.85MiB / 512MiB     7.46kB / 104kB    12.3kB / 73.7kB
+9ecec013ea4b   0.26%     108.2MiB / 7.653GiB   99.3kB / 30.2kB   0B / 1.88MB
+997ebbfd244e   0.00%     30.29MiB / 7.653GiB   26.9kB / 8.64kB   0B / 709kB
+3b8b29636645   0.00%     0B / 0B               0B / 0B           0B / 0B
+585d5aa3fff7   2.67%     63.42MiB / 7.653GiB   716kB / 658kB     44.3MB / 10.2MB
+5a2556eb4239   0.21%     165.6MiB / 7.653GiB   253kB / 238kB     54.4MB / 147kB
+
+## 镜像信息
+REPOSITORY                                                            TAG                             SIZE      CREATED AT
+imagentx-master-imagentx-frontend                                     latest                          430MB     2025-08-26 10:49:20 +0800 CST
+imagentx-master-imagentx-backend                                      latest                          1.43GB    2025-08-26 10:40:31 +0800 CST
+pgvector/pgvector                                                     pg15                            632MB     2025-08-16 02:21:10 +0800 CST
+docker.m.daocloud.io/postgres                                         15                              650MB     2025-08-15 00:40:39 +0800 CST
+postgres                                                              15-alpine                       379MB     2025-08-15 00:40:39 +0800 CST
+registry.cn-hangzhou.aliyuncs.com/apifox/self-hosted-general-runner   latest                          884MB     2025-08-14 15:19:03 +0800 CST
+nginx                                                                 alpine                          80.2MB    2025-08-14 00:34:01 +0800 CST
+grafana/grafana                                                       latest                          906MB     2025-08-12 17:09:48 +0800 CST
+ghcr.io/lucky-aeon/agentx                                             latest                          2.97GB    2025-08-10 00:29:23 +0800 CST
+pytorch/pytorch                                                       2.8.0-cuda12.9-cudnn9-runtime   13.3GB    2025-08-07 01:21:34 +0800 CST
+certbot/certbot                                                       latest                          191MB     2025-08-06 00:04:09 +0800 CST
+ghcr.io/lucky-aeon/api-premium-gateway                                latest                          791MB     2025-08-03 00:46:18 +0800 CST
+prom/prometheus                                                       latest                          423MB     2025-07-15 00:46:37 +0800 CST
+mcp/dockerhub                                                         <none>                          429MB     2025-07-11 21:54:16 +0800 CST
+redis                                                                 7-alpine                        61.4MB    2025-07-07 00:51:58 +0800 CST
+ghcr.io/lucky-aeon/mcp-gateway                                        latest                          374MB     2025-06-29 00:29:40 +0800 CST
+mcp/duckduckgo                                                        <none>                          403MB     2025-06-17 03:20:25 +0800 CST
+docker/jcat                                                           <none>                          513kB     2025-05-19 16:24:59 +0800 CST
+prom/alertmanager                                                     latest                          106MB     2025-03-07 23:10:33 +0800 CST
+registry.cn-hangzhou.aliyuncs.com/apifox/apifox-request-proxy-agent   latest                          630MB     2025-01-17 17:27:20 +0800 CST
+rabbitmq                                                              3.12-management-alpine          272MB     2024-09-21 05:15:09 +0800 CST
+rediscommander/redis-commander                                        latest                          133MB     2021-07-26 18:45:01 +0800 CST
