@@ -1,0 +1,45 @@
+# API限流配置
+rate-limit:
+  # 全局默认限流
+  default:
+    time-window: 60
+    max-requests: 100
+    strategy: TOKEN_BUCKET
+  
+  # 按接口限流
+  endpoints:
+    # 登录接口限流
+    /api/login:
+      time-window: 60
+      max-requests: 5
+      strategy: FIXED_WINDOW
+    
+    # 注册接口限流
+    /api/register:
+      time-window: 300
+      max-requests: 3
+      strategy: FIXED_WINDOW
+    
+    # API接口限流
+    /api/v1/**:
+      time-window: 60
+      max-requests: 1000
+      strategy: TOKEN_BUCKET
+    
+    # 文件上传限流
+    /api/upload:
+      time-window: 60
+      max-requests: 10
+      strategy: LEAKY_BUCKET
+  
+  # 按用户限流
+  user-limits:
+    default:
+      time-window: 60
+      max-requests: 200
+    premium:
+      time-window: 60
+      max-requests: 1000
+    admin:
+      time-window: 60
+      max-requests: 5000

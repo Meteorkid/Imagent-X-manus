@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# ImagentX 服务启动脚本 - 简化版
+
+set -e
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}🐳 ImagentX 服务启动脚本${NC}"
+echo "=================================="
+
+# 检查Docker是否运行
+if ! docker info &> /dev/null; then
+    echo -e "${RED}❌ Docker未运行，请先启动Docker Desktop${NC}"
+    exit 1
+fi
+
+# 停止现有容器
+echo -e "${YELLOW}🛑 停止现有容器...${NC}"
+docker-compose -f working-docker-compose.yml down 2>/dev/null || true
+
+# 启动基础服务
+echo -e "${YELLOW}🚀 启动基础服务（PostgreSQL + RabbitMQ）...${NC}"
+docker-compose -f working-docker-compose.yml up -d postgres rabbitmq
+
+# 等待服务启动
+echo -e "${YELLOW}⏳ 等待服务启动...${NC}"
+sleep 15
+
+# 检查服务状态
+echo -e "${YELLOW}📊 检查服务状态...${NC}"
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+# 测试数据库连接
+echo -e "${YELLOW}🔍 测试数据库连接...${NC}"
+if docker exec imagentx-postgres pg_isready -U imagentx_user -d imagentx &> /dev/null; then
+    echo -e "${GREEN}✅ PostgreSQL 连接正常${NC}"
+else
+    echo -e "${RED}❌ PostgreSQL 连接失败${NC}"
+fi
+
+# 测试RabbitMQ连接
+echo -e "${YELLOW}🔍 测试RabbitMQ连接...${NC}"
+if docker exec imagentx-rabbitmq rabbitmq-diagnostics ping &> /dev/null; then
+    echo -e "${GREEN}✅ RabbitMQ 连接正常${NC}"
+else
+    echo -e "${RED}❌ RabbitMQ 连接失败${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}🎯 基础服务启动完成！${NC}"
+echo -e "${CYAN}PostgreSQL:${NC} localhost:5432"
+echo -e "${CYAN}RabbitMQ:${NC} localhost:5672"
+echo -e "${CYAN}RabbitMQ管理界面:${NC} http://localhost:15672"
+echo ""
+echo -e "${YELLOW}💡 下一步：${NC}"
+echo -e "  - 基础服务已启动，可以手动启动应用服务"
+echo -e "  - 使用 'docker-compose -f working-docker-compose.yml logs' 查看日志"
+echo -e "  - 使用 'docker-compose -f working-docker-compose.yml down' 停止服务"

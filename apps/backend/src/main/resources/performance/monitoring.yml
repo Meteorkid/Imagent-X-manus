@@ -1,0 +1,64 @@
+# 性能监控配置
+performance:
+  monitoring:
+    # 启用性能监控
+    enabled: true
+    
+    # 监控指标
+    metrics:
+      # 响应时间监控
+      response-time:
+        enabled: true
+        threshold: 1000ms
+        alert: true
+        
+      # 吞吐量监控
+      throughput:
+        enabled: true
+        window: 60s
+        alert: true
+        
+      # 错误率监控
+      error-rate:
+        enabled: true
+        threshold: 0.05
+        alert: true
+        
+      # 内存使用监控
+      memory-usage:
+        enabled: true
+        threshold: 0.8
+        alert: true
+        
+      # CPU使用监控
+      cpu-usage:
+        enabled: true
+        threshold: 0.7
+        alert: true
+    
+    # 慢查询监控
+    slow-query:
+      enabled: true
+      threshold: 1000ms
+      log: true
+      alert: true
+    
+    # 数据库连接池监控
+    connection-pool:
+      enabled: true
+      max-connections: 20
+      min-idle: 5
+      alert: true
+    
+    # 缓存监控
+    cache:
+      enabled: true
+      hit-rate-threshold: 0.8
+      alert: true
+    
+    # 外部API监控
+    external-api:
+      enabled: true
+      timeout: 5000ms
+      retry: 3
+      alert: true

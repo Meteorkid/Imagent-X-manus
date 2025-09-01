@@ -1,0 +1,154 @@
+{
+  "dashboard": {
+    "title": "沙箱安全日志分析",
+    "hits": 0,
+    "description": "ImagentX沙箱安全事件分析和用户行为监控",
+    "panelsJSON": [
+      {
+        "type": "visualization",
+        "id": "security-violations-timeline",
+        "panelIndex": "1",
+        "size_x": 12,
+        "size_y": 8,
+        "col": 1,
+        "row": 1,
+        "title": "安全违规时间线"
+      },
+      {
+        "type": "visualization",
+        "id": "anomaly-detection-pie",
+        "panelIndex": "2",
+        "size_x": 6,
+        "size_y": 8,
+        "col": 13,
+        "row": 1,
+        "title": "异常行为分类"
+      },
+      {
+        "type": "visualization",
+        "id": "container-security-scores",
+        "panelIndex": "3",
+        "size_x": 6,
+        "size_y": 8,
+        "col": 19,
+        "row": 1,
+        "title": "容器安全评分"
+      },
+      {
+        "type": "visualization",
+        "id": "resource-usage-trends",
+        "panelIndex": "4",
+        "size_x": 12,
+        "size_y": 8,
+        "col": 1,
+        "row": 9,
+        "title": "资源使用趋势"
+      },
+      {
+        "type": "visualization",
+        "id": "user-behavior-analysis",
+        "panelIndex": "5",
+        "size_x": 12,
+        "size_y": 8,
+        "col": 13,
+        "row": 9,
+        "title": "用户行为分析"
+      }
+    ],
+    "optionsJSON": {
+      "hideAllTabs": false,
+      "useMargins": true
+    },
+    "version": "1.0.0",
+    "timeRestore": false,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
+    }
+  },
+  "visualizations": [
+    {
+      "id": "security-violations-timeline",
+      "type": "line",
+      "attributes": {
+        "title": "安全违规时间线",
+        "visState": "{\"type\":\"line\",\"params\":{\"type\":\"line\",\"grid\":{\"categoryLines\":false},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"filter\":true,\"truncate\":100},\"title\":{}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"left\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"违规次数\"}}],\"seriesParams\":[{\"show\":true,\"type\":\"line\",\"mode\":\"normal\",\"data\":{\"label\":\"安全违规\",\"id\":\"1\"},\"valueAxis\":\"ValueAxis-1\",\"drawLinesBetweenPoints\":true,\"lineWidth\":2,\"interpolate\":\"linear\",\"showCircles\":true}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"times\":[],\"addTimeMarker\":false,\"dimensions\":{\"x\":{\"accessor\":0,\"format\":{\"id\":\"date\",\"params\":{\"pattern\":\"HH:mm:ss\"}},\"params\":{\"date\":true,\"interval\":\"PT30S\",\"intervalESValue\":30,\"intervalESUnit\":\"s\",\"format\":\"HH:mm:ss\",\"bounds\":{\"min\":\"2024-01-01T00:00:00.000Z\",\"max\":\"2024-12-31T23:59:59.999Z\"}},\"aggType\":\"date_histogram\"},\"y\":[{\"accessor\":1,\"format\":{\"id\":\"number\"},\"params\":{},\"aggType\":\"count\"}]}}",
+        "aggs": [
+          {
+            "id": "1",
+            "enabled": true,
+            "type": "count",
+            "schema": "metric",
+            "params": {}
+          },
+          {
+            "id": "2",
+            "enabled": true,
+            "type": "date_histogram",
+            "schema": "segment",
+            "params": {
+              "field": "@timestamp",
+              "timeRange": {
+                "from": "now-1h",
+                "to": "now"
+              },
+              "useNormalizedEsInterval": true,
+              "scaleMetricValues": false,
+              "interval": "auto",
+              "drop_partials": false,
+              "min_doc_count": 1,
+              "extended_bounds": {}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "anomaly-detection-pie",
+      "type": "pie",
+      "attributes": {
+        "title": "异常行为分类",
+        "visState": "{\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":false,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"anomaly_type\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\"}}]}",
+        "aggs": [
+          {
+            "id": "1",
+            "enabled": true,
+            "type": "count",
+            "schema": "metric",
+            "params": {}
+          },
+          {
+            "id": "2",
+            "enabled": true,
+            "type": "terms",
+            "schema": "segment",
+            "params": {
+              "field": "anomaly_type",
+              "size": 5,
+              "order": "desc",
+              "orderBy": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "container-security-scores",
+      "type": "gauge",
+      "attributes": {
+        "title": "容器安全评分",
+        "visState": "{\"type\":\"gauge\",\"params\":{\"type\":\"gauge\",\"addTooltip\":true,\"addLegend\":true,\"gauge\":{\"verticalSplit\":false,\"extendRange\":true,\"colorMode\":\"Labels\",\"useRange\":false,\"percentageMode\":false,\"gaugeType\":\"Arc\",\"gaugeStyle\":\"Full\",\"backStyle\":\"Full\",\"orientation\":\"vertical\",\"colorSchema\":\"Green to Red\",\"gaugeColorMode\":\"Labels\",\"colorsRange\":[{\"from\":0,\"to\":100}],\"invertColors\":false,\"labels\":{\"show\":true,\"color\":\"black\"},\"scale\":{\"show\":true,\"labels\":false,\"color\":\"#333\"},\"type\":\"meter\",\"style\":{\"bgWidth\":0.9,\"width\":0.9,\"mask\":false,\"bgMask\":false,\"maskBars\":50,\"bgFill\":\"#eee\",\"bgColor\":false,\"subText\":\"\",\"fontSize\":60,\"labelColor\":true}}},\"gaugeType\":\"Arc\",\"percentageMode\":false}}",
+        "aggs": [
+          {
+            "id": "1",
+            "enabled": true,
+            "type": "avg",
+            "schema": "metric",
+            "params": {
+              "field": "security_score"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单游戏测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 2px solid #333;
+            display: block;
+            margin: 20px auto;
+        }
+        .info {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦕 简单游戏测试</h1>
+        <div class="info" id="info">游戏正在启动...</div>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    </div>
+
+    <script src="dino-game-optimized.js"></script>
+    <script>
+        // 页面加载完成后直接启动游戏
+        window.addEventListener('load', function() {
+            console.log('页面加载完成，开始创建游戏实例...');
+            
+            try {
+                // 创建游戏实例
+                const game = new DinoGame();
+                console.log('游戏实例创建成功:', game);
+                
+                // 立即启动游戏
+                game.startGame();
+                console.log('游戏启动完成，gameRunning:', game.gameRunning);
+                
+                // 更新状态信息
+                document.getElementById('info').textContent = 
+                    '游戏已启动！使用空格键、↑键或W键跳跃，↓键或S键下蹲。距离: ' + game.distance + 'm';
+                
+                // 定期更新状态信息
+                setInterval(() => {
+                    if (game && game.gameRunning) {
+                        document.getElementById('info').textContent = 
+                            '游戏运行中 - 得分: ' + game.score + ', 距离: ' + Math.floor(game.distance) + 'm, 生命: ' + game.lives;
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('游戏启动失败:', error);
+                document.getElementById('info').textContent = '游戏启动失败: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

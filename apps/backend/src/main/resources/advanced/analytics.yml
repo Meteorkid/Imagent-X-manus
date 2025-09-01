@@ -1,0 +1,89 @@
+# 数据分析配置
+analytics:
+  # 数据收集
+  collection:
+    # 启用数据收集
+    enabled: true
+    # 采样率 (0.0-1.0)
+    sampling-rate: 1.0
+    # 批量大小
+    batch-size: 100
+    # 批量间隔（秒）
+    batch-interval: 60
+  
+  # 数据存储
+  storage:
+    # 存储类型
+    type: elasticsearch
+    # 连接配置
+    elasticsearch:
+      hosts: ["localhost:9200"]
+      index-prefix: imagentx-analytics
+      retention-days: 90
+    
+    # 缓存配置
+    cache:
+      type: redis
+      ttl: 3600
+  
+  # 实时处理
+  realtime:
+    # 启用实时处理
+    enabled: true
+    # 处理引擎
+    engine: kafka
+    # Kafka配置
+    kafka:
+      bootstrap-servers: localhost:9092
+      topic: analytics-events
+      consumer-group: analytics-processor
+  
+  # 报告生成
+  reporting:
+    # 自动报告
+    auto-reports:
+      - name: "每日用户活跃度"
+        type: USER_BEHAVIOR
+        schedule: "0 0 * * *"
+        recipients: ["admin@imagentx.ai"]
+      
+      - name: "系统性能报告"
+        type: PERFORMANCE
+        schedule: "0 */6 * * *"
+        recipients: ["ops@imagentx.ai"]
+      
+      - name: "业务分析报告"
+        type: BUSINESS
+        schedule: "0 0 * * 0"
+        recipients: ["business@imagentx.ai"]
+    
+    # 报告格式
+    formats:
+      - pdf
+      - excel
+      - json
+      - html
+  
+  # 可视化
+  visualization:
+    # 图表类型
+    charts:
+      - line
+      - bar
+      - pie
+      - scatter
+      - heatmap
+    
+    # 仪表板
+    dashboards:
+      - name: "用户分析"
+        description: "用户行为和活跃度分析"
+        charts: ["user-growth", "user-retention", "feature-usage"]
+      
+      - name: "性能监控"
+        description: "系统性能监控"
+        charts: ["response-time", "throughput", "error-rate"]
+      
+      - name: "业务指标"
+        description: "关键业务指标"
+        charts: ["revenue", "conversion", "engagement"]

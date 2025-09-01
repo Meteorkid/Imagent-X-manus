@@ -1,0 +1,93 @@
+/* 响应式样式 */
+
+/* 移动端样式 */
+@media (max-width: 767px) {
+  .mobile-container {
+    padding: 1rem;
+  }
+  
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .mobile-text-center {
+    text-align: center !important;
+  }
+  
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+}
+
+/* 平板样式 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-container {
+    padding: 1.5rem;
+  }
+  
+  .tablet-hidden {
+    display: none !important;
+  }
+  
+  .tablet-half-width {
+    width: 50% !important;
+  }
+}
+
+/* 桌面样式 */
+@media (min-width: 1024px) {
+  .desktop-container {
+    padding: 2rem;
+  }
+  
+  .desktop-hidden {
+    display: none !important;
+  }
+  
+  .desktop-sidebar {
+    width: 250px !important;
+  }
+  
+  .desktop-main {
+    margin-left: 250px !important;
+  }
+}
+
+/* 通用响应式工具类 */
+.responsive-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.responsive-table {
+  overflow-x: auto;
+}
+
+.responsive-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* 触摸优化 */
+@media (hover: none) and (pointer: coarse) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .touch-spacing {
+    margin: 0.5rem 0;
+  }
+}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线检测器调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+        button:hover { background: #0056b3; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 离线检测器调试</h1>
+    
+    <div class="debug-panel">
+        <h3>📊 状态检查</h3>
+        <div id="status"></div>
+        <button onclick="checkStatus()">检查状态</button>
+        <button onclick="forceInit()">强制初始化</button>
+        <button onclick="showGame()">显示游戏</button>
+        <button onclick="hideGame()">隐藏游戏</button>
+    </div>
+
+    <div class="debug-panel">
+        <h3>📝 控制台日志</h3>
+        <div id="log" class="log"></div>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <script>
+        // 日志功能
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${time}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // 检查状态
+        function checkStatus() {
+            addLog('检查离线检测器状态...', 'info');
+            
+            if (typeof window !== 'undefined') {
+                addLog('✅ window 对象存在', 'success');
+            } else {
+                addLog('❌ window 对象不存在', 'error');
+                return;
+            }
+
+            if (window.imagentxOffline) {
+                addLog('✅ imagentxOffline 对象存在', 'success');
+                
+                if (typeof window.imagentxOffline.getStatus === 'function') {
+                    const status = window.imagentxOffline.getStatus();
+                    addLog(`📊 检测器状态: ${JSON.stringify(status)}`, 'info');
+                    
+                    // 更新状态显示
+                    const statusDiv = document.getElementById('status');
+                    statusDiv.innerHTML = `
+                        <div class="status ${status.isInitialized ? 'success' : 'error'}">
+                            初始化状态: ${status.isInitialized ? '已初始化' : '未初始化'}
+                        </div>
+                        <div class="status ${status.isOffline ? 'error' : 'success'}">
+                            网络状态: ${status.isOffline ? '离线' : '在线'}
+                        </div>
+                        <div class="status ${status.gameContainer ? 'warning' : 'success'}">
+                            游戏容器: ${status.gameContainer ? '已显示' : '未显示'}
+                        </div>
+                        <div class="status info">
+                            重试次数: ${status.retryCount}
+                        </div>
+                    `;
+                } else {
+                    addLog('❌ getStatus 方法不存在', 'error');
+                }
+            } else {
+                addLog('❌ imagentxOffline 对象不存在', 'error');
+                
+                // 尝试手动初始化
+                addLog('🔄 尝试手动初始化...', 'warning');
+                try {
+                    // 检查是否有离线检测器脚本
+                    const scripts = document.querySelectorAll('script[src*="offline-game"]');
+                    if (scripts.length > 0) {
+                        addLog(`✅ 找到 ${scripts.length} 个离线检测器脚本`, 'success');
+                        scripts.forEach((script, index) => {
+                            addLog(`脚本 ${index + 1}: ${script.src}`, 'info');
+                        });
+                    } else {
+                        addLog('❌ 未找到离线检测器脚本', 'error');
+                    }
+                } catch (error) {
+                    addLog(`❌ 检查脚本时出错: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // 强制初始化
+        function forceInit() {
+            addLog('🔄 尝试强制初始化离线检测器...', 'warning');
+            
+            // 检查是否有离线检测器类
+            if (typeof ImagentXOfflineGame !== 'undefined') {
+                addLog('✅ ImagentXOfflineGame 类存在', 'success');
+                try {
+                    window.imagentxOffline = new ImagentXOfflineGame();
+                    addLog('✅ 强制初始化成功', 'success');
+                    checkStatus();
+                } catch (error) {
+                    addLog(`❌ 强制初始化失败: ${error.message}`, 'error');
+                }
+            } else {
+                addLog('❌ ImagentXOfflineGame 类不存在', 'error');
+                addLog('请确保 offline-game.js 文件已正确加载', 'warning');
+            }
+        }
+
+        // 显示游戏
+        function showGame() {
+            addLog('🎮 尝试显示游戏...', 'info');
+            if (window.imagentxOffline && typeof window.imagentxOffline.showGame === 'function') {
+                window.imagentxOffline.showGame();
+                addLog('✅ 游戏显示命令已发送', 'success');
+            } else {
+                addLog('❌ 无法显示游戏 - 检测器未初始化或方法不存在', 'error');
+            }
+        }
+
+        // 隐藏游戏
+        function hideGame() {
+            addLog('🎮 尝试隐藏游戏...', 'info');
+            if (window.imagentxOffline && typeof window.imagentxOffline.hideGame === 'function') {
+                window.imagentxOffline.hideGame();
+                addLog('✅ 游戏隐藏命令已发送', 'success');
+            } else {
+                addLog('❌ 无法隐藏游戏 - 检测器未初始化或方法不存在', 'error');
+            }
+        }
+
+        // 清除日志
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', () => {
+            addLog('🚀 页面加载完成', 'success');
+            setTimeout(() => {
+                checkStatus();
+            }, 1000);
+        });
+
+        // 监听控制台错误
+        const originalError = console.error;
+        console.error = function(...args) {
+            addLog(`❌ 控制台错误: ${args.join(' ')}`, 'error');
+            originalError.apply(console, args);
+        };
+
+        // 监听控制台日志
+        const originalLog = console.log;
+        console.log = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('离线') || message.includes('ImagentX') || message.includes('游戏')) {
+                addLog(`📝 控制台日志: ${message}`, 'info');
+            }
+            originalLog.apply(console, args);
+        };
+    </script>
+
+    <!-- 尝试加载离线检测器 -->
+    <script>
+        addLog('📄 开始加载离线检测器...', 'info');
+        
+        // 检查脚本是否已存在
+        const existingScript = document.querySelector('script[src*="offline-game"]');
+        if (!existingScript) {
+            addLog('📥 加载离线检测器脚本...', 'info');
+            const script = document.createElement('script');
+            script.src = '/offline-game.js';
+            script.onload = () => addLog('✅ 离线检测器脚本加载成功', 'success');
+            script.onerror = () => addLog('❌ 离线检测器脚本加载失败', 'error');
+            document.head.appendChild(script);
+        } else {
+            addLog('✅ 离线检测器脚本已存在', 'success');
+        }
+    </script>
+</body>
+</html>

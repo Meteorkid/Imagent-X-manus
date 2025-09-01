@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小恐龙游戏测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .game-canvas {
+            border: 2px solid #333;
+            display: block;
+            margin: 20px auto;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🦕 小恐龙游戏测试</h1>
+        <div class="status" id="status">游戏准备就绪，点击开始游戏按钮或按空格键开始</div>
+        
+        <canvas id="gameCanvas" width="800" height="400" class="game-canvas"></canvas>
+        
+        <div class="controls">
+            <button class="btn" onclick="startTestGame()">开始游戏</button>
+            <button class="btn" onclick="restartTestGame()">重新开始</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <h3>测试说明：</h3>
+            <p>1. 点击"开始游戏"按钮或按空格键启动游戏</p>
+            <p>2. 使用空格键、↑键或W键跳跃</p>
+            <p>3. 使用↓键或S键下蹲</p>
+            <p>4. 观察生命条显示和按键响应</p>
+        </div>
+    </div>
+
+    <script src="dino-game-optimized.js"></script>
+    <script>
+        let testGameInstance = null;
+        let testGameStarted = false;
+
+        function startTestGame() {
+            if (!testGameStarted) {
+                document.getElementById('status').textContent = '游戏已启动！使用空格键、↑键或W键跳跃，↓键或S键下蹲';
+                testGameStarted = true;
+                testGameInstance = new DinoGame();
+                
+                // 启动游戏
+                if (testGameInstance) {
+                    testGameInstance.startGame();
+                    console.log('游戏实例已创建:', testGameInstance);
+                    console.log('游戏已启动，gameRunning:', testGameInstance.gameRunning);
+                }
+            }
+        }
+
+        function restartTestGame() {
+            if (testGameInstance) {
+                testGameInstance.restart();
+                document.getElementById('status').textContent = '游戏已重新开始！';
+            }
+        }
+
+        // 键盘事件监听
+        document.addEventListener('keydown', function(e) {
+            if (!testGameStarted && (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW')) {
+                e.preventDefault();
+                startTestGame();
+            }
+        });
+
+        // 页面加载完成
+        window.addEventListener('load', function() {
+            console.log('测试页面加载完成');
+            document.getElementById('status').textContent = '游戏准备就绪，点击开始游戏按钮或按空格键开始';
+        });
+    </script>
+</body>
+</html>

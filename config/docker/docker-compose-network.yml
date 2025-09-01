@@ -1,0 +1,123 @@
+version: '3.8'
+
+networks:
+  imagentx-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  storage-data:
+    driver: local
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: imagentx-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-imagentx}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+
+  # RabbitMQ消息队列
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: imagentx-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+
+  # Imagent X后端
+  imagentx-backend:
+    image: ghcr.io/lucky-aeon/imagentx:latest
+    container_name: imagentx-backend
+    environment:
+      # 数据库配置
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-imagentx}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      
+      # RabbitMQ配置
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      
+      # 应用配置
+      SERVER_PORT: 8088
+      JWT_SECRET: ${JWT_SECRET:-default_jwt_secret}
+      
+      # 用户配置
+      IMAGENTX_ADMIN_EMAIL: ${IMAGENTX_ADMIN_EMAIL:-admin@imagentx.ai}
+      IMAGENTX_ADMIN_PASSWORD: ${IMAGENTX_ADMIN_PASSWORD:-admin123}
+    ports:
+      - "8088:8088"
+    volumes:
+      - storage-data:/app/storage
+    networks:
+      - imagentx-network
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: unless-stopped
+
+  # Imagent X前端
+  imagentx-frontend:
+    image: ghcr.io/lucky-aeon/imagentx:latest
+    container_name: imagentx-frontend
+    environment:
+      # 前端配置
+      NEXT_PUBLIC_API_BASE_URL: /api
+      PORT: 3000
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    networks:
+      - imagentx-network
+    depends_on:
+      - imagentx-backend
+    restart: unless-stopped
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: imagentx-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - imagentx-network
+    depends_on:
+      - imagentx-frontend
+      - imagentx-backend
+    restart: unless-stopped
+
+  # MCP网关（可选）
+  imagentx-gateway:
+    image: ghcr.io/lucky-aeon/api-premium-gateway:latest
+    container_name: imagentx-gateway
+    ports:
+      - "8081:8081"
+    networks:
+      - imagentx-network
+    restart: unless-stopped

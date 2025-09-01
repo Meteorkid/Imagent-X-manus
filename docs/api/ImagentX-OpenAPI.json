@@ -1,0 +1,339 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Imagent X OpenAPI",
+    "version": "1.0.0",
+    "description": "Imagent X 平台接口（用于 Apifox 接口管理导入）。涵盖健康检查、认证、用户、Agent、会话、工具、RAG、LLM、API 密钥、管理员等核心模块。"
+  },
+  "servers": [
+    { "url": "http://localhost:8088/api", "description": "本机开发环境" },
+    { "url": "http://192.168.1.63:8088/api", "description": "内网访问环境" },
+    { "url": "http://163.142.180.93:8088/api", "description": "公网访问环境" },
+    { "url": "https://test-api.imagentx.ai/api", "description": "测试环境" }
+  ],
+  "tags": [
+    { "name": "health", "description": "系统健康检查" },
+    { "name": "auth", "description": "用户认证" },
+    { "name": "users", "description": "用户" },
+    { "name": "agents", "description": "Agent 管理" },
+    { "name": "sessions", "description": "会话聊天" },
+    { "name": "tools", "description": "工具市场" },
+    { "name": "rag", "description": "RAG 知识库" },
+    { "name": "llms", "description": "LLM 模型管理" },
+    { "name": "apikeys", "description": "API 密钥管理" },
+    { "name": "admin", "description": "管理员" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "后端健康检查",
+        "responses": {
+          "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponse" } } } }
+        }
+      }
+    },
+    "/health/db": {
+      "get": { "tags": ["health"], "summary": "数据库连接检查", "responses": { "200": { "description": "OK" } } }
+    },
+    "/health/redis": {
+      "get": { "tags": ["health"], "summary": "Redis 连接检查", "responses": { "200": { "description": "OK" } } }
+    },
+
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "用户登录",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginResponse" } } }
+          },
+          "401": { "description": "认证失败" }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "用户注册",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } } } },
+        "responses": { "200": { "description": "注册成功" } }
+      }
+    },
+    "/auth/refresh": { "post": { "tags": ["auth"], "summary": "刷新令牌", "responses": { "200": { "description": "OK" } } } },
+    "/auth/logout": { "post": { "tags": ["auth"], "summary": "登出", "responses": { "200": { "description": "OK" } } } },
+
+    "/users/me": { "get": { "tags": ["users"], "summary": "获取当前用户", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } } } },
+    "/users/password": {
+      "put": {
+        "tags": ["users"],
+        "summary": "修改密码",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChangePasswordRequest" } } } },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+
+    "/agents/published": { "get": { "tags": ["agents"], "summary": "获取已发布 Agent 列表", "responses": { "200": { "description": "OK" } } } },
+    "/agents/user/{userId}": {
+      "get": {
+        "tags": ["agents"],
+        "summary": "获取用户创建的 Agent",
+        "parameters": [ { "name": "userId", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/agents": {
+      "post": {
+        "tags": ["agents"],
+        "summary": "创建 Agent",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgentCreateRequest" } } } },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Agent" } } } } } }
+      }
+    },
+    "/agents/{agentId}": {
+      "get": { "tags": ["agents"], "summary": "获取 Agent 详情", "parameters": [ { "name": "agentId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } },
+      "put": { "tags": ["agents"], "summary": "更新 Agent", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "agentId", "in": "path", "required": true, "schema": { "type": "string" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgentUpdateRequest" } } } }, "responses": { "200": { "description": "OK" } } }
+    },
+    "/agents/{agentId}/versions": { "get": { "tags": ["agents"], "summary": "获取 Agent 版本", "parameters": [ { "name": "agentId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+    "/agents/{agentId}/publish": { "post": { "tags": ["agents"], "summary": "发布 Agent 版本", "parameters": [ { "name": "agentId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+
+    "/agents/sessions": {
+      "get": { "tags": ["sessions"], "summary": "获取会话列表", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "OK" } } },
+      "post": { "tags": ["sessions"], "summary": "创建会话", "security": [{ "BearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SessionCreateRequest" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } } } }
+    },
+    "/agents/sessions/{sessionId}": {
+      "delete": { "tags": ["sessions"], "summary": "删除会话", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } }
+    },
+    "/agents/sessions/{sessionId}/message": {
+      "post": { "tags": ["sessions"], "summary": "发送消息", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SendMessageRequest" } } } }, "responses": { "200": { "description": "OK" } } }
+    },
+    "/agents/sessions/{sessionId}/messages": { "get": { "tags": ["sessions"], "summary": "消息历史", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+    "/agents/sessions/{sessionId}/stream-chat": { "post": { "tags": ["sessions"], "summary": "流式聊天", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SendMessageRequest" } } } }, "responses": { "200": { "description": "OK (stream)" } } } },
+
+    "/tools/market": { "get": { "tags": ["tools"], "summary": "工具市场列表", "responses": { "200": { "description": "OK" } } } },
+    "/tools/recommend": { "get": { "tags": ["tools"], "summary": "推荐工具", "responses": { "200": { "description": "OK" } } } },
+    "/tools/install/{toolId}/{version}": { "post": { "tags": ["tools"], "summary": "安装工具", "parameters": [ { "name": "toolId", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "version", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+    "/tools/installed": { "get": { "tags": ["tools"], "summary": "已安装工具", "responses": { "200": { "description": "OK" } } } },
+    "/tools/user": { "get": { "tags": ["tools"], "summary": "用户创建的工具", "responses": { "200": { "description": "OK" } } } },
+    "/tools": {
+      "post": {
+        "tags": ["tools"],
+        "summary": "上传工具",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": { "type": "string", "format": "binary" },
+                  "name": { "type": "string" },
+                  "description": { "type": "string" }
+                },
+                "required": ["file", "name"]
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/tools/{toolId}": { "get": { "tags": ["tools"], "summary": "工具详情", "parameters": [ { "name": "toolId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+    "/tools/uninstall/{toolId}": { "delete": { "tags": ["tools"], "summary": "卸载工具", "parameters": [ { "name": "toolId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+
+    "/rag/datasets": {
+      "get": { "tags": ["rag"], "summary": "数据集列表", "responses": { "200": { "description": "OK" } } },
+      "post": { "tags": ["rag"], "summary": "创建数据集", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RagDatasetCreateRequest" } } } }, "responses": { "200": { "description": "OK" } } }
+    },
+    "/rag/datasets/files": {
+      "post": {
+        "tags": ["rag"],
+        "summary": "上传文件到数据集",
+        "requestBody": { "required": true, "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "datasetId": { "type": "string" }, "file": { "type": "string", "format": "binary" } }, "required": ["datasetId", "file"] } } } },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/rag/search": { "post": { "tags": ["rag"], "summary": "RAG 搜索", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RagSearchRequest" } } } }, "responses": { "200": { "description": "OK" } } } },
+    "/rag/search/stream-chat": { "post": { "tags": ["rag"], "summary": "RAG 流式聊天", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RagSearchRequest" } } } }, "responses": { "200": { "description": "OK (stream)" } } } },
+    "/rag/datasets/{datasetId}": { "get": { "tags": ["rag"], "summary": "数据集详情", "parameters": [ { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } }, "delete": { "tags": ["rag"], "summary": "删除数据集", "parameters": [ { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+
+    "/llms/models": { "get": { "tags": ["llms"], "summary": "模型列表", "responses": { "200": { "description": "OK" } } } },
+    "/llms/providers": { "get": { "tags": ["llms"], "summary": "提供商列表", "responses": { "200": { "description": "OK" } } }, "post": { "tags": ["llms"], "summary": "创建提供商", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LlmProviderCreateRequest" } } } }, "responses": { "200": { "description": "OK" } } } },
+
+    "/api-keys": { "get": { "tags": ["apikeys"], "summary": "API 密钥列表", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "OK" } } }, "post": { "tags": ["apikeys"], "summary": "创建 API 密钥", "security": [{ "BearerAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiKeyCreateRequest" } } } }, "responses": { "200": { "description": "OK" } } } },
+    "/api-keys/{apiKeyId}/status": { "put": { "tags": ["apikeys"], "summary": "更新 API 密钥状态", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "apiKeyId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+    "/api-keys/{apiKeyId}": { "delete": { "tags": ["apikeys"], "summary": "删除 API 密钥", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "apiKeyId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+    "/api-keys/{apiKeyId}/usage": { "get": { "tags": ["apikeys"], "summary": "API 密钥使用统计", "security": [{ "BearerAuth": [] }], "parameters": [ { "name": "apiKeyId", "in": "path", "required": true, "schema": { "type": "string" } } ], "responses": { "200": { "description": "OK" } } } },
+
+    "/admin/users": { "get": { "tags": ["admin"], "summary": "用户列表", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "OK" } } } },
+    "/admin/agents/statistics": { "get": { "tags": ["admin"], "summary": "Agent 统计", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "OK" } } } },
+    "/admin/orders": { "get": { "tags": ["admin"], "summary": "订单列表", "security": [{ "BearerAuth": [] }], "responses": { "200": { "description": "OK" } } } }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 200 },
+          "message": { "type": "string", "example": "ok" },
+          "data": { "nullable": true },
+          "timestamp": { "type": "integer", "example": 1755674525344 }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "admin@imagentx.ai" },
+          "password": { "type": "string", "example": "admin123" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 200 },
+          "message": { "type": "string", "example": "登录成功" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": { "type": "string", "example": "eyJhbGciOi..." },
+              "user": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password", "nickname"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string" },
+          "nickname": { "type": "string" }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": ["oldPassword", "newPassword"],
+        "properties": {
+          "oldPassword": { "type": "string" },
+          "newPassword": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "1" },
+          "email": { "type": "string", "format": "email" },
+          "nickname": { "type": "string" }
+        }
+      },
+      "Agent": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "systemPrompt": { "type": "string" },
+          "modelId": { "type": "integer" },
+          "tools": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "AgentCreateRequest": {
+        "type": "object",
+        "required": ["name", "modelId"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "systemPrompt": { "type": "string" },
+          "modelId": { "type": "integer" },
+          "tools": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "AgentUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "agentId": { "type": "string" },
+          "title": { "type": "string" }
+        }
+      },
+      "SessionCreateRequest": {
+        "type": "object",
+        "required": ["agentId"],
+        "properties": {
+          "agentId": { "type": "string" },
+          "title": { "type": "string" }
+        }
+      },
+      "SendMessageRequest": {
+        "type": "object",
+        "required": ["content", "type"],
+        "properties": {
+          "content": { "type": "string" },
+          "type": { "type": "string", "enum": ["text"] }
+        }
+      },
+      "RagDatasetCreateRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "RagSearchRequest": {
+        "type": "object",
+        "required": ["query", "datasetId"],
+        "properties": {
+          "query": { "type": "string" },
+          "datasetId": { "type": "string" }
+        }
+      },
+      "LlmProviderCreateRequest": {
+        "type": "object",
+        "required": ["name", "type", "config"],
+        "properties": {
+          "name": { "type": "string", "example": "OpenAI" },
+          "type": { "type": "string", "example": "OPENAI" },
+          "config": {
+            "type": "object",
+            "properties": {
+              "apiKey": { "type": "string" },
+              "baseUrl": { "type": "string", "example": "https://api.openai.com" }
+            }
+          }
+        }
+      },
+      "ApiKeyCreateRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  },
+  "security": [ { "BearerAuth": [] } ]
+}

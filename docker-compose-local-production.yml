@@ -1,0 +1,142 @@
+version: '3.8'
+
+networks:
+  imagentx-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  storage-data:
+    driver: local
+  nginx-logs:
+    driver: local
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: imagentx-postgres-prod
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d imagentx"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # RabbitMQ 消息队列
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: imagentx-rabbitmq-prod
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ImagentX 后端服务
+  imagentx-backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: imagentx-backend-prod
+    environment:
+      # 数据库配置
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: imagentx
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      
+      # RabbitMQ配置
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      
+      # 应用配置
+      SERVER_PORT: 8088
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this}
+      
+      # 用户配置
+      IMAGENTX_ADMIN_EMAIL: ${IMAGENTX_ADMIN_EMAIL:-admin@imagentx.top}
+      IMAGENTX_ADMIN_PASSWORD: ${IMAGENTX_ADMIN_PASSWORD:-admin123}
+      
+      # 禁用向量存储（生产环境可选择性启用）
+      EMBEDDING_ENABLED: ${EMBEDDING_ENABLED:-false}
+      
+    volumes:
+      - storage-data:/app/storage
+    networks:
+      - imagentx-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8088/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ImagentX 前端服务
+  imagentx-frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: imagentx-frontend-prod
+    environment:
+      # 前端配置
+      NEXT_PUBLIC_API_BASE_URL: http://localhost/api
+      NODE_ENV: production
+    networks:
+      - imagentx-network
+    depends_on:
+      - imagentx-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: imagentx-nginx-prod
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx/nginx-local.conf:/etc/nginx/nginx.conf:ro
+      - nginx-logs:/var/log/nginx
+    networks:
+      - imagentx-network
+    depends_on:
+      - imagentx-frontend
+      - imagentx-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

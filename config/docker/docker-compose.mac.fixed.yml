@@ -1,0 +1,150 @@
+version: '3.8'
+
+# macOS Apple Silicon优化配置 - 修复版
+services:
+  postgres:
+    image: postgres:15
+    platform: linux/arm64
+    mem_limit: 4g
+    cpus: 2
+    container_name: imagentx-postgres-mac
+    environment:
+      POSTGRES_DB: ${DB_NAME:-imagentx}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: vector
+      POSTGRES_WORK_MEM: 128MB
+      POSTGRES_MAINTENANCE_WORK_MEM: 512MB
+    volumes:
+      - postgres-data-mac:/var/lib/postgresql/data:delegated
+      - ./docs/sql/01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+      - ./docs/sql/00_install_pgvector.sql:/docker-entrypoint-initdb.d/00_install_pgvector.sql:ro
+    ports:
+      - "5433:5432"
+    networks:
+      - imagentx-network-mac
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-imagentx}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    platform: linux/arm64
+    mem_limit: 2g
+    cpus: 1
+    container_name: imagentx-rabbitmq-mac
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: 0.7
+    volumes:
+      - rabbitmq-data-mac:/var/lib/rabbitmq:delegated
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - imagentx-network-mac
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  imagentx-backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      platforms:
+        - linux/arm64
+    platform: linux/arm64
+    mem_limit: 8g
+    cpus: 4
+    container_name: imagentx-backend-mac
+    environment:
+      # 数据库配置
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-imagentx}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      
+      # Spring配置 - Apple Silicon优化
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xms2g -Xmx6g -XX:+UseContainerSupport -XX:+UseStringDeduplication
+      
+      # 默认用户配置
+      IMAGENTX_ADMIN_EMAIL: admin@imagentx.ai
+      IMAGENTX_ADMIN_PASSWORD: admin123
+      IMAGENTX_ADMIN_NICKNAME: Imagent X管理员
+      
+      # 消息队列配置
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      
+      # 安全配置
+      JWT_SECRET: dev_jwt_secret_for_macos_testing
+      
+      # 日志配置
+      LOG_LEVEL_ROOT: info
+      LOG_LEVEL_APP: debug
+    volumes:
+      - storage-data-mac:/app/storage:delegated
+      - ./logs:/app/logs:delegated
+    ports:
+      - "8088:8088"
+      - "5005:5005"
+    networks:
+      - imagentx-network-mac
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  imagentx-frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      platforms:
+        - linux/arm64
+    platform: linux/arm64
+    mem_limit: 2g
+    cpus: 1.5
+    container_name: imagentx-frontend-mac
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8088/api
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: 1
+    ports:
+      - "3000:3000"
+    networks:
+      - imagentx-network-mac
+    depends_on:
+      - imagentx-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  imagentx-network-mac:
+    driver: bridge
+
+volumes:
+  postgres-data-mac:
+    driver: local
+  rabbitmq-data-mac:
+    driver: local
+  storage-data-mac:
+    driver: local

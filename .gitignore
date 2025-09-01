@@ -1,0 +1,51 @@
+# 依赖文件
+node_modules/
+*.log
+logs/
+pids/
+
+# 环境配置文件
+.env
+.env.local
+.env.production
+env.production.template
+
+# 备份目录
+backup_*/
+
+# 临时文件
+*.tmp
+*.temp
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编译输出
+*.class
+target/
+build/
+dist/
+
+# 数据库文件
+*.db
+*.sqlite
+
+# 密钥文件
+*.pem
+*.key
+*.crt
+imagentx_public_key.txt
+
+# 嵌入的Git仓库
+offline-dino/alien-boy-game/
+
+# 部署相关
+deploy/
+production/

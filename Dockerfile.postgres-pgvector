@@ -1,0 +1,21 @@
+FROM postgres:15-alpine
+
+# 安装构建工具和pgvector依赖
+RUN apk add --no-cache \
+    build-base \
+    git \
+    postgresql-dev \
+    && rm -rf /var/cache/apk/*
+
+# 克隆并编译pgvector
+RUN cd /tmp \
+    && git clone --branch v0.5.1 https://github.com/pgvector/pgvector.git \
+    && cd pgvector \
+    && make \
+    && make install
+
+# 清理构建文件
+RUN rm -rf /tmp/pgvector
+
+# 设置pgvector扩展
+RUN echo "shared_preload_libraries = 'vector'" >> /usr/local/share/postgresql/postgresql.conf.sample

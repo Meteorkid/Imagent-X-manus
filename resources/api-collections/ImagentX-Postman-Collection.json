@@ -1,0 +1,661 @@
+{
+  "info": {
+    "name": "Imagent X API 测试集合",
+    "description": "Imagent X 智能Agent平台完整API测试集合，包含所有核心功能接口",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8088/api",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "agent_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "系统健康检查",
+      "item": [
+        {
+          "name": "后端健康检查",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "数据库连接检查",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/db",
+              "host": ["{{base_url}}"],
+              "path": ["health", "db"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "用户认证",
+      "item": [
+        {
+          "name": "用户登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@imagentx.ai\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.code === 200) {",
+                  "    pm.collectionVariables.set('auth_token', response.data.token);",
+                  "    pm.collectionVariables.set('user_id', response.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "用户注册",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"test123\",\n  \"nickname\": \"测试用户\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "用户登出",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "用户管理",
+      "item": [
+        {
+          "name": "获取当前用户信息",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agent 管理",
+      "item": [
+        {
+          "name": "获取已发布Agent列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/agents/published",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "published"]
+            }
+          }
+        },
+        {
+          "name": "获取用户Agent列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/agents/user/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "user", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "创建Agent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"智能助手\",\n  \"description\": \"一个智能对话助手\",\n  \"systemPrompt\": \"你是一个 helpful AI assistant\",\n  \"modelId\": \"gpt-4\",\n  \"tools\": [\"web-search\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/agents",
+              "host": ["{{base_url}}"],
+              "path": ["agents"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.code === 200) {",
+                  "    pm.collectionVariables.set('agent_id', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取Agent详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/agents/{{agent_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "{{agent_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "会话管理",
+      "item": [
+        {
+          "name": "获取会话列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/agents/sessions",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "sessions"]
+            }
+          }
+        },
+        {
+          "name": "创建会话",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agent_id}}\",\n  \"title\": \"新会话\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/agents/sessions",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "sessions"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.code === 200) {",
+                  "    pm.collectionVariables.set('session_id', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取消息历史",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/agents/sessions/{{session_id}}/messages",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "sessions", "{{session_id}}", "messages"]
+            }
+          }
+        },
+        {
+          "name": "发送消息",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"你好，请介绍一下自己\",\n  \"type\": \"text\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/agents/sessions/{{session_id}}/message",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "sessions", "{{session_id}}", "message"]
+            }
+          }
+        },
+        {
+          "name": "流式聊天",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "text/event-stream"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"请详细介绍一下人工智能\",\n  \"type\": \"text\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/agents/sessions/{{session_id}}/stream-chat",
+              "host": ["{{base_url}}"],
+              "path": ["agents", "sessions", "{{session_id}}", "stream-chat"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "LLM 管理",
+      "item": [
+        {
+          "name": "获取提供商列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/llms/providers",
+              "host": ["{{base_url}}"],
+              "path": ["llms", "providers"]
+            }
+          }
+        },
+        {
+          "name": "获取模型列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/llms/models",
+              "host": ["{{base_url}}"],
+              "path": ["llms", "models"]
+            }
+          }
+        },
+        {
+          "name": "创建提供商",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"OpenAI\",\n  \"apiKey\": \"sk-your-api-key\",\n  \"baseUrl\": \"https://api.openai.com\",\n  \"protocol\": \"openai\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/llms/providers",
+              "host": ["{{base_url}}"],
+              "path": ["llms", "providers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "工具市场",
+      "item": [
+        {
+          "name": "获取工具市场列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tools/market",
+              "host": ["{{base_url}}"],
+              "path": ["tools", "market"]
+            }
+          }
+        },
+        {
+          "name": "获取已安装工具",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tools/installed",
+              "host": ["{{base_url}}"],
+              "path": ["tools", "installed"]
+            }
+          }
+        },
+        {
+          "name": "安装工具",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tools/install/tool123/1.0.0",
+              "host": ["{{base_url}}"],
+              "path": ["tools", "install", "tool123", "1.0.0"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RAG 知识库",
+      "item": [
+        {
+          "name": "获取数据集列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rag/datasets",
+              "host": ["{{base_url}}"],
+              "path": ["rag", "datasets"]
+            }
+          }
+        },
+        {
+          "name": "创建数据集",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"测试数据集\",\n  \"description\": \"用于测试的知识库\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rag/datasets",
+              "host": ["{{base_url}}"],
+              "path": ["rag", "datasets"]
+            }
+          }
+        },
+        {
+          "name": "上传文件到数据集",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "datasetId",
+                  "value": "dataset123",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/rag/datasets/files",
+              "host": ["{{base_url}}"],
+              "path": ["rag", "datasets", "files"]
+            }
+          }
+        },
+        {
+          "name": "RAG搜索",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"什么是机器学习\",\n  \"datasetIds\": [\"dataset123\"],\n  \"topK\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rag/search",
+              "host": ["{{base_url}}"],
+              "path": ["rag", "search"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 密钥管理",
+      "item": [
+        {
+          "name": "获取API密钥列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api-keys",
+              "host": ["{{base_url}}"],
+              "path": ["api-keys"]
+            }
+          }
+        },
+        {
+          "name": "创建API密钥",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"测试密钥\",\n  \"description\": \"用于测试的API密钥\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api-keys",
+              "host": ["{{base_url}}"],
+              "path": ["api-keys"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  }
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>脚本加载测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🔍 脚本加载测试</h1>
+    
+    <div class="test-panel">
+        <h3>📥 脚本加载测试</h3>
+        <button onclick="loadScript()">加载脚本</button>
+        <button onclick="checkGlobals()">检查全局变量</button>
+        <button onclick="testInit()">测试初始化</button>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <div class="test-panel">
+        <h3>📝 详细日志</h3>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${time}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function loadScript() {
+            log('📥 开始加载脚本...', 'info');
+            
+            // 检查是否已经加载
+            const existingScript = document.querySelector('script[src*="offline-game"]');
+            if (existingScript) {
+                log('⚠️ 脚本已存在，移除旧脚本', 'warning');
+                existingScript.remove();
+            }
+
+            // 创建新脚本
+            const script = document.createElement('script');
+            script.src = 'offline-game.js';
+            
+            script.onload = () => {
+                log('✅ 脚本加载成功', 'success');
+                setTimeout(() => {
+                    checkGlobals();
+                }, 100);
+            };
+            
+            script.onerror = (error) => {
+                log(`❌ 脚本加载失败: ${error}`, 'error');
+            };
+            
+            document.head.appendChild(script);
+            log('📄 脚本标签已添加到页面', 'info');
+        }
+
+        function checkGlobals() {
+            log('🔍 检查全局变量...', 'info');
+            
+            // 检查 window 对象
+            if (typeof window !== 'undefined') {
+                log('✅ window 对象存在', 'success');
+            } else {
+                log('❌ window 对象不存在', 'error');
+                return;
+            }
+
+            // 检查 ImagentXOfflineGame 类
+            if (typeof ImagentXOfflineGame !== 'undefined') {
+                log('✅ ImagentXOfflineGame 类存在', 'success');
+                log(`📝 类构造函数: ${typeof ImagentXOfflineGame}`, 'info');
+            } else {
+                log('❌ ImagentXOfflineGame 类不存在', 'error');
+            }
+
+            // 检查 imagentxOffline 对象
+            if (window.imagentxOffline) {
+                log('✅ imagentxOffline 对象存在', 'success');
+                log(`📝 对象类型: ${typeof window.imagentxOffline}`, 'info');
+                
+                if (typeof window.imagentxOffline.getStatus === 'function') {
+                    log('✅ getStatus 方法存在', 'success');
+                    const status = window.imagentxOffline.getStatus();
+                    log(`📊 状态: ${JSON.stringify(status)}`, 'info');
+                } else {
+                    log('❌ getStatus 方法不存在', 'error');
+                }
+            } else {
+                log('❌ imagentxOffline 对象不存在', 'error');
+            }
+
+            // 检查 debugOfflineGame 函数
+            if (typeof window.debugOfflineGame === 'function') {
+                log('✅ debugOfflineGame 函数存在', 'success');
+            } else {
+                log('❌ debugOfflineGame 函数不存在', 'error');
+            }
+
+            // 检查所有全局变量
+            const globals = Object.keys(window).filter(key => 
+                key.includes('imagentx') || 
+                key.includes('Offline') || 
+                key.includes('Game') ||
+                key.includes('debug')
+            );
+            
+            if (globals.length > 0) {
+                log(`📋 相关全局变量: ${globals.join(', ')}`, 'info');
+            } else {
+                log('⚠️ 未找到相关全局变量', 'warning');
+            }
+        }
+
+        function testInit() {
+            log('🔄 测试初始化...', 'info');
+            
+            if (typeof ImagentXOfflineGame === 'undefined') {
+                log('❌ ImagentXOfflineGame 类不存在，无法初始化', 'error');
+                return;
+            }
+
+            try {
+                log('📝 创建 ImagentXOfflineGame 实例...', 'info');
+                const instance = new ImagentXOfflineGame();
+                log('✅ 实例创建成功', 'success');
+                
+                // 检查实例方法
+                const methods = ['getStatus', 'showGame', 'hideGame', 'forceShowGame', 'forceHideGame'];
+                methods.forEach(method => {
+                    if (typeof instance[method] === 'function') {
+                        log(`✅ ${method} 方法存在`, 'success');
+                    } else {
+                        log(`❌ ${method} 方法不存在`, 'error');
+                    }
+                });
+
+                // 获取状态
+                const status = instance.getStatus();
+                log(`📊 实例状态: ${JSON.stringify(status)}`, 'info');
+
+                // 设置为全局对象
+                window.imagentxOffline = instance;
+                log('✅ 实例已设置为全局对象', 'success');
+                
+            } catch (error) {
+                log(`❌ 初始化失败: ${error.message}`, 'error');
+                log(`📝 错误堆栈: ${error.stack}`, 'error');
+            }
+        }
+
+        // 页面加载完成后自动开始测试
+        window.addEventListener('load', () => {
+            log('🚀 页面加载完成', 'success');
+            log('⏳ 等待 2 秒后开始自动测试...', 'info');
+            
+            setTimeout(() => {
+                loadScript();
+            }, 2000);
+        });
+
+        // 监听控制台错误
+        const originalError = console.error;
+        console.error = function(...args) {
+            log(`❌ 控制台错误: ${args.join(' ')}`, 'error');
+            originalError.apply(console, args);
+        };
+
+        // 监听控制台日志
+        const originalLog = console.log;
+        console.log = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('离线') || message.includes('ImagentX') || message.includes('游戏') || message.includes('初始化')) {
+                log(`📝 控制台: ${message}`, 'info');
+            }
+            originalLog.apply(console, args);
+        };
+    </script>
+</body>
+</html>

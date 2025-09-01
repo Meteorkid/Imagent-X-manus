@@ -1,0 +1,56 @@
+# 插件市场配置
+plugin:
+  # 市场配置
+  marketplace:
+    # 市场URL
+    url: https://marketplace.imagentx.ai
+    # API版本
+    api-version: v1
+    # 认证token
+    auth-token: ${PLUGIN_MARKETPLACE_TOKEN}
+  
+  # 插件目录
+  directory:
+    # 插件安装目录
+    install-path: /plugins
+    # 插件配置目录
+    config-path: /config/plugins
+    # 插件数据目录
+    data-path: /data/plugins
+  
+  # 插件管理
+  management:
+    # 自动更新
+    auto-update: false
+    # 更新检查间隔（小时）
+    update-check-interval: 24
+    # 插件验证
+    verification: true
+    # 沙箱模式
+    sandbox-mode: true
+  
+  # 插件权限
+  permissions:
+    # 文件系统访问
+    file-system: false
+    # 网络访问
+    network: false
+    # 数据库访问
+    database: false
+    # 系统调用
+    system-call: false
+  
+  # 插件分类
+  categories:
+    - name: "工具集成"
+      description: "第三方工具和服务集成"
+    - name: "数据分析"
+      description: "数据分析和可视化工具"
+    - name: "工作流"
+      description: "工作流和自动化工具"
+    - name: "安全"
+      description: "安全相关插件"
+    - name: "监控"
+      description: "监控和告警插件"
+    - name: "其他"
+      description: "其他类型插件"

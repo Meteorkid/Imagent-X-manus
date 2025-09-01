@@ -1,0 +1,37 @@
+# 本地开发环境缓存配置
+spring:
+  cache:
+    type: simple
+    cache-names:
+      - user-session
+      - config
+      - query-result
+      - tool-info
+      - rag-cache
+
+# 缓存配置
+cache:
+  # 用户会话缓存
+  session:
+    ttl: 3600000 # 1小时
+    max-size: 1000
+  
+  # 配置信息缓存
+  config:
+    ttl: 1800000 # 30分钟
+    max-size: 100
+  
+  # 查询结果缓存
+  query:
+    ttl: 300000 # 5分钟
+    max-size: 500
+  
+  # 工具信息缓存
+  tool:
+    ttl: 900000 # 15分钟
+    max-size: 200
+  
+  # RAG知识库缓存
+  rag:
+    ttl: 600000 # 10分钟
+    max-size: 300

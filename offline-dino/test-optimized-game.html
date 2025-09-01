@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试外星人小男孩游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        #gameCanvas {
+            border: 3px solid white;
+            border-radius: 10px;
+            background: #87CEEB;
+            display: block;
+            margin: 20px auto;
+        }
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 5px;
+        }
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">👽 外星人小男孩游戏测试</h1>
+    
+    <div class="status" id="status">正在加载游戏...</div>
+    
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    
+    <button class="start-btn" id="startBtn" onclick="startGame()" style="display: none;">开始游戏</button>
+
+    <script>
+        // 先加载游戏脚本
+        const script = document.createElement('script');
+        script.src = 'dino-game-optimized.js';
+        
+        script.onload = function() {
+            document.getElementById('status').textContent = '游戏脚本加载成功！';
+            console.log('dino-game-optimized.js 加载成功');
+            
+            // 检查DinoGame类
+            setTimeout(() => {
+                if (typeof DinoGame !== 'undefined') {
+                    document.getElementById('status').textContent = 'DinoGame类已就绪，可以开始游戏！';
+                    document.getElementById('startBtn').style.display = 'block';
+                    console.log('DinoGame类已定义');
+                } else {
+                    document.getElementById('status').textContent = '错误：DinoGame类未定义';
+                    console.error('DinoGame类未定义');
+                }
+            }, 100);
+        };
+        
+        script.onerror = function() {
+            document.getElementById('status').textContent = '错误：无法加载游戏脚本文件';
+            console.error('无法加载 dino-game-optimized.js');
+        };
+        
+        document.head.appendChild(script);
+
+        let gameInstance = null;
+
+        function startGame() {
+            try {
+                document.getElementById('status').textContent = '正在启动游戏...';
+                gameInstance = new DinoGame();
+                gameInstance.startGame();
+                document.getElementById('status').textContent = '游戏已启动！';
+                console.log('游戏启动成功');
+            } catch (error) {
+                document.getElementById('status').textContent = '启动游戏时出错: ' + error.message;
+                console.error('启动游戏时出错:', error);
+            }
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                if (!gameInstance || !gameInstance.gameRunning) {
+                    startGame();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(main)/settings/api-keys/page": "app/(main)/settings/api-keys/page.js",
+  "/(main)/settings/pricing/page": "app/(main)/settings/pricing/page.js",
+  "/(main)/settings/billing/page": "app/(main)/settings/billing/page.js",
+  "/(main)/agents/page": "app/(main)/agents/page.js",
+  "/(main)/explore/page": "app/(main)/explore/page.js",
+  "/(main)/studio/page": "app/(main)/studio/page.js"
+}

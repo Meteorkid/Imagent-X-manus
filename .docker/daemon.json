@@ -1,0 +1,9 @@
+{
+  "registry-mirrors": [
+    "https://registry-1.docker.io"
+  ],
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 5,
+  "debug": false,
+  "experimental": false
+}

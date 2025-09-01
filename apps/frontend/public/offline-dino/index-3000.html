@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3000端口演示 - 断网检测</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .network-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .online { background: #4caf50; }
+        .offline { background: #f44336; }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        
+        button:hover {
+            background: #1557b0;
+        }
+        
+        .instructions {
+            background: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>3000端口离线检测演示</h1>
+        <p>模拟断网状态，自动显示小恐龙游戏</p>
+    </div>
+
+    <div class="status-card">
+        <h3>当前网络状态</h3>
+        <div>
+            <span class="network-indicator" id="status-dot"></span>
+            <span id="status-text">正在检测...</span>
+        </div>
+    </div>
+
+    <div class="status-card">
+        <h3>手动控制</h3>
+        <div class="controls">
+            <button onclick="simulateOffline()">模拟断网</button>
+            <button onclick="simulateOnline()">模拟恢复</button>
+            <button onclick="showGame()">显示游戏</button>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h4>使用说明：</h4>
+        <ul>
+            <li>当网络断开时，会自动弹出小恐龙游戏</li>
+            <li>按 ESC 键或点击关闭按钮可关闭游戏</li>
+            <li>网络恢复后，游戏窗口会自动关闭</li>
+            <li>游戏支持键盘和鼠标操作</li>
+        </ul>
+    </div>
+
+    <div class="status-card">
+        <h3>集成方法</h3>
+        <p>在您的3000端口页面中添加以下代码：</p>
+        <pre style="background: #f5f5f5; padding: 16px; border-radius: 4px; overflow-x: auto;">
+&lt;script src="/offline-dino/offline-detector.js"&gt;&lt;/script&gt;</pre>
+    </div>
+
+    <script src="offline-detector.js"></script>
+    <script>
+        let detector = null;
+        let isSimulatedOffline = false;
+
+        // 更新状态显示
+        function updateStatus(online) {
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+            
+            if (online) {
+                dot.className = 'network-indicator online';
+                text.textContent = '在线';
+            } else {
+                dot.className = 'network-indicator offline';
+                text.textContent = '离线';
+            }
+        }
+
+        // 模拟断网
+        function simulateOffline() {
+            isSimulatedOffline = true;
+            updateStatus(false);
+            detector.handleOffline();
+        }
+
+        // 模拟恢复
+        function simulateOnline() {
+            isSimulatedOffline = false;
+            updateStatus(true);
+            detector.handleOnline();
+        }
+
+        // 显示游戏
+        function showGame() {
+            detector.showOfflineGame();
+        }
+
+        // 修改检测器，支持模拟状态
+        class DemoOfflineDetector extends OfflineDetector {
+            async checkNetworkStatus() {
+                if (isSimulatedOffline) {
+                    this.handleOffline();
+                    return;
+                }
+                
+                // 正常检测
+                await super.checkNetworkStatus();
+            }
+        }
+
+        // 替换原有的检测器
+        window.addEventListener('DOMContentLoaded', () => {
+            detector = new DemoOfflineDetector();
+            
+            // 初始状态
+            updateStatus(!isSimulatedOffline);
+            
+            // 监听真实网络状态
+            window.addEventListener('online', () => {
+                if (!isSimulatedOffline) {
+                    updateStatus(true);
+                }
+            });
+            
+            window.addEventListener('offline', () => {
+                if (!isSimulatedOffline) {
+                    updateStatus(false);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

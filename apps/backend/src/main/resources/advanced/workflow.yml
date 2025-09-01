@@ -1,0 +1,76 @@
+# 工作流引擎配置
+workflow:
+  # 引擎配置
+  engine:
+    # 最大并发实例数
+    max-concurrent-instances: 100
+    # 实例超时时间（分钟）
+    instance-timeout: 30
+    # 步骤超时时间（分钟）
+    step-timeout: 5
+    # 重试次数
+    max-retries: 3
+    # 重试间隔（秒）
+    retry-interval: 10
+  
+  # 步骤类型配置
+  step-types:
+    # 任务步骤
+    task:
+      enabled: true
+      timeout: 300
+      retry: true
+    
+    # 决策步骤
+    decision:
+      enabled: true
+      timeout: 60
+      retry: false
+    
+    # 并行步骤
+    parallel:
+      enabled: true
+      max-branches: 10
+      timeout: 600
+    
+    # 循环步骤
+    loop:
+      enabled: true
+      max-iterations: 100
+      timeout: 1800
+    
+    # 子流程步骤
+    subflow:
+      enabled: true
+      timeout: 900
+  
+  # 存储配置
+  storage:
+    # 实例存储
+    instance:
+      type: database
+      table: workflow_instances
+      cleanup-days: 30
+    
+    # 定义存储
+    definition:
+      type: database
+      table: workflow_definitions
+      versioning: true
+  
+  # 监控配置
+  monitoring:
+    # 启用监控
+    enabled: true
+    # 指标收集
+    metrics:
+      - instance-count
+      - execution-time
+      - success-rate
+      - error-rate
+    # 告警配置
+    alerts:
+      - type: timeout
+        threshold: 300
+      - type: error-rate
+        threshold: 0.1

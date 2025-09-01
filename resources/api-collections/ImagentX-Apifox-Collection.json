@@ -1,0 +1,685 @@
+{
+  "info": {
+    "name": "Imagent X API 接口集合",
+    "description": "Imagent X智能对话系统平台 - 完整的API接口测试集合",
+    "version": "1.0.0",
+    "schema": "https://schema.apifox.cn/apifox-schema.json"
+  },
+  "environments": [
+    {
+      "name": "本机开发环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "http://localhost:8088/api",
+          "description": "本机后端API地址"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "http://localhost:3000",
+          "description": "本机前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "http://localhost:8081",
+          "description": "本机MCP网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "http://localhost:15673",
+          "description": "本机RabbitMQ管理地址"
+        }
+      ]
+    },
+    {
+      "name": "内网访问环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "http://192.168.1.63:8088/api",
+          "description": "内网后端API地址"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "http://192.168.1.63:3000",
+          "description": "内网前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "http://192.168.1.63:8081",
+          "description": "内网MCP网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "http://192.168.1.63:15673",
+          "description": "内网RabbitMQ管理地址"
+        }
+      ]
+    },
+    {
+      "name": "公网访问环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "https://test-api.imagentx.ai/api",
+          "description": "测试环境"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "http://163.142.180.93:3000",
+          "description": "公网前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "http://163.142.180.93:8081",
+          "description": "公网MCP网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "http://163.142.180.93:15673",
+          "description": "公网RabbitMQ管理地址"
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "name": "系统健康检查",
+      "description": "系统基础健康状态检查接口",
+      "items": [
+        {
+          "name": "后端健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/health",
+            "description": "检查后端服务健康状态"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "code": 200,
+              "body": "{\n  \"code\": 200,\n  \"message\": \"ok\",\n  \"data\": null,\n  \"timestamp\": 1755674525344\n}"
+            }
+          ]
+        },
+        {
+          "name": "前端健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{FRONTEND_URL}}",
+            "description": "检查前端服务状态"
+          }
+        },
+        {
+          "name": "网关健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{GATEWAY_URL}}/api/health",
+            "description": "检查MCP网关健康状态"
+          }
+        },
+        {
+          "name": "RabbitMQ管理页面",
+          "request": {
+            "method": "GET",
+            "url": "{{RABBITMQ_URL}}",
+            "description": "检查RabbitMQ管理界面可访问性"
+          }
+        }
+      ]
+    },
+    {
+      "name": "用户认证",
+      "description": "用户登录、注册、权限管理相关接口",
+      "items": [
+        {
+          "name": "用户登录",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/login",
+            "description": "用户登录获取访问令牌",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"admin@imagentx.ai\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "登录成功",
+              "code": 200,
+              "body": "{\n  \"code\": 200,\n  \"message\": \"登录成功\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"admin@imagentx.ai\",\n      \"nickname\": \"Imagent X管理员\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "用户注册",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/register",
+            "description": "新用户注册",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"nickname\": \"测试用户\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取当前用户信息",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/users/me",
+            "description": "获取当前登录用户信息（需要认证）"
+          }
+        },
+        {
+          "name": "刷新令牌",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/refresh",
+            "description": "刷新访问令牌"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agent管理",
+      "description": "AI Agent的创建、配置、发布、版本管理",
+      "items": [
+        {
+          "name": "获取已发布的Agent列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/published",
+            "description": "获取所有已发布的Agent列表"
+          }
+        },
+        {
+          "name": "获取用户创建的Agent列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/user/{{USER_ID}}",
+            "description": "获取指定用户创建的Agent列表"
+          }
+        },
+        {
+          "name": "创建新Agent",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents",
+            "description": "创建新的AI Agent",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"智能助手\",\n  \"description\": \"一个智能对话助手\",\n  \"systemPrompt\": \"你是一个有用的AI助手\",\n  \"modelId\": 1,\n  \"tools\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "获取Agent详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}",
+            "description": "获取指定Agent的详细信息"
+          }
+        },
+        {
+          "name": "更新Agent",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}",
+            "description": "更新Agent信息",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"更新后的名称\",\n  \"description\": \"更新后的描述\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取Agent版本列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}/versions",
+            "description": "获取指定Agent的所有版本"
+          }
+        },
+        {
+          "name": "发布Agent版本",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}/publish",
+            "description": "发布Agent新版本"
+          }
+        }
+      ]
+    },
+    {
+      "name": "会话聊天",
+      "description": "与AI Agent的对话会话管理",
+      "items": [
+        {
+          "name": "创建新会话",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/sessions",
+            "description": "创建新的对话会话",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"agentId\": \"{{AGENT_ID}}\",\n  \"title\": \"新对话\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取会话列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/sessions",
+            "description": "获取用户的对话会话列表"
+          }
+        },
+        {
+          "name": "发送消息",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}/message",
+            "description": "在指定会话中发送消息",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"content\": \"你好，请介绍一下自己\",\n  \"type\": \"text\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取会话消息历史",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}/messages",
+            "description": "获取指定会话的消息历史"
+          }
+        },
+        {
+          "name": "删除会话",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}",
+            "description": "删除指定的对话会话"
+          }
+        }
+      ]
+    },
+    {
+      "name": "工具市场",
+      "description": "AI工具的管理、安装、使用",
+      "items": [
+        {
+          "name": "获取工具市场列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/market",
+            "description": "获取工具市场中的可用工具列表"
+          }
+        },
+        {
+          "name": "获取推荐工具",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/recommend",
+            "description": "获取系统推荐的工具列表"
+          }
+        },
+        {
+          "name": "安装工具",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/tools/install/{{TOOL_ID}}/{{VERSION}}",
+            "description": "安装指定版本的工具"
+          }
+        },
+        {
+          "name": "获取已安装工具",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/installed",
+            "description": "获取用户已安装的工具列表"
+          }
+        },
+        {
+          "name": "获取用户创建的工具",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/user",
+            "description": "获取用户创建的工具列表"
+          }
+        },
+        {
+          "name": "上传工具",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/tools",
+            "description": "上传新的工具",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "工具文件"
+                },
+                {
+                  "key": "name",
+                  "value": "工具名称",
+                  "description": "工具名称"
+                },
+                {
+                  "key": "description",
+                  "value": "工具描述",
+                  "description": "工具描述"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RAG知识库",
+      "description": "检索增强生成的知识库管理",
+      "items": [
+        {
+          "name": "获取数据集列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/rag/datasets",
+            "description": "获取RAG数据集列表"
+          }
+        },
+        {
+          "name": "创建数据集",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/datasets",
+            "description": "创建新的RAG数据集",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"测试数据集\",\n  \"description\": \"用于测试的数据集\"\n}"
+            }
+          }
+        },
+        {
+          "name": "上传文件到数据集",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/datasets/files",
+            "description": "上传文件到指定数据集",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "datasetId",
+                  "value": "{{DATASET_ID}}",
+                  "description": "数据集ID"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "要上传的文件"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "RAG搜索",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/search",
+            "description": "在知识库中搜索相关内容",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"query\": \"搜索查询内容\",\n  \"datasetId\": \"{{DATASET_ID}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "RAG流式聊天",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/search/stream-chat",
+            "description": "基于知识库的流式问答",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"query\": \"问题内容\",\n  \"datasetId\": \"{{DATASET_ID}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "LLM模型管理",
+      "description": "大语言模型和提供商的配置管理",
+      "items": [
+        {
+          "name": "获取模型列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/llms/models",
+            "description": "获取可用的LLM模型列表"
+          }
+        },
+        {
+          "name": "获取提供商列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/llms/providers",
+            "description": "获取LLM服务提供商列表"
+          }
+        },
+        {
+          "name": "创建提供商",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/llms/providers",
+            "description": "创建新的LLM服务提供商",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"OpenAI\",\n  \"type\": \"OPENAI\",\n  \"config\": {\n    \"apiKey\": \"your-api-key\",\n    \"baseUrl\": \"https://api.openai.com\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "API密钥管理",
+      "description": "用户API密钥的创建、管理、使用",
+      "items": [
+        {
+          "name": "获取API密钥列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/api-keys",
+            "description": "获取用户的API密钥列表"
+          }
+        },
+        {
+          "name": "创建API密钥",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api-keys",
+            "description": "创建新的API密钥",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"测试密钥\",\n  \"description\": \"用于测试的API密钥\"\n}"
+            }
+          }
+        },
+        {
+          "name": "更新API密钥状态",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api-keys/{{API_KEY_ID}}/status",
+            "description": "启用或禁用API密钥"
+          }
+        },
+        {
+          "name": "删除API密钥",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/api-keys/{{API_KEY_ID}}",
+            "description": "删除指定的API密钥"
+          }
+        }
+      ]
+    },
+    {
+      "name": "管理员接口",
+      "description": "管理员专用接口（需要管理员权限）",
+      "items": [
+        {
+          "name": "获取用户列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/users",
+            "description": "管理员获取所有用户列表"
+          }
+        },
+        {
+          "name": "获取Agent统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/agents/statistics",
+            "description": "管理员获取Agent使用统计"
+          }
+        },
+        {
+          "name": "获取订单列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/orders",
+            "description": "管理员获取所有订单列表"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": {
+      "token": "{{TOKEN}}"
+    }
+  },
+  "variables": [
+    {
+      "key": "TOKEN",
+      "value": "",
+      "description": "用户登录后的访问令牌"
+    },
+    {
+      "key": "USER_ID",
+      "value": "1",
+      "description": "当前用户ID"
+    },
+    {
+      "key": "AGENT_ID",
+      "value": "",
+      "description": "Agent ID（从Agent列表接口获取）"
+    },
+    {
+      "key": "SESSION_ID",
+      "value": "",
+      "description": "会话ID（从会话列表接口获取）"
+    },
+    {
+      "key": "DATASET_ID",
+      "value": "",
+      "description": "数据集ID（从数据集列表接口获取）"
+    },
+    {
+      "key": "TOOL_ID",
+      "value": "",
+      "description": "工具ID（从工具市场接口获取）"
+    },
+    {
+      "key": "API_KEY_ID",
+      "value": "",
+      "description": "API密钥ID（从API密钥列表接口获取）"
+    }
+  ]
+}
+
+

@@ -1,0 +1,80 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "安全分析仪表板",
+    "tags": ["security", "analytics", "threat-detection"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "安全事件趋势",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(sandbox_security_violations_total[5m])) by (violation_type)",
+            "legendFormat": "{{violation_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "异常行为分类",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum(sandbox_anomaly_detections_total) by (anomaly_type)",
+            "legendFormat": "{{anomaly_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 3,
+        "title": "容器安全评分分布",
+        "type": "histogram",
+        "targets": [
+          {
+            "expr": "sandbox_security_score",
+            "legendFormat": "{{container_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "资源使用异常检测",
+        "type": "alertlist",
+        "targets": [
+          {
+            "expr": "sandbox_resource_usage{resource_type=\"memory\"} > 80",
+            "legendFormat": "内存使用率过高 - {{container_name}}"
+          },
+          {
+            "expr": "sandbox_resource_usage{resource_type=\"cpu\"} > 90",
+            "legendFormat": "CPU使用率过高 - {{container_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "安全威胁热力图",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "sum(rate(sandbox_security_violations_total[5m])) by (container_name, violation_type)",
+            "legendFormat": "{{container_name}} - {{violation_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

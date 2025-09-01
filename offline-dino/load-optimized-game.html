@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外星人小男孩游戏 - 优化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            cursor: pointer;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .game-over h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #4CAF50;
+        }
+
+        .game-over p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .restart-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #45a049;
+        }
+
+        .score-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        .game-start {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .game-start h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            color: #4CAF50;
+        }
+
+        .game-start p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    
+    <div class="score-display">
+        得分: <span id="score">0</span>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <h3>正在加载外星人小男孩游戏...</h3>
+        <p id="loadingStatus">检查游戏文件...</p>
+    </div>
+    
+    <div class="game-start" id="gameStart" style="display: none;">
+        <h1>👽 外星人小男孩游戏</h1>
+        <p>帮助小外星人从抑郁状态成长到治愈状态<br>
+        按空格键或点击开始游戏<br>
+        躲避障碍物，收集宝石，获得高分！</p>
+        <button class="start-btn" onclick="startGame()">开始游戏</button>
+    </div>
+    
+    <div class="game-over" id="gameOver">
+        <h2>游戏结束！</h2>
+        <p>最终得分: <span id="finalScore">0</span></p>
+        <button class="restart-btn" onclick="restartGame()">立即重新开始</button>
+    </div>
+
+    <script>
+        let gameInstance = null;
+        let gameStarted = false;
+        let scriptLoaded = false;
+
+        // 加载游戏脚本
+        function loadGameScript() {
+            const loadingStatus = document.getElementById('loadingStatus');
+            loadingStatus.textContent = '正在加载游戏脚本...';
+            
+            const script = document.createElement('script');
+            script.src = 'dino-game-optimized.js';
+            
+            script.onload = function() {
+                loadingStatus.textContent = '游戏脚本加载成功！';
+                console.log('dino-game-optimized.js 加载成功');
+                
+                // 等待一小段时间确保脚本完全执行
+                setTimeout(() => {
+                    checkDinoGameClass();
+                }, 100);
+            };
+            
+            script.onerror = function() {
+                loadingStatus.textContent = '错误：无法加载游戏脚本文件';
+                console.error('无法加载 dino-game-optimized.js');
+                showError('游戏脚本文件加载失败，请检查文件是否存在');
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        // 检查DinoGame类是否可用
+        function checkDinoGameClass() {
+            const loadingStatus = document.getElementById('loadingStatus');
+            
+            if (typeof DinoGame === 'undefined') {
+                loadingStatus.textContent = '错误：DinoGame类未定义';
+                console.error('DinoGame类未定义');
+                showError('游戏类未正确加载，请刷新页面重试');
+                return;
+            }
+            
+            loadingStatus.textContent = 'DinoGame类已就绪！';
+            console.log('DinoGame类已定义');
+            scriptLoaded = true;
+            
+            // 隐藏加载界面，显示开始界面
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('gameStart').style.display = 'block';
+            }, 500);
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = `
+                <h3 style="color: #ff6b6b;">加载失败</h3>
+                <p>${message}</p>
+                <button class="start-btn" onclick="location.reload()">重新加载</button>
+            `;
+        }
+
+        function startGame() {
+            if (!scriptLoaded) {
+                alert('游戏脚本尚未加载完成，请稍后再试');
+                return;
+            }
+
+            if (!gameStarted) {
+                document.getElementById('gameStart').style.display = 'none';
+                gameStarted = true;
+                
+                try {
+                    console.log('正在创建游戏实例...');
+                    gameInstance = new DinoGame();
+                    
+                    console.log('正在启动游戏...');
+                    gameInstance.startGame();
+                    
+                    console.log('外星人小男孩游戏已启动！');
+                } catch (error) {
+                    console.error('启动游戏时出错:', error);
+                    alert('启动游戏时出错: ' + error.message);
+                    gameStarted = false;
+                    document.getElementById('gameStart').style.display = 'block';
+                }
+            }
+        }
+
+        function restartGame() {
+            if (gameInstance) {
+                gameInstance.restart();
+                document.getElementById('gameOver').style.display = 'none';
+            }
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (!gameStarted && (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW')) {
+                e.preventDefault();
+                if (scriptLoaded) {
+                    startGame();
+                }
+            }
+        });
+
+        // 页面加载完成后开始加载游戏脚本
+        window.addEventListener('load', function() {
+            console.log('页面加载完成，开始加载游戏脚本...');
+            loadGameScript();
+        });
+
+        // 防止页面滚动
+        document.addEventListener('keydown', function(e) {
+            if (!gameStarted && ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyS'].includes(e.code)) {
+                e.preventDefault();
+            }
+        });
+
+        // 防止触摸滚动
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线检测器初始化测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .status-value {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .test-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #6c757d;
+            font-size: 11px;
+        }
+
+        .log-success {
+            color: #28a745;
+        }
+
+        .log-error {
+            color: #dc3545;
+        }
+
+        .log-info {
+            color: #007bff;
+        }
+
+        .log-warning {
+            color: #ffc107;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .instructions h4 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 离线检测器初始化测试</h1>
+        
+        <div class="status-panel">
+            <h3>📊 检测器状态</h3>
+            <div class="status-item">
+                <span class="status-label">检测器初始化：</span>
+                <span class="status-value" id="detectorStatus">检测中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">网络状态：</span>
+                <span class="status-value" id="networkStatus">检测中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">游戏容器：</span>
+                <span class="status-value" id="gameContainerStatus">检测中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">重试次数：</span>
+                <span class="status-value" id="retryCountStatus">检测中...</span>
+            </div>
+        </div>
+
+        <div class="test-buttons">
+            <button class="test-btn btn-primary" onclick="checkStatus()">检查状态</button>
+            <button class="test-btn btn-success" onclick="forceShowGame()">强制显示游戏</button>
+            <button class="test-btn btn-warning" onclick="forceHideGame()">强制隐藏游戏</button>
+            <button class="test-btn btn-danger" onclick="simulateOffline()">模拟断网</button>
+        </div>
+
+        <div class="instructions">
+            <h4>📋 测试说明</h4>
+            <p>1. <strong>检查状态</strong>：查看离线检测器的当前状态</p>
+            <p>2. <strong>强制显示游戏</strong>：手动触发游戏显示（不依赖网络状态）</p>
+            <p>3. <strong>强制隐藏游戏</strong>：手动隐藏游戏</p>
+            <p>4. <strong>模拟断网</strong>：模拟网络断开，测试自动显示功能</p>
+            <p>5. 打开浏览器开发者工具查看控制台日志</p>
+        </div>
+
+        <div class="log" id="log">
+            <div class="log-entry log-info">等待测试开始...</div>
+        </div>
+    </div>
+
+    <!-- 引入离线检测器 -->
+    <script src="/offline-game.js"></script>
+    
+    <script>
+        // 日志功能
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            logEntry.innerHTML = `<span class="log-time">[${time}]</span> ${message}`;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 更新状态显示
+        function updateStatus() {
+            const detectorStatus = document.getElementById('detectorStatus');
+            const networkStatus = document.getElementById('networkStatus');
+            const gameContainerStatus = document.getElementById('gameContainerStatus');
+            const retryCountStatus = document.getElementById('retryCountStatus');
+
+            if (window.imagentxOffline) {
+                const status = window.imagentxOffline.getStatus();
+                
+                detectorStatus.textContent = status.isInitialized ? '已初始化' : '未初始化';
+                detectorStatus.className = status.isInitialized ? 'status-value status-success' : 'status-value status-error';
+                
+                networkStatus.textContent = status.isOffline ? '离线' : '在线';
+                networkStatus.className = status.isOffline ? 'status-value status-error' : 'status-value status-success';
+                
+                gameContainerStatus.textContent = status.gameContainer ? '已显示' : '未显示';
+                gameContainerStatus.className = status.gameContainer ? 'status-value status-warning' : 'status-value status-success';
+                
+                retryCountStatus.textContent = status.retryCount.toString();
+                retryCountStatus.className = 'status-value status-info';
+            } else {
+                detectorStatus.textContent = '未找到';
+                detectorStatus.className = 'status-value status-error';
+                networkStatus.textContent = '未知';
+                networkStatus.className = 'status-value status-warning';
+                gameContainerStatus.textContent = '未知';
+                gameContainerStatus.className = 'status-value status-warning';
+                retryCountStatus.textContent = '未知';
+                retryCountStatus.className = 'status-value status-warning';
+            }
+        }
+
+        // 检查状态
+        function checkStatus() {
+            log('🔍 检查离线检测器状态...', 'info');
+            updateStatus();
+            
+            if (window.imagentxOffline) {
+                const status = window.imagentxOffline.getStatus();
+                log(`✅ 检测器状态: ${JSON.stringify(status)}`, 'success');
+            } else {
+                log('❌ 离线检测器未找到', 'error');
+            }
+        }
+
+        // 强制显示游戏
+        function forceShowGame() {
+            log('🎮 尝试强制显示游戏...', 'info');
+            if (window.imagentxOffline) {
+                window.imagentxOffline.forceShowGame();
+                log('✅ 游戏显示命令已发送', 'success');
+            } else {
+                log('❌ 离线检测器未找到', 'error');
+            }
+        }
+
+        // 强制隐藏游戏
+        function forceHideGame() {
+            log('🎮 尝试强制隐藏游戏...', 'info');
+            if (window.imagentxOffline) {
+                window.imagentxOffline.forceHideGame();
+                log('✅ 游戏隐藏命令已发送', 'success');
+            } else {
+                log('❌ 离线检测器未找到', 'error');
+            }
+        }
+
+        // 模拟断网
+        function simulateOffline() {
+            log('📴 模拟断网...', 'warning');
+            if (window.imagentxOffline) {
+                window.imagentxOffline.handleOffline();
+                log('✅ 断网模拟已触发', 'success');
+            } else {
+                log('❌ 离线检测器未找到', 'error');
+            }
+        }
+
+        // 监听网络状态变化
+        window.addEventListener('online', () => {
+            log('🌐 网络连接恢复', 'success');
+            updateStatus();
+        });
+
+        window.addEventListener('offline', () => {
+            log('❌ 网络连接断开', 'error');
+            updateStatus();
+        });
+
+        // 定期检查状态
+        setInterval(updateStatus, 2000);
+
+        // 初始化
+        log('🚀 离线检测器测试页面已加载', 'info');
+        log('⏳ 等待离线检测器初始化...', 'info');
+        
+        // 等待一段时间后检查初始化状态
+        setTimeout(() => {
+            checkStatus();
+        }, 3000);
+    </script>
+</body>
+</html>

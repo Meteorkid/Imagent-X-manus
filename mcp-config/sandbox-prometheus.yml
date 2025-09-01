@@ -1,0 +1,60 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "sandbox-alert-rules.yml"
+
+scrape_configs:
+  # 沙箱容器监控
+  - job_name: 'sandbox-containers'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    honor_labels: true
+
+  # 容器资源监控
+  - job_name: 'container-resources'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    params:
+      type: ['container']
+
+  # 沙箱网络监控
+  - job_name: 'sandbox-network'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: '/api/v1/query'
+    scrape_interval: 30s
+    params:
+      query: ['container_network_receive_bytes_total', 'container_network_transmit_bytes_total']
+
+  # 沙箱文件系统监控
+  - job_name: 'sandbox-filesystem'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: '/api/v1/query'
+    scrape_interval: 30s
+    params:
+      query: ['container_fs_usage_bytes', 'container_fs_writes_total']
+
+  # 沙箱进程监控
+  - job_name: 'sandbox-processes'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: '/api/v1/query'
+    scrape_interval: 30s
+    params:
+      query: ['container_processes', 'container_cpu_usage_seconds_total']
+
+  # 沙箱安全事件监控
+  - job_name: 'sandbox-security'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: '/api/v1/query'
+    scrape_interval: 30s
+    params:
+      query: ['sandbox_security_violations_total', 'sandbox_anomaly_detections_total']

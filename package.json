@@ -1,0 +1,27 @@
+{
+  "name": "imagentx-master",
+  "version": "1.0.0",
+  "description": "ImagentX是一个基于Spring Boot和React的智能AI助手平台，提供强大的AI对话、知识管理和工具集成功能。",
+  "main": "mock-server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meteorkid/Imagent-X.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Meteorkid/Imagent-X/issues"
+  },
+  "homepage": "https://github.com/Meteorkid/Imagent-X#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}

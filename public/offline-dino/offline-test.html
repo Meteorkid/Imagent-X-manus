@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>断网检测测试 - ImagentX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .status-card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .status-value {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .test-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-simulate-offline {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-simulate-online {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-test-game {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .instructions h4 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            padding: 5px 0;
+            color: #0056b3;
+        }
+
+        .instructions li:before {
+            content: "• ";
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .log-message {
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌐 断网检测测试</h1>
+        
+        <div class="status-card">
+            <h3>📊 当前状态</h3>
+            <div class="status-item">
+                <span class="status-label">网络连接状态：</span>
+                <span class="status-value" id="networkStatus">检测中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">离线检测器状态：</span>
+                <span class="status-value" id="detectorStatus">未初始化</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">游戏显示状态：</span>
+                <span class="status-value" id="gameStatus">未显示</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">API健康检查：</span>
+                <span class="status-value" id="apiStatus">检测中...</span>
+            </div>
+        </div>
+
+        <div class="test-buttons">
+            <button class="test-btn btn-simulate-offline" onclick="simulateOffline()">模拟断网</button>
+            <button class="test-btn btn-simulate-online" onclick="simulateOnline()">模拟联网</button>
+            <button class="test-btn btn-test-game" onclick="testGameDisplay()">测试游戏显示</button>
+            <button class="test-btn btn-reset" onclick="resetTest()">重置测试</button>
+        </div>
+
+        <div class="instructions">
+            <h4>🧪 测试说明</h4>
+            <ul>
+                <li>点击"模拟断网"按钮模拟网络断开</li>
+                <li>点击"模拟联网"按钮模拟网络恢复</li>
+                <li>点击"测试游戏显示"直接显示游戏</li>
+                <li>观察状态变化和日志记录</li>
+                <li>检查游戏是否正确显示和隐藏</li>
+            </ul>
+        </div>
+
+        <div class="log-container">
+            <h4>📝 测试日志</h4>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <script>
+        // 日志记录功能
+        function log(message) {
+            const logContainer = document.getElementById('logEntries');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const time = new Date().toLocaleTimeString();
+            logEntry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-message">${message}</span>
+            `;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 更新状态显示
+        function updateStatus() {
+            const networkStatus = document.getElementById('networkStatus');
+            const detectorStatus = document.getElementById('detectorStatus');
+            const gameStatus = document.getElementById('gameStatus');
+            
+            // 网络状态
+            if (navigator.onLine) {
+                networkStatus.textContent = '在线';
+                networkStatus.className = 'status-value status-online';
+            } else {
+                networkStatus.textContent = '离线';
+                networkStatus.className = 'status-value status-offline';
+            }
+            
+            // 检测器状态
+            if (window.imagentxOffline) {
+                detectorStatus.textContent = window.imagentxOffline.isOffline ? '离线模式' : '在线模式';
+                detectorStatus.className = window.imagentxOffline.isOffline ? 
+                    'status-value status-offline' : 'status-value status-online';
+            }
+            
+            // 游戏状态
+            const gameContainer = document.querySelector('.offline-game-overlay');
+            if (gameContainer && gameContainer.style.display === 'flex') {
+                gameStatus.textContent = '已显示';
+                gameStatus.className = 'status-value status-online';
+            } else {
+                gameStatus.textContent = '未显示';
+                gameStatus.className = 'status-value status-offline';
+            }
+        }
+
+        // 模拟断网
+        function simulateOffline() {
+            log('🔄 模拟断网...');
+            
+            // 模拟API请求失败
+            const originalFetch = window.fetch;
+            window.fetch = function() {
+                return Promise.reject(new Error('Network error'));
+            };
+            
+            // 触发离线检测
+            if (window.imagentxOffline) {
+                window.imagentxOffline.checkConnection();
+            }
+            
+            log('✅ 断网模拟完成');
+            updateStatus();
+        }
+
+        // 模拟联网
+        function simulateOnline() {
+            log('🔄 模拟联网...');
+            
+            // 恢复fetch函数
+            window.fetch = window.originalFetch || window.fetch;
+            
+            // 触发在线检测
+            if (window.imagentxOffline) {
+                window.imagentxOffline.handleOnline();
+            }
+            
+            log('✅ 联网模拟完成');
+            updateStatus();
+        }
+
+        // 测试游戏显示
+        function testGameDisplay() {
+            log('🔄 测试游戏显示...');
+            
+            if (window.imagentxOffline) {
+                window.imagentxOffline.showGame();
+                log('✅ 游戏显示测试完成');
+            } else {
+                log('❌ 离线检测器未初始化');
+            }
+            
+            updateStatus();
+        }
+
+        // 重置测试
+        function resetTest() {
+            log('🔄 重置测试...');
+            
+            // 恢复fetch函数
+            window.fetch = window.originalFetch || window.fetch;
+            
+            // 隐藏游戏
+            if (window.imagentxOffline) {
+                window.imagentxOffline.hideGame();
+                window.imagentxOffline.hideOfflineStatus();
+            }
+            
+            log('✅ 测试重置完成');
+            updateStatus();
+        }
+
+        // 保存原始fetch函数
+        window.originalFetch = window.fetch;
+
+        // 监听网络状态变化
+        window.addEventListener('online', () => {
+            log('🌐 网络连接恢复');
+            updateStatus();
+        });
+
+        window.addEventListener('offline', () => {
+            log('❌ 网络连接断开');
+            updateStatus();
+        });
+
+        // 定期更新状态
+        setInterval(updateStatus, 1000);
+
+        // 初始化
+        log('🚀 断网检测测试页面已加载');
+        updateStatus();
+    </script>
+
+    <!-- 引入离线游戏脚本 -->
+    <script src="/offline-game.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ImagentX 沙箱概览",
+    "tags": ["sandbox", "security", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "容器安全评分",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sandbox_security_score",
+            "legendFormat": "{{container_name}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 60},
+                {"color": "green", "value": 80}
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "安全违规统计",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(sandbox_security_violations_total[5m])",
+            "legendFormat": "{{container_name}} - {{violation_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "异常行为检测",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(sandbox_anomaly_detections_total[5m])",
+            "legendFormat": "{{container_name}} - {{anomaly_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "容器健康状态",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sandbox_container_health",
+            "legendFormat": "{{container_name}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "异常"}}, "type": "value"},
+              {"options": {"1": {"text": "健康"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "内存使用率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sandbox_resource_usage{resource_type=\"memory\"}",
+            "legendFormat": "{{container_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "CPU使用率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sandbox_resource_usage{resource_type=\"cpu\"}",
+            "legendFormat": "{{container_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

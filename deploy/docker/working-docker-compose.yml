@@ -1,0 +1,122 @@
+networks:
+  imagentx-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  storage-data:
+    driver: local
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: docker.m.daocloud.io/postgres:15
+    container_name: imagentx-postgres
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: imagentx_user
+      POSTGRES_PASSWORD: imagentx_pass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../../docs/sql/00_install_pgvector.sql:/docker-entrypoint-initdb.d/00_install_pgvector.sql:ro
+      - ../../docs/sql/01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U imagentx_user -d imagentx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ 消息队列
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: imagentx-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Imagent X 应用服务（使用预构建镜像）
+  imagentx:
+    image: ghcr.io/lucky-aeon/imagentx:latest
+    container_name: imagentx-app
+    environment:
+      # 数据库配置
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: imagentx
+      DB_USER: imagentx_user
+      DB_PASSWORD: imagentx_pass
+      
+      # 应用配置
+      SERVER_PORT: 8088
+      FRONTEND_PORT: 3000
+      NEXT_PUBLIC_API_BASE_URL: /api
+      
+      # Spring 配置
+      SPRING_PROFILES_ACTIVE: prod
+      JPA_DDL_AUTO: update
+      SHOW_SQL: false
+      
+      # 用户配置
+      IMAGENTX_ADMIN_EMAIL: admin@imagentx.ai
+      IMAGENTX_ADMIN_PASSWORD: admin123
+      IMAGENTX_ADMIN_NICKNAME: Imagent X管理员
+      IMAGENTX_TEST_ENABLED: false
+      IMAGENTX_TEST_EMAIL: test@imagentx.ai
+      IMAGENTX_TEST_PASSWORD: test123
+      IMAGENTX_TEST_NICKNAME: 测试用户
+      
+      # 消息队列配置
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      
+      # 安全配置
+      JWT_SECRET: please_change_this_in_production
+      
+      # 日志配置
+      LOG_LEVEL_ROOT: warn
+      LOG_LEVEL_APP: info
+      
+      # 文件存储
+      FILE_STORAGE_PATH: /app/storage
+      
+    volumes:
+      - storage-data:/app/storage
+    ports:
+      - "3000:3000"
+    networks:
+      - imagentx-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s

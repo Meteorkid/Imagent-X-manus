@@ -1,0 +1,511 @@
+openapi: 3.0.3
+info:
+  title: Imagent X OpenAPI (Extended, Minimal for Import Test)
+  version: 1.1.0
+  description: >-
+    Imagent X 平台接口（用于 Apifox 接口管理导入）。本文件为精简可导入版，覆盖
+    健康检查、认证、用户、Agent、会话、工具、RAG、LLM、API 密钥、管理员、监控、
+    容器、HA、文件、通知、分析、工作流、插件、安全、国际化、移动端、系统配置等模块的关键端点。
+servers:
+  - url: http://localhost:8088/api
+    description: 本机开发环境
+  - url: http://192.168.1.63:8088/api
+    description: 内网访问环境
+  - url: http://163.142.180.93:8088/api
+    description: 公网访问环境
+  - url: https://test-api.imagentx.ai/api
+    description: 测试环境
+security:
+  - BearerAuth: []
+tags:
+  - name: health
+    description: 系统健康检查
+  - name: auth
+    description: 用户认证
+  - name: users
+    description: 用户
+  - name: agents
+    description: Agent 管理
+  - name: sessions
+    description: 会话聊天
+  - name: tools
+    description: 工具市场
+  - name: rag
+    description: RAG 知识库
+  - name: llms
+    description: LLM 模型管理
+  - name: apikeys
+    description: API 密钥管理
+  - name: admin
+    description: 管理员
+  - name: monitoring
+    description: 监控与日志
+  - name: containers
+    description: 容器管理
+  - name: ha
+    description: 高可用
+  - name: files
+    description: 文件存储
+  - name: notifications
+    description: 通知系统
+  - name: analytics
+    description: 数据分析
+  - name: workflows
+    description: 工作流管理
+  - name: plugins
+    description: 插件系统
+  - name: security
+    description: 安全审计
+  - name: i18n
+    description: 国际化
+  - name: mobile
+    description: 移动端
+  - name: system
+    description: 系统配置
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: 后端健康检查
+      operationId: healthCheck
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: 用户登录
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: 认证失败
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/me:
+    get:
+      tags: [users]
+      summary: 获取当前用户
+      operationId: usersMe
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /agents:
+    post:
+      tags: [agents]
+      summary: 创建 Agent
+      operationId: agentsCreate
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentCreateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+  /agents/{agentId}:
+    get:
+      tags: [agents]
+      summary: 获取 Agent 详情
+      operationId: agentsDetail
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+  /agents/sessions:
+    post:
+      tags: [sessions]
+      summary: 创建会话
+      operationId: sessionsCreate
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionCreateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+  /tools/market:
+    get:
+      tags: [tools]
+      summary: 工具市场列表
+      operationId: toolsMarket
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /rag/datasets:
+    get:
+      tags: [rag]
+      summary: 数据集列表
+      operationId: ragDatasets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /llms/models:
+    get:
+      tags: [llms]
+      summary: 模型列表
+      operationId: llmsModels
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /api-keys:
+    get:
+      tags: [apikeys]
+      summary: API 密钥列表
+      operationId: apiKeysList
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /admin/users:
+    get:
+      tags: [admin]
+      summary: 用户列表
+      operationId: adminUsers
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /monitoring/overview:
+    get:
+      tags: [monitoring]
+      summary: 系统状态概览
+      operationId: monitoringOverview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /containers:
+    get:
+      tags: [containers]
+      summary: 获取容器列表
+      operationId: containersList
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /containers/start:
+    post:
+      tags: [containers]
+      summary: 启动容器
+      operationId: containersStart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                containerId:
+                  type: string
+              required: [containerId]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /ha/cluster/status:
+    get:
+      tags: [ha]
+      summary: 集群状态
+      operationId: haClusterStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /files/upload:
+    post:
+      tags: [files]
+      summary: 上传文件
+      operationId: filesUpload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /notifications/email:
+    post:
+      tags: [notifications]
+      summary: 发送邮件
+      operationId: notifyEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to: { type: string }
+                subject: { type: string }
+                content: { type: string }
+              required: [to, subject, content]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /analytics/user-activity:
+    get:
+      tags: [analytics]
+      summary: 用户活跃度
+      operationId: analyticsUserActivity
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /workflows:
+    get:
+      tags: [workflows]
+      summary: 工作流列表
+      operationId: workflowsList
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /plugins:
+    get:
+      tags: [plugins]
+      summary: 插件列表
+      operationId: pluginsList
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /security/audit-logs:
+    get:
+      tags: [security]
+      summary: 安全日志
+      operationId: securityAuditLogs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /i18n/languages:
+    get:
+      tags: [i18n]
+      summary: 支持语言
+      operationId: i18nLanguages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /mobile/auth/login:
+    post:
+      tags: [mobile]
+      summary: 移动端登录
+      operationId: mobileLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+              required: [email, password]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /system/config:
+    get:
+      tags: [system]
+      summary: 系统配置
+      operationId: systemConfig
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code: { type: integer, example: 200 }
+        message: { type: string, example: ok }
+        data:
+          type: object
+          nullable: true
+        timestamp: { type: integer, example: 1755674525344 }
+    ErrorResponse:
+      type: object
+      properties:
+        code: { type: integer, example: 401 }
+        message: { type: string, example: Unauthorized }
+        error:
+          type: string
+          nullable: true
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: admin@imagentx.ai }
+        password: { type: string, example: admin123 }
+    LoginResponse:
+      type: object
+      properties:
+        code: { type: integer, example: 200 }
+        message: { type: string, example: 登录成功 }
+        data:
+          type: object
+          properties:
+            token: { type: string, example: eyJhbGciOi... }
+            user:
+              $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id: { type: string, example: '1' }
+        email: { type: string, format: email }
+        nickname: { type: string }
+    Agent:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        systemPrompt: { type: string }
+        modelId: { type: integer }
+        tools:
+          type: array
+          items: { type: string }
+    AgentCreateRequest:
+      type: object
+      required: [name, modelId]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        systemPrompt: { type: string }
+        modelId: { type: integer }
+        tools:
+          type: array
+          items: { type: string }
+    Session:
+      type: object
+      properties:
+        id: { type: string }
+        agentId: { type: string }
+        title: { type: string }
+    SessionCreateRequest:
+      type: object
+      required: [agentId]
+      properties:
+        agentId: { type: string }
+        title: { type: string }

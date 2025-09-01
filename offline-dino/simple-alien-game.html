@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外星人小男孩游戏 - 测试版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        #gameCanvas {
+            border: 3px solid #fff;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            display: block;
+            margin: 20px auto;
+        }
+
+        .controls {
+            color: white;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .status {
+            color: white;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 style="color: white; margin-bottom: 20px;">👽 外星人小男孩游戏</h1>
+        <div class="status" id="status">准备加载游戏...</div>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div class="controls">
+            <p>按 <strong>空格键</strong> 或 <strong>↑</strong> 跳跃</p>
+            <p>按 <strong>↓</strong> 下蹲</p>
+            <p>点击屏幕也可以跳跃！</p>
+        </div>
+        <button class="start-btn" onclick="startGame()">开始游戏</button>
+    </div>
+
+    <script>
+        // 先检查文件是否加载
+        function checkFileLoaded() {
+            const status = document.getElementById('status');
+            status.textContent = '正在检查游戏文件...';
+            
+            // 创建一个script标签来加载游戏文件
+            const script = document.createElement('script');
+            script.src = 'dino-game-optimized.js';
+            script.onload = function() {
+                status.textContent = '游戏文件加载成功！';
+                console.log('dino-game-optimized.js 加载成功');
+                
+                // 检查DinoGame类是否可用
+                if (typeof DinoGame !== 'undefined') {
+                    status.textContent = 'DinoGame类已就绪，可以开始游戏！';
+                    console.log('DinoGame类已定义');
+                } else {
+                    status.textContent = '错误：DinoGame类未定义';
+                    console.error('DinoGame类未定义');
+                }
+            };
+            script.onerror = function() {
+                status.textContent = '错误：无法加载游戏文件';
+                console.error('无法加载 dino-game-optimized.js');
+            };
+            document.head.appendChild(script);
+        }
+
+        let gameInstance = null;
+
+        function startGame() {
+            const status = document.getElementById('status');
+            
+            if (typeof DinoGame === 'undefined') {
+                status.textContent = '错误：DinoGame类未加载，请刷新页面重试';
+                alert('游戏文件未正确加载，请刷新页面重试');
+                return;
+            }
+
+            try {
+                status.textContent = '正在启动游戏...';
+                gameInstance = new DinoGame();
+                gameInstance.startGame();
+                status.textContent = '游戏已启动！';
+                console.log('游戏启动成功');
+            } catch (error) {
+                status.textContent = '启动游戏时出错: ' + error.message;
+                console.error('启动游戏时出错:', error);
+                alert('启动游戏时出错: ' + error.message);
+            }
+        }
+
+        // 页面加载完成后检查文件
+        window.addEventListener('load', checkFileLoaded);
+
+        // 键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                if (!gameInstance || !gameInstance.gameRunning) {
+                    startGame();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

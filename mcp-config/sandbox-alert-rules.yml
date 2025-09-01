@@ -1,0 +1,119 @@
+groups:
+  - name: sandbox_alerts
+    rules:
+      # 内存使用率告警
+      - alert: SandboxMemoryUsageHigh
+        expr: container_memory_usage_bytes / container_spec_memory_limit_bytes * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+          component: sandbox
+        annotations:
+          summary: "沙箱容器内存使用率过高"
+          description: "容器 {{ $labels.container_name }} 内存使用率达到 {{ $value }}%"
+
+      # CPU使用率告警
+      - alert: SandboxCPUUsageHigh
+        expr: rate(container_cpu_usage_seconds_total[5m]) * 100 > 90
+        for: 2m
+        labels:
+          severity: warning
+          component: sandbox
+        annotations:
+          summary: "沙箱容器CPU使用率过高"
+          description: "容器 {{ $labels.container_name }} CPU使用率达到 {{ $value }}%"
+
+      # 网络连接数告警
+      - alert: SandboxNetworkConnectionsHigh
+        expr: container_network_receive_packets_total + container_network_transmit_packets_total > 100
+        for: 1m
+        labels:
+          severity: warning
+          component: sandbox
+        annotations:
+          summary: "沙箱容器网络连接数过多"
+          description: "容器 {{ $labels.container_name }} 网络连接数达到 {{ $value }}"
+
+      # 文件系统写入告警
+      - alert: SandboxFileSystemWriteHigh
+        expr: rate(container_fs_writes_total[5m]) > 1073741824  # 1GB
+        for: 2m
+        labels:
+          severity: warning
+          component: sandbox
+        annotations:
+          summary: "沙箱容器文件系统写入量过大"
+          description: "容器 {{ $labels.container_name }} 文件系统写入速率达到 {{ $value }} bytes/s"
+
+      # 进程数告警
+      - alert: SandboxProcessCountHigh
+        expr: container_processes > 40
+        for: 1m
+        labels:
+          severity: warning
+          component: sandbox
+        annotations:
+          summary: "沙箱容器进程数过多"
+          description: "容器 {{ $labels.container_name }} 进程数达到 {{ $value }}"
+
+      # 安全违规告警
+      - alert: SandboxSecurityViolation
+        expr: sandbox_security_violations_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: sandbox
+        annotations:
+          summary: "沙箱安全违规检测"
+          description: "容器 {{ $labels.container_name }} 检测到安全违规行为"
+
+      # 异常行为告警
+      - alert: SandboxAnomalyDetected
+        expr: sandbox_anomaly_detections_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: sandbox
+        annotations:
+          summary: "沙箱异常行为检测"
+          description: "容器 {{ $labels.container_name }} 检测到异常行为"
+
+      # 容器重启告警
+      - alert: SandboxContainerRestart
+        expr: increase(container_start_time_seconds[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          component: sandbox
+        annotations:
+          summary: "沙箱容器重启"
+          description: "容器 {{ $labels.container_name }} 在5分钟内重启了 {{ $value }} 次"
+
+      # 资源限制告警
+      - alert: SandboxResourceLimitReached
+        expr: container_memory_usage_bytes >= container_spec_memory_limit_bytes * 0.95
+        for: 1m
+        labels:
+          severity: critical
+          component: sandbox
+        annotations:
+          summary: "沙箱容器达到资源限制"
+          description: "容器 {{ $labels.container_name }} 内存使用接近限制"
+
+  - name: sandbox_metrics
+    rules:
+      # 沙箱容器健康状态
+      - record: sandbox_container_health
+        expr: container_last_seen > 0
+
+      # 沙箱资源使用率
+      - record: sandbox_memory_usage_percent
+        expr: container_memory_usage_bytes / container_spec_memory_limit_bytes * 100
+
+      # 沙箱CPU使用率
+      - record: sandbox_cpu_usage_percent
+        expr: rate(container_cpu_usage_seconds_total[5m]) * 100
+
+      # 沙箱网络使用率
+      - record: sandbox_network_usage_bytes
+        expr: container_network_receive_bytes_total + container_network_transmit_bytes_total

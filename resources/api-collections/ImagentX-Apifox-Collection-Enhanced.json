@@ -1,0 +1,3138 @@
+{
+  "info": {
+    "name": "Imagent X API 接口集合 - 增强版",
+  "description": "Imagent X智能对话系统平台 - 完整的API接口测试集合，包含环境配置、登录鉴权、健康检查与示例接口",
+    "version": "2.0.0",
+    "schema": "https://schema.apifox.cn/apifox-schema.json"
+  },
+  "environments": [
+    {
+      "name": "本机开发环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "http://localhost:8088/api",
+          "description": "本机后端API地址"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "http://localhost:3000",
+          "description": "本机前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "http://localhost:8081",
+          "description": "本机MCP网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "http://localhost:15673",
+          "description": "本机RabbitMQ管理地址"
+        },
+        {
+          "key": "REDIS_URL",
+          "value": "redis://localhost:6379",
+          "description": "本机Redis地址"
+        }
+      ]
+    },
+    {
+      "name": "内网访问环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "http://192.168.1.63:8088/api",
+          "description": "内网后端API地址"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "http://192.168.1.63:3000",
+          "description": "内网前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "http://192.168.1.63:8081",
+          "description": "内网MCP网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "http://192.168.1.63:15673",
+          "description": "内网RabbitMQ管理地址"
+        },
+        {
+          "key": "REDIS_URL",
+          "value": "redis://192.168.1.63:6379",
+          "description": "内网Redis地址"
+        }
+      ]
+    },
+    {
+      "name": "公网访问环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "http://163.142.180.93:8088/api",
+          "description": "公网后端API地址（需路由器端口转发）"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "http://163.142.180.93:3000",
+          "description": "公网前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "http://163.142.180.93:8081",
+          "description": "公网MCP网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "http://163.142.180.93:15673",
+          "description": "公网RabbitMQ管理地址"
+        },
+        {
+          "key": "REDIS_URL",
+          "value": "redis://163.142.180.93:6379",
+          "description": "公网Redis地址"
+        }
+      ]
+    },
+    {
+      "name": "测试环境",
+      "variables": [
+        {
+          "key": "BASE_URL",
+          "value": "https://test-api.imagentx.ai/api",
+          "description": "测试环境API地址"
+        },
+        {
+          "key": "FRONTEND_URL",
+          "value": "https://test.imagentx.ai",
+          "description": "测试环境前端地址"
+        },
+        {
+          "key": "GATEWAY_URL",
+          "value": "https://test-gateway.imagentx.ai",
+          "description": "测试环境网关地址"
+        },
+        {
+          "key": "RABBITMQ_URL",
+          "value": "https://test-mq.imagentx.ai",
+          "description": "测试环境RabbitMQ地址"
+        },
+        {
+          "key": "REDIS_URL",
+          "value": "redis://test-redis.imagentx.ai:6379",
+          "description": "测试环境Redis地址"
+        }
+      ]
+    },
+    {
+      "name": "📁 文件存储",
+      "description": "文件上传、下载、管理接口",
+      "items": [
+        {
+          "name": "上传文件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/files/upload",
+            "description": "上传文件到存储系统",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "要上传的文件"
+                },
+                {
+                  "key": "category",
+                  "value": "document",
+                  "description": "文件分类"
+                },
+                {
+                  "key": "description",
+                  "value": "文件描述",
+                  "description": "文件描述信息"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "下载文件",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}/download",
+            "description": "下载指定文件"
+          }
+        },
+        {
+          "name": "获取文件列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files",
+            "description": "获取文件列表"
+          }
+        },
+        {
+          "name": "获取文件详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}",
+            "description": "获取文件详细信息"
+          }
+        },
+        {
+          "name": "删除文件",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}",
+            "description": "删除指定文件"
+          }
+        },
+        {
+          "name": "文件预览",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}/preview",
+            "description": "预览文件内容"
+          }
+        },
+        {
+          "name": "批量删除文件",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/files/batch",
+            "description": "批量删除文件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"fileIds\": [\"{{FILE_ID_1}}\", \"{{FILE_ID_2}}\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "文件搜索",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/files/search",
+            "description": "搜索文件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"keyword\": \"搜索关键词\",\n  \"category\": \"document\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 通知系统",
+      "description": "邮件、短信、推送通知接口",
+      "items": [
+        {
+          "name": "发送邮件通知",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/email",
+            "description": "发送邮件通知",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"to\": \"user@example.com\",\n  \"subject\": \"系统通知\",\n  \"content\": \"这是一条系统通知\",\n  \"template\": \"notification\"\n}"
+            }
+          }
+        },
+        {
+          "name": "发送短信通知",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/sms",
+            "description": "发送短信通知",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"to\": \"+8613800138000\",\n  \"content\": \"您的验证码是123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "发送推送通知",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/push",
+            "description": "发送推送通知",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"userId\": \"{{USER_ID}}\",\n  \"title\": \"新消息\",\n  \"body\": \"您有一条新消息\",\n  \"data\": {\n    \"type\": \"message\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "获取通知历史",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/notifications/history",
+            "description": "获取通知发送历史"
+          }
+        },
+        {
+          "name": "获取通知模板",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/notifications/templates",
+            "description": "获取可用的通知模板"
+          }
+        },
+        {
+          "name": "创建通知模板",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/templates",
+            "description": "创建新的通知模板",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"welcome\",\n  \"type\": \"email\",\n  \"subject\": \"欢迎加入\",\n  \"content\": \"欢迎您加入我们的平台！\"\n}"
+            }
+          }
+        },
+        {
+          "name": "通知设置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/notifications/settings",
+            "description": "获取用户通知设置"
+          }
+        },
+        {
+          "name": "更新通知设置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/notifications/settings",
+            "description": "更新用户通知设置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": true,\n  \"sms\": false,\n  \"push\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 数据分析",
+      "description": "数据统计、报表、分析接口",
+      "items": [
+        {
+          "name": "用户活跃度统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/user-activity",
+            "description": "获取用户活跃度统计数据"
+          }
+        },
+        {
+          "name": "Agent使用统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/agent-usage",
+            "description": "获取Agent使用统计数据"
+          }
+        },
+        {
+          "name": "系统性能统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/system-performance",
+            "description": "获取系统性能统计数据"
+          }
+        },
+        {
+          "name": "收入统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/revenue",
+            "description": "获取收入统计数据"
+          }
+        },
+        {
+          "name": "自定义报表",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/analytics/reports",
+            "description": "生成自定义报表",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"月度报告\",\n  \"metrics\": [\"user_count\", \"revenue\", \"usage\"],\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-01-31\",\n  \"groupBy\": \"day\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取报表列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/reports",
+            "description": "获取已生成的报表列表"
+          }
+        },
+        {
+          "name": "导出报表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/reports/{{REPORT_ID}}/export",
+            "description": "导出报表数据",
+            "query": [
+              {
+                "key": "format",
+                "value": "excel",
+                "description": "导出格式"
+              }
+            ]
+          }
+        },
+        {
+          "name": "实时数据流",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/stream",
+            "description": "获取实时数据流"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 工作流管理",
+      "description": "业务流程、任务调度、自动化接口",
+      "items": [
+        {
+          "name": "获取工作流列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows",
+            "description": "获取所有工作流列表"
+          }
+        },
+        {
+          "name": "创建工作流",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows",
+            "description": "创建新的工作流",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"数据处理流程\",\n  \"description\": \"自动处理数据的工作流\",\n  \"steps\": [\n    {\n      \"name\": \"数据收集\",\n      \"type\": \"data_collection\",\n      \"config\": {}\n    },\n    {\n      \"name\": \"数据清洗\",\n      \"type\": \"data_cleaning\",\n      \"config\": {}\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "启动工作流",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows/{{WORKFLOW_ID}}/start",
+            "description": "启动指定的工作流"
+          }
+        },
+        {
+          "name": "停止工作流",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows/{{WORKFLOW_ID}}/stop",
+            "description": "停止指定的工作流"
+          }
+        },
+        {
+          "name": "获取工作流状态",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows/{{WORKFLOW_ID}}/status",
+            "description": "获取工作流执行状态"
+          }
+        },
+        {
+          "name": "获取任务列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows/tasks",
+            "description": "获取工作流任务列表"
+          }
+        },
+        {
+          "name": "重试失败任务",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows/tasks/{{TASK_ID}}/retry",
+            "description": "重试失败的任务"
+          }
+        },
+        {
+          "name": "获取调度器配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows/scheduler/config",
+            "description": "获取任务调度器配置"
+          }
+        },
+        {
+          "name": "更新调度器配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/workflows/scheduler/config",
+            "description": "更新任务调度器配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"maxConcurrentJobs\": 10,\n  \"defaultTimeout\": 3600\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔌 插件系统",
+      "description": "插件管理、扩展开发接口",
+      "items": [
+        {
+          "name": "获取插件列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/plugins",
+            "description": "获取已安装的插件列表"
+          }
+        },
+        {
+          "name": "安装插件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/plugins/install",
+            "description": "安装新插件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "plugin",
+                  "type": "file",
+                  "description": "插件文件"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "启用插件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/enable",
+            "description": "启用指定的插件"
+          }
+        },
+        {
+          "name": "禁用插件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/disable",
+            "description": "禁用指定的插件"
+          }
+        },
+        {
+          "name": "卸载插件",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}",
+            "description": "卸载指定的插件"
+          }
+        },
+        {
+          "name": "获取插件配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/config",
+            "description": "获取插件配置信息"
+          }
+        },
+        {
+          "name": "更新插件配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/config",
+            "description": "更新插件配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"enabled\": true,\n  \"settings\": {\n    \"apiKey\": \"your-api-key\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "插件市场",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/plugins/market",
+            "description": "获取插件市场列表"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔒 安全审计",
+      "description": "安全日志、权限审计、威胁检测接口",
+      "items": [
+        {
+          "name": "获取安全日志",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/audit-logs",
+            "description": "获取安全审计日志"
+          }
+        },
+        {
+          "name": "获取登录历史",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/login-history",
+            "description": "获取用户登录历史"
+          }
+        },
+        {
+          "name": "获取权限变更记录",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/permission-changes",
+            "description": "获取权限变更记录"
+          }
+        },
+        {
+          "name": "威胁检测",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/security/threat-detection",
+            "description": "检测潜在安全威胁",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"ip\": \"192.168.1.100\",\n  \"action\": \"login_attempt\",\n  \"timestamp\": \"2024-01-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取安全策略",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/policies",
+            "description": "获取安全策略配置"
+          }
+        },
+        {
+          "name": "更新安全策略",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/security/policies",
+            "description": "更新安全策略配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"passwordPolicy\": {\n    \"minLength\": 8,\n    \"requireSpecialChars\": true\n  },\n  \"sessionTimeout\": 3600\n}"
+            }
+          }
+        },
+        {
+          "name": "IP白名单管理",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/ip-whitelist",
+            "description": "获取IP白名单"
+          }
+        },
+        {
+          "name": "添加IP白名单",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/security/ip-whitelist",
+            "description": "添加IP到白名单",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"ip\": \"192.168.1.100\",\n  \"description\": \"内网服务器\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 国际化",
+      "description": "多语言支持、本地化接口",
+      "items": [
+        {
+          "name": "获取支持的语言",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/i18n/languages",
+            "description": "获取系统支持的语言列表"
+          }
+        },
+        {
+          "name": "获取语言包",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/i18n/translations/{{LANGUAGE}}",
+            "description": "获取指定语言的翻译包"
+          }
+        },
+        {
+          "name": "更新用户语言偏好",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/i18n/user-language",
+            "description": "更新用户语言偏好设置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"language\": \"zh-CN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取时区列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/i18n/timezones",
+            "description": "获取支持的时区列表"
+          }
+        },
+        {
+          "name": "更新用户时区",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/i18n/user-timezone",
+            "description": "更新用户时区设置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"timezone\": \"Asia/Shanghai\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📱 移动端API",
+      "description": "移动应用专用接口",
+      "items": [
+        {
+          "name": "移动端登录",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/mobile/auth/login",
+            "description": "移动端用户登录",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"deviceId\": \"mobile-device-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "推送令牌注册",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/mobile/push-token",
+            "description": "注册移动端推送令牌",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"token\": \"push-token-123\",\n  \"platform\": \"ios\",\n  \"deviceId\": \"mobile-device-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "移动端配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/mobile/config",
+            "description": "获取移动端配置信息"
+          }
+        },
+        {
+          "name": "离线数据同步",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/mobile/sync",
+            "description": "同步离线数据",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"lastSyncTime\": \"2024-01-01T00:00:00Z\",\n  \"data\": []\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 系统配置",
+      "description": "系统设置、配置管理接口",
+      "items": [
+        {
+          "name": "获取系统配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/config",
+            "description": "获取系统配置信息"
+          }
+        },
+        {
+          "name": "更新系统配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/system/config",
+            "description": "更新系统配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"maintenanceMode\": false,\n  \"maxFileSize\": 10485760,\n  \"sessionTimeout\": 3600\n}"
+            }
+          }
+        },
+        {
+          "name": "获取功能开关",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/feature-flags",
+            "description": "获取功能开关配置"
+          }
+        },
+        {
+          "name": "更新功能开关",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/system/feature-flags",
+            "description": "更新功能开关",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"newUI\": true,\n  \"betaFeatures\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "系统维护模式",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/system/maintenance",
+            "description": "启用/禁用系统维护模式",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"enabled\": true,\n  \"message\": \"系统维护中，请稍后再试\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取系统信息",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/info",
+            "description": "获取系统基本信息"
+          }
+        },
+        {
+          "name": "获取系统资源",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/resources",
+            "description": "获取系统资源使用情况"
+          }
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "name": "🚀 快速开始",
+      "description": "新用户快速上手测试流程",
+      "items": [
+        {
+          "name": "1️⃣ 健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/health",
+            "description": "首先检查系统是否正常运行"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "code": 200,
+              "body": "{\n  \"code\": 200,\n  \"message\": \"ok\",\n  \"data\": null,\n  \"timestamp\": 1755674525344\n}"
+            }
+          ]
+        },
+        {
+          "name": "2️⃣ 用户登录",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/login",
+            "description": "登录获取访问令牌",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"admin@imagentx.ai\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "登录成功",
+              "code": 200,
+              "body": "{\n  \"code\": 200,\n  \"message\": \"登录成功\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"admin@imagentx.ai\",\n      \"nickname\": \"Imagent X管理员\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3️⃣ 获取用户信息",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/users/me",
+            "description": "验证令牌有效性，获取用户信息"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 系统健康检查",
+      "description": "系统基础健康状态检查接口",
+      "items": [
+        {
+          "name": "后端健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/health",
+            "description": "检查后端服务健康状态"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "code": 200,
+              "body": "{\n  \"code\": 200,\n  \"message\": \"ok\",\n  \"data\": null,\n  \"timestamp\": 1755674525344\n}"
+            }
+          ]
+        },
+        {
+          "name": "前端健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{FRONTEND_URL}}",
+            "description": "检查前端服务状态"
+          }
+        },
+        {
+          "name": "网关健康检查",
+          "request": {
+            "method": "GET",
+            "url": "{{GATEWAY_URL}}/api/health",
+            "description": "检查MCP网关健康状态"
+          }
+        },
+        {
+          "name": "RabbitMQ管理页面",
+          "request": {
+            "method": "GET",
+            "url": "{{RABBITMQ_URL}}",
+            "description": "检查RabbitMQ管理界面可访问性"
+          }
+        },
+        {
+          "name": "数据库连接检查",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/health/db",
+            "description": "检查数据库连接状态"
+          }
+        },
+        {
+          "name": "Redis连接检查",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/health/redis",
+            "description": "检查Redis连接状态"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 用户认证",
+      "description": "用户登录、注册、权限管理相关接口",
+      "items": [
+        {
+          "name": "用户登录",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/login",
+            "description": "用户登录获取访问令牌",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"admin@imagentx.ai\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "登录成功",
+              "code": 200,
+              "body": "{\n  \"code\": 200,\n  \"message\": \"登录成功\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"admin@imagentx.ai\",\n      \"nickname\": \"Imagent X管理员\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "用户注册",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/register",
+            "description": "新用户注册",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"nickname\": \"测试用户\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取当前用户信息",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/users/me",
+            "description": "获取当前登录用户信息（需要认证）"
+          }
+        },
+        {
+          "name": "刷新令牌",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/refresh",
+            "description": "刷新访问令牌"
+          }
+        },
+        {
+          "name": "用户登出",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/logout",
+            "description": "用户登出，清除令牌"
+          }
+        },
+        {
+          "name": "修改密码",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/users/password",
+            "description": "修改用户密码",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"oldPassword\": \"oldpassword123\",\n  \"newPassword\": \"newpassword123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "重置密码",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/reset-password",
+            "description": "发送密码重置邮件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"user@example.com\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 Agent管理",
+      "description": "AI Agent的创建、配置、发布、版本管理",
+      "items": [
+        {
+          "name": "获取已发布的Agent列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/published",
+            "description": "获取所有已发布的Agent列表"
+          }
+        },
+        {
+          "name": "获取用户创建的Agent列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/user/{{USER_ID}}",
+            "description": "获取指定用户创建的Agent列表"
+          }
+        },
+        {
+          "name": "创建新Agent",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents",
+            "description": "创建新的AI Agent",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"智能助手\",\n  \"description\": \"一个智能对话助手\",\n  \"systemPrompt\": \"你是一个有用的AI助手\",\n  \"modelId\": 1,\n  \"tools\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "获取Agent详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}",
+            "description": "获取指定Agent的详细信息"
+          }
+        },
+        {
+          "name": "更新Agent",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}",
+            "description": "更新Agent信息",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"更新后的名称\",\n  \"description\": \"更新后的描述\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取Agent版本列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}/versions",
+            "description": "获取指定Agent的所有版本"
+          }
+        },
+        {
+          "name": "发布Agent版本",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}/publish",
+            "description": "发布Agent新版本"
+          }
+        },
+        {
+          "name": "删除Agent",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}",
+            "description": "删除指定的Agent"
+          }
+        },
+        {
+          "name": "Agent使用统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/{{AGENT_ID}}/statistics",
+            "description": "获取Agent使用统计信息"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 会话聊天",
+      "description": "与AI Agent的对话会话管理",
+      "items": [
+        {
+          "name": "创建新会话",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/sessions",
+            "description": "创建新的对话会话",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"agentId\": \"{{AGENT_ID}}\",\n  \"title\": \"新对话\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取会话列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/sessions",
+            "description": "获取用户的对话会话列表"
+          }
+        },
+        {
+          "name": "发送消息",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}/message",
+            "description": "在指定会话中发送消息",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"content\": \"你好，请介绍一下自己\",\n  \"type\": \"text\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取会话消息历史",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}/messages",
+            "description": "获取指定会话的消息历史"
+          }
+        },
+        {
+          "name": "删除会话",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}",
+            "description": "删除指定的对话会话"
+          }
+        },
+        {
+          "name": "流式聊天",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/agents/sessions/{{SESSION_ID}}/stream-chat",
+            "description": "流式聊天接口",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"content\": \"流式聊天测试\",\n  \"type\": \"text\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛠️ 工具市场",
+      "description": "AI工具的管理、安装、使用",
+      "items": [
+        {
+          "name": "获取工具市场列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/market",
+            "description": "获取工具市场中的可用工具列表"
+          }
+        },
+        {
+          "name": "获取推荐工具",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/recommend",
+            "description": "获取系统推荐的工具列表"
+          }
+        },
+        {
+          "name": "安装工具",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/tools/install/{{TOOL_ID}}/{{VERSION}}",
+            "description": "安装指定版本的工具"
+          }
+        },
+        {
+          "name": "获取已安装工具",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/installed",
+            "description": "获取用户已安装的工具列表"
+          }
+        },
+        {
+          "name": "获取用户创建的工具",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/user",
+            "description": "获取用户创建的工具列表"
+          }
+        },
+        {
+          "name": "上传工具",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/tools",
+            "description": "上传新的工具",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "工具文件"
+                },
+                {
+                  "key": "name",
+                  "value": "工具名称",
+                  "description": "工具名称"
+                },
+                {
+                  "key": "description",
+                  "value": "工具描述",
+                  "description": "工具描述"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "工具详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/tools/{{TOOL_ID}}",
+            "description": "获取工具详细信息"
+          }
+        },
+        {
+          "name": "卸载工具",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/tools/uninstall/{{TOOL_ID}}",
+            "description": "卸载已安装的工具"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📚 RAG知识库",
+      "description": "检索增强生成的知识库管理",
+      "items": [
+        {
+          "name": "获取数据集列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/rag/datasets",
+            "description": "获取RAG数据集列表"
+          }
+        },
+        {
+          "name": "创建数据集",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/datasets",
+            "description": "创建新的RAG数据集",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"测试数据集\",\n  \"description\": \"用于测试的数据集\"\n}"
+            }
+          }
+        },
+        {
+          "name": "上传文件到数据集",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/datasets/files",
+            "description": "上传文件到指定数据集",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "datasetId",
+                  "value": "{{DATASET_ID}}",
+                  "description": "数据集ID"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "要上传的文件"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "RAG搜索",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/search",
+            "description": "在知识库中搜索相关内容",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"query\": \"搜索查询内容\",\n  \"datasetId\": \"{{DATASET_ID}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "RAG流式聊天",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/rag/search/stream-chat",
+            "description": "基于知识库的流式问答",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"query\": \"问题内容\",\n  \"datasetId\": \"{{DATASET_ID}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "数据集详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/rag/datasets/{{DATASET_ID}}",
+            "description": "获取数据集详细信息"
+          }
+        },
+        {
+          "name": "删除数据集",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/rag/datasets/{{DATASET_ID}}",
+            "description": "删除指定的数据集"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧠 LLM模型管理",
+      "description": "大语言模型和提供商的配置管理",
+      "items": [
+        {
+          "name": "获取模型列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/llms/models",
+            "description": "获取可用的LLM模型列表"
+          }
+        },
+        {
+          "name": "获取提供商列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/llms/providers",
+            "description": "获取LLM服务提供商列表"
+          }
+        },
+        {
+          "name": "创建提供商",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/llms/providers",
+            "description": "创建新的LLM服务提供商",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"OpenAI\",\n  \"type\": \"OPENAI\",\n  \"config\": {\n    \"apiKey\": \"your-api-key\",\n    \"baseUrl\": \"https://api.openai.com\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "测试模型连接",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/llms/providers/{{PROVIDER_ID}}/test",
+            "description": "测试LLM提供商连接"
+          }
+        },
+        {
+          "name": "获取模型价格",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/llms/models/{{MODEL_ID}}/pricing",
+            "description": "获取模型价格信息"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔑 API密钥管理",
+      "description": "用户API密钥的创建、管理、使用",
+      "items": [
+        {
+          "name": "获取API密钥列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/api-keys",
+            "description": "获取用户的API密钥列表"
+          }
+        },
+        {
+          "name": "创建API密钥",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api-keys",
+            "description": "创建新的API密钥",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"测试密钥\",\n  \"description\": \"用于测试的API密钥\"\n}"
+            }
+          }
+        },
+        {
+          "name": "更新API密钥状态",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api-keys/{{API_KEY_ID}}/status",
+            "description": "启用或禁用API密钥"
+          }
+        },
+        {
+          "name": "删除API密钥",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/api-keys/{{API_KEY_ID}}",
+            "description": "删除指定的API密钥"
+          }
+        },
+        {
+          "name": "API密钥使用统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/api-keys/{{API_KEY_ID}}/usage",
+            "description": "获取API密钥使用统计"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 计费系统",
+      "description": "用户计费、订单、支付相关接口",
+      "items": [
+        {
+          "name": "获取用户余额",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/billing/balance",
+            "description": "获取用户账户余额"
+          }
+        },
+        {
+          "name": "获取计费规则",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/billing/rules",
+            "description": "获取系统计费规则"
+          }
+        },
+        {
+          "name": "获取订单列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/billing/orders",
+            "description": "获取用户订单列表"
+          }
+        },
+        {
+          "name": "创建充值订单",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/billing/orders/recharge",
+            "description": "创建充值订单",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"amount\": 100,\n  \"paymentMethod\": \"alipay\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取订单详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/billing/orders/{{ORDER_ID}}",
+            "description": "获取订单详细信息"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👑 管理员接口",
+      "description": "管理员专用接口（需要管理员权限）",
+      "items": [
+        {
+          "name": "获取用户列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/users",
+            "description": "管理员获取所有用户列表"
+          }
+        },
+        {
+          "name": "获取Agent统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/agents/statistics",
+            "description": "管理员获取Agent使用统计"
+          }
+        },
+        {
+          "name": "获取订单列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/orders",
+            "description": "管理员获取所有订单列表"
+          }
+        },
+        {
+          "name": "系统监控数据",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/monitoring",
+            "description": "获取系统监控数据"
+          }
+        },
+        {
+          "name": "用户权限管理",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/admin/users/{{USER_ID}}/role",
+            "description": "修改用户角色权限",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"role\": \"ADMIN\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 监控与日志",
+      "description": "系统监控、日志查询接口",
+      "items": [
+        {
+          "name": "系统状态概览",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/monitoring/overview",
+            "description": "获取系统整体状态概览"
+          }
+        },
+        {
+          "name": "性能指标",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/monitoring/metrics",
+            "description": "获取系统性能指标"
+          }
+        },
+        {
+          "name": "错误日志",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/monitoring/logs/errors",
+            "description": "获取系统错误日志"
+          }
+        },
+        {
+          "name": "访问日志",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/monitoring/logs/access",
+            "description": "获取系统访问日志"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🐳 容器管理",
+      "description": "Docker容器、Kubernetes集群管理接口",
+      "items": [
+        {
+          "name": "获取容器列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers",
+            "description": "获取所有运行中的容器列表"
+          }
+        },
+        {
+          "name": "启动容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/start",
+            "description": "启动指定的容器",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"containerId\": \"{{CONTAINER_ID}}\",\n  \"environment\": {\n    \"NODE_ENV\": \"production\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "停止容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/stop",
+            "description": "停止指定的容器"
+          }
+        },
+        {
+          "name": "重启容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/restart",
+            "description": "重启指定的容器"
+          }
+        },
+        {
+          "name": "获取容器日志",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/logs",
+            "description": "获取容器运行日志"
+          }
+        },
+        {
+          "name": "容器资源使用",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/stats",
+            "description": "获取容器资源使用统计"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🐳 容器管理",
+      "description": "Docker容器、Kubernetes集群管理接口",
+      "items": [
+        {
+          "name": "获取容器列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers",
+            "description": "获取所有运行中的容器列表"
+          }
+        },
+        {
+          "name": "启动容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/start",
+            "description": "启动指定的容器",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"containerId\": \"{{CONTAINER_ID}}\",\n  \"environment\": {\n    \"NODE_ENV\": \"production\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "停止容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/stop",
+            "description": "停止指定的容器"
+          }
+        },
+        {
+          "name": "重启容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/restart",
+            "description": "重启指定的容器"
+          }
+        },
+        {
+          "name": "获取容器日志",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/logs",
+            "description": "获取容器运行日志"
+          }
+        },
+        {
+          "name": "容器资源使用",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}/stats",
+            "description": "获取容器资源使用统计"
+          }
+        },
+        {
+          "name": "创建容器",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers",
+            "description": "创建新的容器",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"image\": \"nginx:latest\",\n  \"name\": \"web-server\",\n  \"ports\": [\"80:80\"],\n  \"environment\": {\n    \"NGINX_HOST\": \"localhost\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "删除容器",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/containers/{{CONTAINER_ID}}",
+            "description": "删除指定的容器"
+          }
+        },
+        {
+          "name": "获取镜像列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/containers/images",
+            "description": "获取可用的Docker镜像列表"
+          }
+        },
+        {
+          "name": "拉取镜像",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/containers/images/pull",
+            "description": "拉取指定的Docker镜像",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"image\": \"nginx:latest\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚡ 高可用性",
+      "description": "负载均衡、故障转移、集群管理接口",
+      "items": [
+        {
+          "name": "获取集群状态",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/ha/cluster/status",
+            "description": "获取高可用集群状态"
+          }
+        },
+        {
+          "name": "获取节点列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/ha/nodes",
+            "description": "获取集群节点列表"
+          }
+        },
+        {
+          "name": "添加节点",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/ha/nodes",
+            "description": "添加新节点到集群",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"host\": \"192.168.1.100\",\n  \"port\": 8088,\n  \"weight\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "移除节点",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/ha/nodes/{{NODE_ID}}",
+            "description": "从集群中移除节点"
+          }
+        },
+        {
+          "name": "故障转移测试",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/ha/failover/test",
+            "description": "测试故障转移机制"
+          }
+        },
+        {
+          "name": "负载均衡配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/ha/loadbalancer/config",
+            "description": "获取负载均衡配置"
+          }
+        },
+        {
+          "name": "更新负载均衡配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/ha/loadbalancer/config",
+            "description": "更新负载均衡配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"algorithm\": \"round-robin\",\n  \"healthCheck\": true,\n  \"healthCheckInterval\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "健康检查状态",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/ha/health-check",
+            "description": "获取所有节点的健康检查状态"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📁 文件存储",
+      "description": "文件上传、下载、管理接口",
+      "items": [
+        {
+          "name": "上传文件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/files/upload",
+            "description": "上传文件到存储系统",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "要上传的文件"
+                },
+                {
+                  "key": "category",
+                  "value": "document",
+                  "description": "文件分类"
+                },
+                {
+                  "key": "description",
+                  "value": "文件描述",
+                  "description": "文件描述信息"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "下载文件",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}/download",
+            "description": "下载指定文件"
+          }
+        },
+        {
+          "name": "获取文件列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files",
+            "description": "获取文件列表"
+          }
+        },
+        {
+          "name": "获取文件详情",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}",
+            "description": "获取文件详细信息"
+          }
+        },
+        {
+          "name": "删除文件",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}",
+            "description": "删除指定文件"
+          }
+        },
+        {
+          "name": "文件预览",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/files/{{FILE_ID}}/preview",
+            "description": "预览文件内容"
+          }
+        },
+        {
+          "name": "批量删除文件",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/files/batch",
+            "description": "批量删除文件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"fileIds\": [\"{{FILE_ID_1}}\", \"{{FILE_ID_2}}\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "文件搜索",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/files/search",
+            "description": "搜索文件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"keyword\": \"搜索关键词\",\n  \"category\": \"document\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 通知系统",
+      "description": "邮件、短信、推送通知接口",
+      "items": [
+        {
+          "name": "发送邮件通知",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/email",
+            "description": "发送邮件通知",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"to\": \"user@example.com\",\n  \"subject\": \"系统通知\",\n  \"content\": \"这是一条系统通知\",\n  \"template\": \"notification\"\n}"
+            }
+          }
+        },
+        {
+          "name": "发送短信通知",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/sms",
+            "description": "发送短信通知",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"to\": \"+8613800138000\",\n  \"content\": \"您的验证码是123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "发送推送通知",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/push",
+            "description": "发送推送通知",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"userId\": \"{{USER_ID}}\",\n  \"title\": \"新消息\",\n  \"body\": \"您有一条新消息\",\n  \"data\": {\n    \"type\": \"message\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "获取通知历史",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/notifications/history",
+            "description": "获取通知发送历史"
+          }
+        },
+        {
+          "name": "获取通知模板",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/notifications/templates",
+            "description": "获取可用的通知模板"
+          }
+        },
+        {
+          "name": "创建通知模板",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/notifications/templates",
+            "description": "创建新的通知模板",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"welcome\",\n  \"type\": \"email\",\n  \"subject\": \"欢迎加入\",\n  \"content\": \"欢迎您加入我们的平台！\"\n}"
+            }
+          }
+        },
+        {
+          "name": "通知设置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/notifications/settings",
+            "description": "获取用户通知设置"
+          }
+        },
+        {
+          "name": "更新通知设置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/notifications/settings",
+            "description": "更新用户通知设置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": true,\n  \"sms\": false,\n  \"push\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 数据分析",
+      "description": "数据统计、报表、分析接口",
+      "items": [
+        {
+          "name": "用户活跃度统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/user-activity",
+            "description": "获取用户活跃度统计数据"
+          }
+        },
+        {
+          "name": "Agent使用统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/agent-usage",
+            "description": "获取Agent使用统计数据"
+          }
+        },
+        {
+          "name": "系统性能统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/system-performance",
+            "description": "获取系统性能统计数据"
+          }
+        },
+        {
+          "name": "收入统计",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/revenue",
+            "description": "获取收入统计数据"
+          }
+        },
+        {
+          "name": "自定义报表",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/analytics/reports",
+            "description": "生成自定义报表",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"月度报告\",\n  \"metrics\": [\"user_count\", \"revenue\", \"usage\"],\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-01-31\",\n  \"groupBy\": \"day\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取报表列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/reports",
+            "description": "获取已生成的报表列表"
+          }
+        },
+        {
+          "name": "导出报表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/reports/{{REPORT_ID}}/export",
+            "description": "导出报表数据",
+            "query": [
+              {
+                "key": "format",
+                "value": "excel",
+                "description": "导出格式"
+              }
+            ]
+          }
+        },
+        {
+          "name": "实时数据流",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/analytics/stream",
+            "description": "获取实时数据流"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 工作流管理",
+      "description": "业务流程、任务调度、自动化接口",
+      "items": [
+        {
+          "name": "获取工作流列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows",
+            "description": "获取所有工作流列表"
+          }
+        },
+        {
+          "name": "创建工作流",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows",
+            "description": "创建新的工作流",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\": \"数据处理流程\",\n  \"description\": \"自动处理数据的工作流\",\n  \"steps\": [\n    {\n      \"name\": \"数据收集\",\n      \"type\": \"data_collection\",\n      \"config\": {}\n    },\n    {\n      \"name\": \"数据清洗\",\n      \"type\": \"data_cleaning\",\n      \"config\": {}\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "启动工作流",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows/{{WORKFLOW_ID}}/start",
+            "description": "启动指定的工作流"
+          }
+        },
+        {
+          "name": "停止工作流",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows/{{WORKFLOW_ID}}/stop",
+            "description": "停止指定的工作流"
+          }
+        },
+        {
+          "name": "获取工作流状态",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows/{{WORKFLOW_ID}}/status",
+            "description": "获取工作流执行状态"
+          }
+        },
+        {
+          "name": "获取任务列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows/tasks",
+            "description": "获取工作流任务列表"
+          }
+        },
+        {
+          "name": "重试失败任务",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/workflows/tasks/{{TASK_ID}}/retry",
+            "description": "重试失败的任务"
+          }
+        },
+        {
+          "name": "获取调度器配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/workflows/scheduler/config",
+            "description": "获取任务调度器配置"
+          }
+        },
+        {
+          "name": "更新调度器配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/workflows/scheduler/config",
+            "description": "更新任务调度器配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"maxConcurrentJobs\": 10,\n  \"defaultTimeout\": 3600\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔌 插件系统",
+      "description": "插件管理、扩展开发接口",
+      "items": [
+        {
+          "name": "获取插件列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/plugins",
+            "description": "获取已安装的插件列表"
+          }
+        },
+        {
+          "name": "安装插件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/plugins/install",
+            "description": "安装新插件",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "plugin",
+                  "type": "file",
+                  "description": "插件文件"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "启用插件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/enable",
+            "description": "启用指定的插件"
+          }
+        },
+        {
+          "name": "禁用插件",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/disable",
+            "description": "禁用指定的插件"
+          }
+        },
+        {
+          "name": "卸载插件",
+          "request": {
+            "method": "DELETE",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}",
+            "description": "卸载指定的插件"
+          }
+        },
+        {
+          "name": "获取插件配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/config",
+            "description": "获取插件配置信息"
+          }
+        },
+        {
+          "name": "更新插件配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/plugins/{{PLUGIN_ID}}/config",
+            "description": "更新插件配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"enabled\": true,\n  \"settings\": {\n    \"apiKey\": \"your-api-key\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "插件市场",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/plugins/market",
+            "description": "获取插件市场列表"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔒 安全审计",
+      "description": "安全日志、权限审计、威胁检测接口",
+      "items": [
+        {
+          "name": "获取安全日志",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/audit-logs",
+            "description": "获取安全审计日志"
+          }
+        },
+        {
+          "name": "获取登录历史",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/login-history",
+            "description": "获取用户登录历史"
+          }
+        },
+        {
+          "name": "获取权限变更记录",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/permission-changes",
+            "description": "获取权限变更记录"
+          }
+        },
+        {
+          "name": "威胁检测",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/security/threat-detection",
+            "description": "检测潜在安全威胁",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"ip\": \"192.168.1.100\",\n  \"action\": \"login_attempt\",\n  \"timestamp\": \"2024-01-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取安全策略",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/policies",
+            "description": "获取安全策略配置"
+          }
+        },
+        {
+          "name": "更新安全策略",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/security/policies",
+            "description": "更新安全策略配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"passwordPolicy\": {\n    \"minLength\": 8,\n    \"requireSpecialChars\": true\n  },\n  \"sessionTimeout\": 3600\n}"
+            }
+          }
+        },
+        {
+          "name": "IP白名单管理",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/security/ip-whitelist",
+            "description": "获取IP白名单"
+          }
+        },
+        {
+          "name": "添加IP白名单",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/security/ip-whitelist",
+            "description": "添加IP到白名单",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"ip\": \"192.168.1.100\",\n  \"description\": \"内网服务器\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 国际化",
+      "description": "多语言支持、本地化接口",
+      "items": [
+        {
+          "name": "获取支持的语言",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/i18n/languages",
+            "description": "获取系统支持的语言列表"
+          }
+        },
+        {
+          "name": "获取语言包",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/i18n/translations/{{LANGUAGE}}",
+            "description": "获取指定语言的翻译包"
+          }
+        },
+        {
+          "name": "更新用户语言偏好",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/i18n/user-language",
+            "description": "更新用户语言偏好设置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"language\": \"zh-CN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取时区列表",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/i18n/timezones",
+            "description": "获取支持的时区列表"
+          }
+        },
+        {
+          "name": "更新用户时区",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/i18n/user-timezone",
+            "description": "更新用户时区设置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"timezone\": \"Asia/Shanghai\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📱 移动端API",
+      "description": "移动应用专用接口",
+      "items": [
+        {
+          "name": "移动端登录",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/mobile/auth/login",
+            "description": "移动端用户登录",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"deviceId\": \"mobile-device-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "推送令牌注册",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/mobile/push-token",
+            "description": "注册移动端推送令牌",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"token\": \"push-token-123\",\n  \"platform\": \"ios\",\n  \"deviceId\": \"mobile-device-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "移动端配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/mobile/config",
+            "description": "获取移动端配置信息"
+          }
+        },
+        {
+          "name": "离线数据同步",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/mobile/sync",
+            "description": "同步离线数据",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"lastSyncTime\": \"2024-01-01T00:00:00Z\",\n  \"data\": []\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 系统配置",
+      "description": "系统设置、配置管理接口",
+      "items": [
+        {
+          "name": "获取系统配置",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/config",
+            "description": "获取系统配置信息"
+          }
+        },
+        {
+          "name": "更新系统配置",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/system/config",
+            "description": "更新系统配置",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"maintenanceMode\": false,\n  \"maxFileSize\": 10485760,\n  \"sessionTimeout\": 3600\n}"
+            }
+          }
+        },
+        {
+          "name": "获取功能开关",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/feature-flags",
+            "description": "获取功能开关配置"
+          }
+        },
+        {
+          "name": "更新功能开关",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/system/feature-flags",
+            "description": "更新功能开关",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"newUI\": true,\n  \"betaFeatures\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "系统维护模式",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/system/maintenance",
+            "description": "启用/禁用系统维护模式",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"enabled\": true,\n  \"message\": \"系统维护中，请稍后再试\"\n}"
+            }
+          }
+        },
+        {
+          "name": "获取系统信息",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/info",
+            "description": "获取系统基本信息"
+          }
+        },
+        {
+          "name": "获取系统资源",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/system/resources",
+            "description": "获取系统资源使用情况"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": {
+      "token": "{{TOKEN}}"
+    }
+  },
+  "variables": [
+    {
+      "key": "TOKEN",
+      "value": "",
+      "description": "用户登录后的访问令牌"
+    },
+    {
+      "key": "USER_ID",
+      "value": "1",
+      "description": "当前用户ID"
+    },
+    {
+      "key": "AGENT_ID",
+      "value": "",
+      "description": "Agent ID（从Agent列表接口获取）"
+    },
+    {
+      "key": "SESSION_ID",
+      "value": "",
+      "description": "会话ID（从会话列表接口获取）"
+    },
+    {
+      "key": "DATASET_ID",
+      "value": "",
+      "description": "数据集ID（从数据集列表接口获取）"
+    },
+    {
+      "key": "TOOL_ID",
+      "value": "",
+      "description": "工具ID（从工具市场接口获取）"
+    },
+    {
+      "key": "API_KEY_ID",
+      "value": "",
+      "description": "API密钥ID（从API密钥列表接口获取）"
+    },
+    {
+      "key": "PROVIDER_ID",
+      "value": "",
+      "description": "LLM提供商ID（从提供商列表接口获取）"
+    },
+    {
+      "key": "MODEL_ID",
+      "value": "",
+      "description": "模型ID（从模型列表接口获取）"
+    },
+    {
+      "key": "ORDER_ID",
+      "value": "",
+      "description": "订单ID（从订单列表接口获取）"
+    },
+    {
+      "key": "CONTAINER_ID",
+      "value": "",
+      "description": "容器ID（从容器列表接口获取）"
+    },
+    {
+      "key": "NODE_ID",
+      "value": "",
+      "description": "集群节点ID（从节点列表接口获取）"
+    },
+    {
+      "key": "FILE_ID",
+      "value": "",
+      "description": "文件ID（从文件列表接口获取）"
+    },
+    {
+      "key": "FILE_ID_1",
+      "value": "",
+      "description": "文件ID 1（用于批量操作）"
+    },
+    {
+      "key": "FILE_ID_2",
+      "value": "",
+      "description": "文件ID 2（用于批量操作）"
+    },
+    {
+      "key": "REPORT_ID",
+      "value": "",
+      "description": "报表ID（从报表列表接口获取）"
+    },
+    {
+      "key": "WORKFLOW_ID",
+      "value": "",
+      "description": "工作流ID（从工作流列表接口获取）"
+    },
+    {
+      "key": "TASK_ID",
+      "value": "",
+      "description": "任务ID（从任务列表接口获取）"
+    },
+    {
+      "key": "PLUGIN_ID",
+      "value": "",
+      "description": "插件ID（从插件列表接口获取）"
+    },
+    {
+      "key": "LANGUAGE",
+      "value": "zh-CN",
+      "description": "语言代码（如zh-CN、en-US）"
+    },
+    {
+      "key": "CONTAINER_ID",
+      "value": "",
+      "description": "容器ID（从容器列表接口获取）"
+    },
+    {
+      "key": "NODE_ID",
+      "value": "",
+      "description": "集群节点ID（从节点列表接口获取）"
+    },
+    {
+      "key": "FILE_ID",
+      "value": "",
+      "description": "文件ID（从文件列表接口获取）"
+    },
+    {
+      "key": "FILE_ID_1",
+      "value": "",
+      "description": "文件ID 1（用于批量操作）"
+    },
+    {
+      "key": "FILE_ID_2",
+      "value": "",
+      "description": "文件ID 2（用于批量操作）"
+    },
+    {
+      "key": "REPORT_ID",
+      "value": "",
+      "description": "报表ID（从报表列表接口获取）"
+    },
+    {
+      "key": "WORKFLOW_ID",
+      "value": "",
+      "description": "工作流ID（从工作流列表接口获取）"
+    },
+    {
+      "key": "TASK_ID",
+      "value": "",
+      "description": "任务ID（从任务列表接口获取）"
+    },
+    {
+      "key": "PLUGIN_ID",
+      "value": "",
+      "description": "插件ID（从插件列表接口获取）"
+    }
+  ],
+  "scripts": {
+    "beforeRequest": [
+      {
+        "type": "text/javascript",
+        "script": "// 自动设置认证头\nif (pm.environment.get('TOKEN')) {\n  pm.request.headers.add({\n    key: 'Authorization',\n    value: 'Bearer ' + pm.environment.get('TOKEN')\n  });\n}\n\n// 自动设置请求ID用于追踪\npm.request.headers.add({\n  key: 'X-Request-ID',\n  value: pm.variables.replaceIn('{{$guid}}')\n});\n\n// 自动设置时间戳\npm.request.headers.add({\n  key: 'X-Timestamp',\n  value: new Date().toISOString()\n});"
+      }
+    ],
+    "afterResponse": [
+      {
+        "type": "text/javascript",
+        "script": "// 自动保存登录返回的token\nif (pm.response.code === 200 && pm.request.url.path.includes('/auth/login')) {\n  try {\n    const response = pm.response.json();\n    if (response.data && response.data.token) {\n      pm.environment.set('TOKEN', response.data.token);\n      pm.environment.set('USER_ID', response.data.user.id);\n      console.log('Token已自动保存到环境变量');\n    }\n  } catch (e) {\n    console.log('解析响应失败:', e);\n  }\n}\n\n// 自动保存文件ID\nif (pm.response.code === 200 && pm.request.url.path.includes('/files/upload')) {\n  try {\n    const response = pm.response.json();\n    if (response.data && response.data.fileId) {\n      pm.environment.set('FILE_ID', response.data.fileId);\n      console.log('文件ID已自动保存:', response.data.fileId);\n    }\n  } catch (e) {\n    console.log('解析文件上传响应失败:', e);\n  }\n}\n\n// 自动保存Agent ID\nif (pm.response.code === 200 && pm.request.url.path.includes('/agents') && pm.request.method === 'POST') {\n  try {\n    const response = pm.response.json();\n    if (response.data && response.data.id) {\n      pm.environment.set('AGENT_ID', response.data.id);\n      console.log('Agent ID已自动保存:', response.data.id);\n    }\n  } catch (e) {\n    console.log('解析Agent创建响应失败:', e);\n  }\n}\n\n// 响应时间监控\nconst responseTime = pm.response.responseTime;\nif (responseTime > 5000) {\n  console.warn('响应时间过长:', responseTime + 'ms');\n}\n\n// 错误响应处理\nif (pm.response.code >= 400) {\n  console.error('请求失败:', pm.response.code, pm.response.status);\n  try {\n    const errorResponse = pm.response.json();\n    console.error('错误详情:', errorResponse);\n  } catch (e) {\n    console.error('无法解析错误响应');\n  }\n}"
+      }
+    ],
+    "beforeScript": [
+      {
+        "type": "text/javascript",
+        "script": "// 请求前预处理\nconsole.log('开始请求:', pm.request.method, pm.request.url);\n\n// 检查必要参数\nif (pm.request.url.path.includes('{{AGENT_ID}}') && !pm.environment.get('AGENT_ID')) {\n  console.warn('警告: AGENT_ID 未设置，请求可能失败');\n}\n\nif (pm.request.url.path.includes('{{SESSION_ID}}') && !pm.environment.get('SESSION_ID')) {\n  console.warn('警告: SESSION_ID 未设置，请求可能失败');\n}"
+      }
+    ]
+  }
+}

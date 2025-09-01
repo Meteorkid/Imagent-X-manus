@@ -1,0 +1,31 @@
+{
+    "name": "离线小恐龙游戏",
+    "short_name": "小恐龙",
+    "description": "谷歌经典离线小恐龙游戏的复刻版，支持完全离线游玩",
+    "version": "1.0.0",
+    "start_url": "/offline-dino/dino.html",
+    "display": "standalone",
+    "orientation": "landscape",
+    "theme_color": "#87CEEB",
+    "background_color": "#f7f7f7",
+    "icons": [
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjODdDRUVCIi8+CjxwYXRoIGQ9Ik00OCAxMjhIMTQ0TDEyOCA2NEg2NEw0OCAxMjhaIiBmaWxsPSIjMkMzRTUwIi8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iNDAiIHI9IjIwIiBmaWxsPSIjMkMzRTUwIi8+CjxjaXJjbGUgY3g9IjExMiIgY3k9IjQwIiByPSIyMCIgZmlsbD0iIzJDM0U1MCIvPgo8L3N2Zz4K",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSIjODdDRUVCIi8+CjxwYXRoIGQ9Ik0xMjggMzIwSDM4NEwzNTIgMTY0SDE2MEwxMjggMzIwWiIgZmlsbD0iIzJDM0U1MCIvPgo8Y2lyY2xlIGN4PSIyMTQiIGN5PSIxMDYiIHI9IjUwIiBmaWxsPSIjMkMzRTUwIi8+CjxjaXJjbGUgY3g9IjI5OCIgY3k9IjEwNiIgcj0iNTAiIGZpbGw9IiMyQzNFNTAiLz4KPC9zdmc+Cg==",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ],
+    "categories": ["games", "entertainment"],
+    "lang": "zh-CN",
+    "scope": "/offline-dino/",
+    "serviceworker": {
+        "src": "sw.js",
+        "scope": "/offline-dino/",
+        "update_via_cache": "all"
+    }
+}

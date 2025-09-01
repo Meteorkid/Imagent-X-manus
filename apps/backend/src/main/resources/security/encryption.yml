@@ -1,0 +1,23 @@
+# 数据加密配置
+encryption:
+  # 加密算法
+  algorithm: AES/GCM/NoPadding
+  # 密钥长度
+  key-size: 256
+  # 密钥存储方式 (file/database/vault)
+  key-storage: file
+  # 密钥文件路径
+  key-file: ${user.home}/.imagentx/encryption.key
+  # 需要加密的字段
+  encrypted-fields:
+    - user.password
+    - user.email
+    - api-key.secret
+    - payment.card-number
+  # 加密敏感数据
+  sensitive-data:
+    - password
+    - email
+    - phone
+    - id-card
+    - credit-card

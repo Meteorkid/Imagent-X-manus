@@ -1,0 +1,60 @@
+version: '3.8'
+
+# 简化测试配置 - 使用官方镜像源
+services:
+  postgres:
+    image: postgres:15-alpine
+    platform: linux/arm64
+    container_name: test-postgres
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - test-postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d imagentx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    platform: linux/arm64
+    container_name: test-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # 测试用后端服务
+  test-backend:
+    image: openjdk:17-jdk-slim
+    platform: linux/arm64
+    container_name: test-backend
+    command: ["java", "-version"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  test-postgres-data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge

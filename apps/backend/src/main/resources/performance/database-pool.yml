@@ -1,0 +1,49 @@
+# 数据库连接池优化配置
+spring:
+  datasource:
+    # HikariCP连接池配置
+    hikari:
+      # 连接池名称
+      pool-name: ImagentXHikariCP
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接池大小
+      maximum-pool-size: 20
+      # 连接超时时间（毫秒）
+      connection-timeout: 30000
+      # 空闲连接超时时间（毫秒）
+      idle-timeout: 600000
+      # 连接最大生存时间（毫秒）
+      max-lifetime: 1800000
+      # 连接测试查询
+      connection-test-query: SELECT 1
+      # 连接泄漏检测
+      leak-detection-threshold: 60000
+      # 自动提交
+      auto-commit: true
+      # 连接初始化SQL
+      connection-init-sql: SET time_zone = '+08:00'
+  
+  # JPA配置优化
+  jpa:
+    # 批处理大小
+    properties:
+      hibernate:
+        # 批处理大小
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+        # 二级缓存配置
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+        # 查询优化
+        order_inserts: true
+        order_updates: true
+        # 统计信息
+        generate_statistics: false
+        # 慢查询日志
+        session_factory:
+          observer_class: org.hibernate.stat.Statistics

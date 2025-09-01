@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏控制测试 - 双连跳和滑翔</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .test-container {
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .control-info {
+            background: #e8f4fd;
+            border: 2px solid #1a73e8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .control-info h3 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .control-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .control-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .control-list li:last-child {
+            border-bottom: none;
+        }
+
+        .key {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .feature {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        #gameCanvas {
+            border: 2px solid #333;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .restart-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .restart-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🦕 游戏控制测试 - 双连跳和滑翔功能</h1>
+        
+        <div class="control-info">
+            <h3>🎮 优化后的控制说明：</h3>
+            <ul class="control-list">
+                <li><span class="key">空格键</span> 或 <span class="key">↑</span> - <span class="feature">跳跃</span></li>
+                <li><span class="key">↓</span> - <span class="feature">下蹲</span></li>
+                <li><span class="key">鼠标点击</span> - <span class="feature">跳跃</span></li>
+                <li><span class="key">触摸屏幕</span> - <span class="feature">跳跃</span></li>
+                <li><span class="feature">双连跳系统</span> - 连续按跳跃键可以进行两次跳跃</li>
+                <li><span class="feature">滑翔降落</span> - 第三次跳跃会进入滑翔模式，下降速度减慢</li>
+            </ul>
+        </div>
+
+        <div class="score">得分: <span id="score">0</span></div>
+        <div class="status" id="status">准备开始游戏...</div>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        
+        <div class="game-over" id="gameOver">
+            <h2>游戏结束！</h2>
+            <p>最终得分: <span id="finalScore">0</span></p>
+            <button class="restart-btn" onclick="restartGame()">重新开始</button>
+        </div>
+    </div>
+
+    <script src="dino-game.js"></script>
+    <script>
+        // 添加状态显示功能
+        function updateStatus() {
+            const status = document.getElementById('status');
+            if (game.dino.isGliding) {
+                status.textContent = '🦅 滑翔模式 - 下降速度减慢';
+                status.style.background = '#d4edda';
+                status.style.borderColor = '#c3e6cb';
+            } else if (game.dino.jumping) {
+                status.textContent = `🦘 跳跃中 - 跳跃次数: ${game.dino.jumpCount}`;
+                status.style.background = '#fff3cd';
+                status.style.borderColor = '#ffeaa7';
+            } else if (game.dino.ducking) {
+                status.textContent = '🦆 下蹲中';
+                status.style.background = '#f8d7da';
+                status.style.borderColor = '#f5c6cb';
+            } else {
+                status.textContent = '🏃 准备跳跃';
+                status.style.background = '#e8f4fd';
+                status.style.borderColor = '#bee5eb';
+            }
+        }
+
+        // 重写游戏循环以包含状态更新
+        const originalGameLoop = game.gameLoop;
+        game.gameLoop = function(currentTime = 0) {
+            originalGameLoop.call(this, currentTime);
+            updateStatus();
+        };
+
+        // 全局函数
+        function restartGame() {
+            game.restart();
+        }
+
+        // 初始化状态显示
+        updateStatus();
+    </script>
+</body>
+</html>

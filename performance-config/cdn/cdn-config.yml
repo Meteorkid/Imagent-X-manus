@@ -1,0 +1,44 @@
+# CDN集成配置
+cdn:
+  # 主要CDN提供商
+  provider: cloudflare
+  
+  # 静态资源CDN
+  static:
+    domain: cdn.imagentx.ai
+    protocol: https
+    cache-control: public, max-age=31536000, immutable
+    
+  # 图片CDN
+  images:
+    domain: img.imagentx.ai
+    protocol: https
+    formats: [webp, avif, jpg, png]
+    sizes: [320, 640, 1280, 1920]
+    
+  # 字体CDN
+  fonts:
+    domain: fonts.imagentx.ai
+    protocol: https
+    formats: [woff2, woff, ttf]
+    
+  # API CDN
+  api:
+    domain: api.imagentx.ai
+    protocol: https
+    cache-control: public, max-age=300, s-maxage=3600
+    
+  # 配置
+  settings:
+    # 启用压缩
+    compression: true
+    # 启用HTTP/2
+    http2: true
+    # 启用Brotli压缩
+    brotli: true
+    # 启用Gzip压缩
+    gzip: true
+    # 缓存策略
+    cache-strategy: aggressive
+    # 边缘计算
+    edge-computing: true

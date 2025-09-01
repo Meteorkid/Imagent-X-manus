@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"components/payment/QRCodeDisplay.tsx -> qrcode\":{\"id\":\"components/payment/QRCodeDisplay.tsx -> qrcode\",\"files\":[\"static/chunks/_app-pages-browser_node_modules_qrcode_lib_browser_js.js\"]}}"

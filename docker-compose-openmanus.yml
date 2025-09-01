@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - OPENMANUS_ENABLED=true
+    volumes:
+      - ./OpenManus:/app/OpenManus
+      - openmanus-data:/app/OpenManus/workspace
+    depends_on:
+      - postgres
+    networks:
+      - imagentx-network
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://backend:8080
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    depends_on:
+      - backend
+    networks:
+      - imagentx-network
+
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: imagentx
+      POSTGRES_PASSWORD: imagentx123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - imagentx-network
+
+  # OpenManus Python 服务
+  openmanus:
+    build:
+      context: ./OpenManus
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - ./OpenManus:/app
+      - openmanus-data:/app/workspace
+    working_dir: /app
+    command: ["python", "main.py"]
+    networks:
+      - imagentx-network
+    profiles:
+      - openmanus
+
+volumes:
+  postgres-data:
+  openmanus-data:
+
+networks:
+  imagentx-network:
+    driver: bridge
+

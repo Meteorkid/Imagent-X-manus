@@ -1,0 +1,57 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: Imagent X
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:imagentx}
+    username: ${DB_USER:imagentx_user}
+    password: ${DB_PASSWORD:imagentx_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+logging:
+  level:
+    root: info
+    org.xhy: debug
+  file:
+    name: logs/agent-x.log
+
+# 禁用所有需要外部依赖的功能
+high-availability:
+  enabled: false
+
+# 完全禁用向量存储功能
+embedding:
+  enabled: false
+  name: disabled
+  vector-store:
+    enabled: false
+    host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+    database: imagentx
+    table: public.vector_store
+    dimension: 1024
+    drop-table-first: false
+    create-table: false
+
+# 禁用其他外部服务
+rerank:
+  enabled: false
+
+dromara:
+  x-file-storage:
+    enabled: false

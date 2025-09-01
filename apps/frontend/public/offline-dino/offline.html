@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线 - 小恐龙游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .offline-container {
+            max-width: 400px;
+            padding: 40px 20px;
+        }
+
+        .dino-icon {
+            width: 74px;
+            height: 74px;
+            margin: 0 auto 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74 74"><path fill="#535353" d="M37 0C16.5 0 0 16.5 0 37s16.5 37 37 37 37-16.5 37-37S57.5 0 37 0zm0 67.2C20.4 67.2 7.2 54 7.2 37S20.4 6.8 37 6.8 66.8 20 66.8 37 53.6 67.2 37 67.2z"/><path fill="#535353" d="M45.6 27.2c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3zm-17.2 0c-2.4 0-4.3 1.9-4.3 4.3s1.9 4.3 4.3 4.3 4.3-1.9 4.3-4.3-1.9-4.3-4.3-4.3z"/><path fill="#535353" d="M37 47.6c-8.1 0-15.3 3.5-20.3 9.1 2.8 3.1 6.8 5.1 11.3 5.1s8.5-2 11.3-5.1c-5-5.6-12.2-9.1-20.3-9.1z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        h1 {
+            color: #202124;
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
+
+        .message {
+            color: #5f6368;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .game-button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .game-button:hover {
+            background: #1557b0;
+        }
+
+        .game-button:active {
+            background: #0f4999;
+        }
+
+        .controls {
+            margin-top: 32px;
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+        .controls kbd {
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            border-radius: 2px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .network-status {
+            margin-top: 24px;
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="dino-icon"></div>
+        <h1>无法连接到互联网</h1>
+        <div class="message">
+            您的设备似乎处于离线状态。<br>
+            在等待网络恢复的同时，来玩个小游戏吧！
+        </div>
+        
+        <a href="dino.html" class="game-button">开始游戏</a>
+        
+        <div class="controls">
+            游戏控制：<br>
+            <kbd>空格</kbd> 跳跃 | <kbd>↓</kbd> 下蹲 | <kbd>点击</kbd> 跳跃
+        </div>
+        
+        <div class="network-status">
+            <span id="status">正在检查网络连接...</span>
+        </div>
+    </div>
+
+    <script>
+        // 网络状态检测
+        function checkNetworkStatus() {
+            const statusEl = document.getElementById('status');
+            
+            // 尝试加载一个小的资源来检测网络
+            const img = new Image();
+            img.onload = function() {
+                statusEl.innerHTML = '网络已恢复，正在重定向...';
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:3000';
+                }, 1000);
+            };
+            
+            img.onerror = function() {
+                statusEl.innerHTML = '网络仍未连接，继续游戏吧！';
+            };
+            
+            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?' + Date.now();
+        }
+
+        // 每3秒检查一次网络状态
+        setInterval(checkNetworkStatus, 3000);
+        
+        // 初始检查
+        setTimeout(checkNetworkStatus, 1000);
+    </script>
+</body>
+</html>

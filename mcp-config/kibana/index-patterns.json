@@ -1,0 +1,109 @@
+{
+  "index_patterns": [
+    {
+      "title": "sandbox-logs-*",
+      "timeFieldName": "@timestamp",
+      "fields": [
+        {
+          "name": "@timestamp",
+          "type": "date",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "container_name",
+          "type": "string",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "log_type",
+          "type": "string",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "violation_type",
+          "type": "string",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "anomaly_type",
+          "type": "string",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "security_score",
+          "type": "number",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "resource_usage",
+          "type": "object",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": false,
+          "readFromDocValues": true
+        },
+        {
+          "name": "resource_usage.memory",
+          "type": "number",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "resource_usage.cpu",
+          "type": "number",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "network_connections",
+          "type": "number",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        },
+        {
+          "name": "process_count",
+          "type": "number",
+          "count": 0,
+          "scripted": false,
+          "searchable": true,
+          "aggregatable": true,
+          "readFromDocValues": true
+        }
+      ]
+    }
+  ]
+}
