@@ -1,26 +1,25 @@
-# 多阶段构建的后端优化Dockerfile
-FROM maven:3.9.5-openjdk-17 AS builder
+# 多阶段构建 - 后端优化版本
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
 
 # 设置工作目录
-WORKDIR /app
+WORKDIR /build
 
-# 复制pom文件
-COPY pom.xml ./
+# 复制pom文件并下载依赖
+COPY apps/backend/pom.xml ./
+RUN mvn dependency:go-offline -B -q
 
-# 下载依赖
-RUN mvn dependency:go-offline -B
+# 复制源代码并构建
+COPY apps/backend/src ./src
+RUN mvn clean package -DskipTests -q
 
-# 复制源代码
-COPY src ./src
+# 运行时镜像
+FROM eclipse-temurin:17-jre-alpine
 
-# 构建应用
-RUN mvn clean package -DskipTests
+# 安装必要的工具
+RUN apk add --no-cache curl tzdata
 
-# 生产阶段
-FROM openjdk:17-jre-alpine
-
-# 安装curl用于健康检查
-RUN apk add --no-cache curl
+# 设置时区
+ENV TZ=Asia/Shanghai
 
 # 创建应用用户
 RUN addgroup -g 1001 -S appgroup && \
@@ -29,21 +28,24 @@ RUN addgroup -g 1001 -S appgroup && \
 # 设置工作目录
 WORKDIR /app
 
-# 复制jar文件
-COPY --from=builder /app/target/*.jar app.jar
+# 复制JAR文件
+COPY --from=builder /build/target/*.jar app.jar
 
-# 创建日志目录
-RUN mkdir -p /app/logs && chown -R appuser:appgroup /app
+# 设置文件权限
+RUN chown -R appuser:appgroup /app
 
-# 切换到应用用户
+# 切换到非root用户
 USER appuser
-
-# 暴露端口
-EXPOSE 8080
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/actuator/health || exit 1
+    CMD curl -f http://localhost:8088/actuator/health || exit 1
 
-# 启动应用
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# JVM优化参数
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+# 暴露端口
+EXPOSE 8088
+
+# 启动命令
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

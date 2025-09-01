@@ -1,0 +1,192 @@
+server:
+  port: ${SERVER_PORT:8088}
+  servlet:
+    context-path: /api
+  # 优化Tomcat配置
+  tomcat:
+    threads:
+      max: 200 # 最大工作线程数
+      min-spare: 10 # 最小空闲线程数
+    connection-timeout: 20000 # 连接超时毫秒
+    max-connections: 8192 # 最大连接数
+    accept-count: 100 # 等待队列长度
+    processor-cache: 200 # 处理器缓存
+    tcp-no-delay: true # TCP无延迟
+    keep-alive-timeout: 60000 # Keep-Alive超时
+
+spring:
+  application:
+    name: Imagent X
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        concurrency: 5
+        max-concurrency: 10
+        prefetch: 1
+        acknowledge-mode: manual
+        default-requeue-rejected: true
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 3000
+      direct:
+        acknowledge-mode: manual
+        default-requeue-rejected: true
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 3000
+    publisher-returns: true
+    publisher-confirm-type: correlated
+    connection-timeout: 200000
+    cache:
+      channel:
+        size: 25
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/imagentx
+    username: imagentx_user
+    password: imagentx_pass
+    hikari:
+      maximum-pool-size: 20 # 最大连接池大小
+      minimum-idle: 5 # 最小空闲连接数
+      connection-timeout: 30000 # 连接超时时间
+      idle-timeout: 600000 # 空闲超时时间
+      max-lifetime: 1800000 # 最大生命周期
+      leak-detection-threshold: 60000 # 泄漏检测阈值
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  
+
+  
+  # 数据库初始化配置
+  sql:
+    init:
+      mode: never
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: org.xhy.domain
+  type-handlers-package: org.xhy.infrastructure.converter
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted_at
+      logic-delete-value: now()
+      logic-not-delete-value: "null"
+    banner: false
+
+# 监控端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    root: info
+    org.xhy: debug
+    org.springframework.web: debug
+    org.hibernate.SQL: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/agent-x.log
+    max-size: 100MB
+    max-history: 30
+mail:
+  smtp:
+    host: ${MAIL_SMTP_HOST:smtp.qq.com}
+    port: ${MAIL_SMTP_PORT:587}
+    username: ${MAIL_SMTP_USERNAME:}
+    password: ${MAIL_SMTP_PASSWORD:}
+  verification:
+    template: ${MAIL_VERIFICATION_TEMPLATE:您的验证码是:%s，有效期10分钟，请勿泄露给他人。}
+    subject: ${MAIL_VERIFICATION_SUBJECT:Imagent X - 邮箱验证码}
+
+github:
+  target:
+    repo-name: ${GITHUB_REPO_NAME:agent-mcp-community}
+    username: ${GITHUB_USERNAME:lucky-aeon}
+    token: ${GITHUB_TOKEN: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}
+
+# 高可用网关配置
+high-availability:
+  enabled: false # 禁用高可用功能
+  gateway-url: ${HIGH_AVAILABILITY_GATEWAY_URL:http://localhost:8081} # 高可用网关地址
+  api-key: ${HIGH_AVAILABILITY_API_KEY:default-api-key-1234567890} # API密钥
+  connect-timeout: 30000 # 连接超时时间(毫秒)
+  read-timeout: 60000 # 读取超时时间(毫秒)
+
+# MCP网关配置
+mcp:
+  gateway:
+    base-url: ${MCP_GATEWAY_URL:http://localhost:8081} # MCP网关基础URL
+    api-key: ${MCP_GATEWAY_API_KEY:default-api-key-1234567890} # MCP网关API密钥
+    connect-timeout: ${MCP_GATEWAY_CONNECT_TIMEOUT:30000} # 连接超时时间(毫秒)
+    read-timeout: ${MCP_GATEWAY_READ_TIMEOUT:60000} # 读取超时时间(毫秒)
+
+embedding:
+  enabled: false
+  name: disabled
+  vector-store:
+    enabled: false
+    host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+    database: imagentx
+    table: public.vector_store
+    dimension: 1024
+    drop-table-first: false
+    create-table: false
+
+rerank:
+  name: OpenAI
+  api-key: ${SILICONFLOW_API_KEY}
+  api-url: ${SILICONFLOW_API_URL_RERANK}
+  model: ${SILICONFLOW_MODEL_RERANK_MODEL:Pro/BAAI/bge-reranker-v2-m3}
+  timeout: ${SILICONFLOW_TIMEOUT:30000}
+
+dromara:
+  x-file-storage: #文件存储配置
+    default-platform: amazon-s3-1 #默认使用的存储平台
+    thumbnail-suffix: ".min.jpg" #缩略图后缀，例如【.min.jpg】【.png】
+    #对应平台的配置写在这里，注意缩进要对齐
+    amazon-s3: # 0.0.7 及以前的版本，配置名称是：aws-s3
+      - platform: amazon-s3-1 # 存储平台标识
+        enable-storage: true # 启用存储
+        access-key: ${S3_SECRET_ID}
+        secret-key: ${S3_SECRET_KEY}
+        region: ${S3_REGION} # 与 end-point 参数至少填一个
+        end-point: ${S3_ENDPOINT} # 与 region 参数至少填一个
+        bucket-name: ${S3_BUCKET_NAME}
+        domain: ${S3_DOMAIN} # 访问域名，注意“/”结尾，例如：https://abc.hn-bkt.clouddn.com/
+        base-path: s3/ # 基础路径
+
+payment:
+  alipay:
+    app-id: ${ALIPAY_APP_ID:your_alipay_app_id}
+    private-key: ${ALIPAY_PRIVATE_KEY:your_alipay_private_key}
+    public-key: ${ALIPAY_PUBLIC_KEY:your_alipay_public_key}
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:your_stripe_secret_key}
+    publishable-key: ${STRIPE_PUBLISHABLE_KEY:your_stripe_publishable_key}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:your_stripe_webhook_secret}

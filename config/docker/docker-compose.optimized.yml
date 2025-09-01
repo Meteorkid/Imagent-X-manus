@@ -1,0 +1,251 @@
+version: '3.8'
+
+networks:
+  imagentx-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  storage-data:
+    driver: local
+  nginx-logs:
+    driver: local
+
+services:
+  # PostgreSQL 数据库 (优化版)
+  postgres:
+    image: postgres:15-alpine
+    container_name: imagentx-postgres-opt
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d imagentx"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis 缓存 (优化版)
+  redis:
+    image: redis:7-alpine
+    container_name: imagentx-redis-opt
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # RabbitMQ 消息队列 (优化版)
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: imagentx-rabbitmq-opt
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_ERLANG_COOKIE: SWQOKODSQALRPCLNMEQG
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ImagentX 后端服务 (优化版)
+  imagentx-backend:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.backend.optimized
+    container_name: imagentx-backend-opt
+    environment:
+      # 数据库配置
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: imagentx
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      
+      # Redis配置
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      
+      # RabbitMQ配置
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      
+      # 应用配置
+      SERVER_PORT: 8088
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this}
+      
+      # 用户配置
+      IMAGENTX_ADMIN_EMAIL: ${IMAGENTX_ADMIN_EMAIL:-admin@imagentx.top}
+      IMAGENTX_ADMIN_PASSWORD: ${IMAGENTX_ADMIN_PASSWORD:-admin123}
+      
+      # 性能优化配置
+      EMBEDDING_ENABLED: ${EMBEDDING_ENABLED:-false}
+      CACHE_ENABLED: ${CACHE_ENABLED:-true}
+      
+    volumes:
+      - storage-data:/app/storage
+    networks:
+      - imagentx-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # Nginx 反向代理 (优化版)
+  nginx:
+    image: nginx:alpine
+    container_name: imagentx-nginx-opt
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - nginx-logs:/var/log/nginx
+    networks:
+      - imagentx-network
+    depends_on:
+      - imagentx-backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Prometheus 监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: imagentx-prometheus-opt
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - imagentx-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Grafana 监控面板
+  grafana:
+    image: grafana/grafana:latest
+    container_name: imagentx-grafana-opt
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - imagentx-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+# 监控数据卷已在顶部定义

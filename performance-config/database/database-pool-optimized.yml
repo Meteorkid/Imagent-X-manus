@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    hikari:
+      # 连接池优化配置
+      pool-name: ImagentXHikariCP
+      maximum-pool-size: 30  # 根据CPU核心数调整
+      minimum-idle: 10
+      connection-timeout: 20000  # 20秒
+      idle-timeout: 300000  # 5分钟
+      max-lifetime: 1200000  # 20分钟
+      leak-detection-threshold: 60000  # 1分钟
+      connection-test-query: SELECT 1
+      validation-timeout: 5000  # 5秒
+      register-mbeans: true
+      
+  # JPA配置优化
+  jpa:
+    properties:
+      hibernate:
+        # 批处理大小
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+        # 二级缓存配置
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+        # 查询优化
+        order_inserts: true
+        order_updates: true
+        # 统计信息
+        generate_statistics: true
+        # 慢查询日志
+        session_factory:
+          observer_class: org.hibernate.stat.Statistics

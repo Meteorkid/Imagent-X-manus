@@ -1,0 +1,22 @@
+# ImagentX 容器性能监控报告
+# 生成时间: Tue Sep  2 03:10:37 CST 2025
+
+## 容器资源使用情况
+CONTAINER      CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O
+0855835c939c   0.00%     40.2MiB / 7.653GiB    0.51%     142kB / 39.2kB    0B / 4.1kB
+79079a24bbf3   0.46%     11.8MiB / 512MiB      2.30%     42.5kB / 139kB    12.3kB / 73.7kB
+9ecec013ea4b   0.50%     108MiB / 7.653GiB     1.38%     281kB / 95.8kB    0B / 7.43MB
+997ebbfd244e   0.02%     36.6MiB / 7.653GiB    0.47%     84.4kB / 8.85kB   0B / 3.01MB
+3b8b29636645   0.00%     0B / 0B               0.00%     0B / 0B           0B / 0B
+585d5aa3fff7   0.00%     63.13MiB / 7.653GiB   0.81%     718kB / 660kB     44.3MB / 10.2MB
+5a2556eb4239   0.46%     165.8MiB / 7.653GiB   2.12%     253kB / 238kB     54.4MB / 147kB
+
+## 容器详细信息
+NAMES                      IMAGE                                   STATUS                          PORTS
+imagentx-redis-commander   rediscommander/redis-commander:latest   Up 4 hours (healthy)            0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+imagentx-redis             redis:7-alpine                          Up 4 hours (healthy)            0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+imagentx-grafana           grafana/grafana:latest                  Up 5 hours                      0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+imagentx-prometheus        prom/prometheus:latest                  Up 5 hours                      0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+imagentx-alertmanager      prom/alertmanager:latest                Restarting (1) 50 seconds ago   
+imagentx-postgres          docker.m.daocloud.io/postgres:15        Up 12 hours (healthy)           0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+imagentx-rabbitmq          rabbitmq:3.12-management-alpine         Up 12 hours (healthy)           0.0.0.0:5672->5672/tcp, [::]:5672->5672/tcp, 0.0.0.0:15672->15672/tcp, [::]:15672->15672/tcp
