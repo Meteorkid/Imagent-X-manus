@@ -1,0 +1,32 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ImagentX 系统概览",
+    "tags": ["imagentx", "overview"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "系统性能概览",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "请求速率"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "gradient"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
