@@ -1,0 +1,6 @@
+=== 系统性能基准 Mon Sep  1 22:49:55 CST 2025 ===
+操作系统: Darwin 24.6.0
+CPU核心数: unknown
+内存信息: 
+内存信息: Mach Virtual Memory Statistics: (page size of 16384 bytes)
+磁盘空间: 312Gi available
