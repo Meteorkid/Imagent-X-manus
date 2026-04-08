@@ -237,64 +237,62 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-background">
-      {/* 页面头部 */}
-      <div className="flex items-center justify-between border-b bg-card px-6 py-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-              <Bot className="h-5 w-5 text-white" />
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col bg-background">
+      <div className="mx-auto flex h-full w-full max-w-[1440px] min-h-0 flex-1 flex-col px-4 py-4 md:px-6">
+        {/* 页面头部 */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-lg border border-b-0 bg-card px-4 py-4 md:px-6">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-purple-600">
+                <Bot className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold">智能体工作台</h1>
+                <p className="text-sm text-muted-foreground">OpenManus 通用AI智能体</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-semibold">智能体工作台</h1>
-              <p className="text-sm text-muted-foreground">OpenManus 通用AI智能体</p>
-            </div>
+            <Badge variant="secondary" className="bg-primary/10 text-primary">
+              <Sparkles className="mr-1 h-3 w-3" />
+              OpenManus
+            </Badge>
           </div>
-          <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
-            <Sparkles className="h-3 w-3 mr-1" />
-            OpenManus
-          </Badge>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowConfig(!showConfig)}
-            className="border-blue-200 hover:bg-blue-50"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            配置
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={clearMessages}
-            disabled={messages.length === 0}
-            className="border-orange-200 hover:bg-orange-50"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            清空
-          </Button>
-          {isProcessing && (
+
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={stopProcessing}
-              className="border-red-200 hover:bg-red-50"
+              onClick={() => setShowConfig(!showConfig)}
             >
-              <X className="h-4 w-4 mr-2" />
-              停止
+              <Settings className="mr-2 h-4 w-4" />
+              配置
             </Button>
-          )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearMessages}
+              disabled={messages.length === 0}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              清空
+            </Button>
+            {isProcessing && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={stopProcessing}
+              >
+                <X className="mr-2 h-4 w-4" />
+                停止
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* 主内容区域 */}
-        <div className="flex-1 flex flex-col">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-            <div className="border-b bg-card px-6">
+        <div className="flex min-h-0 flex-1 overflow-hidden rounded-b-lg border bg-card">
+          {/* 主内容区域 */}
+          <div className="flex min-h-0 flex-1 flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex min-h-0 flex-1 flex-col">
+              <div className="border-b bg-card px-4 md:px-6">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="chat" className="flex items-center space-x-2">
                   <MessageSquare className="h-4 w-4" />
@@ -311,13 +309,13 @@ export default function AgentsPage() {
               </TabsList>
             </div>
 
-            <TabsContent value="chat" className="flex-1 flex flex-col p-0">
-              <ScrollArea className="flex-1 p-6">
+              <TabsContent value="chat" className="flex min-h-0 flex-1 flex-col p-0">
+                <ScrollArea className="flex-1 p-4 md:p-6">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center">
                     <div className="relative mb-6">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100">
-                        <Bot className="h-10 w-10 text-blue-600" />
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-purple-100">
+                        <Bot className="h-10 w-10 text-primary" />
                       </div>
                       <div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
                         <Zap className="h-3 w-3 text-white" />
@@ -356,21 +354,21 @@ export default function AgentsPage() {
                         <div
                           className={`max-w-[80%] rounded-2xl p-4 ${
                             message.type === 'user'
-                              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                              ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg'
                               : 'bg-card border shadow-sm'
                           }`}
                         >
                           <div className="flex items-start space-x-3">
                             {message.type === 'agent' && (
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex-shrink-0">
-                                <Bot className="h-4 w-4 text-blue-600" />
+                              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-purple-100">
+                                <Bot className="h-4 w-4 text-primary" />
                               </div>
                             )}
                             <div className="flex-1">
                               <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
                               {message.status === 'pending' && (
                                 <div className="flex items-center mt-3">
-                                  <Loader2 className="h-4 w-4 animate-spin mr-2 text-blue-500" />
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
                                   <span className="text-sm text-muted-foreground">OpenManus 正在处理...</span>
                                 </div>
                               )}
@@ -398,20 +396,20 @@ export default function AgentsPage() {
                 )}
               </ScrollArea>
 
-              <div className="border-t bg-card p-6">
+                <div className="border-t bg-card p-4 md:p-6">
                 <div className="flex space-x-3">
                   <Textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="输入您的任务或问题，OpenManus 将为您提供智能帮助..."
-                    className="min-h-[60px] max-h-[200px] resize-none border-blue-200 focus:border-blue-400"
+                    className="min-h-[60px] max-h-[200px] resize-none"
                     disabled={isProcessing}
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={!inputValue.trim() || isProcessing}
-                    className="self-end bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                    className="self-end bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700"
                   >
                     {isProcessing ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -423,17 +421,17 @@ export default function AgentsPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="templates" className="flex-1 p-6">
+              <TabsContent value="templates" className="flex-1 p-4 md:p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {agentTemplates.map((template) => (
                   <Card 
                     key={template.id} 
-                    className="hover:shadow-md transition-shadow cursor-pointer border-blue-100 hover:border-blue-200"
+                    className="cursor-pointer border-border transition-shadow hover:shadow-md"
                     onClick={() => useTemplate(template)}
                   >
                     <CardHeader className="pb-3">
                       <div className="flex items-center space-x-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-100 to-purple-100">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-purple-100">
                           {template.icon}
                         </div>
                         <div>
@@ -454,31 +452,31 @@ export default function AgentsPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="history" className="flex-1 p-6">
+              <TabsContent value="history" className="flex-1 p-4 md:p-6">
               <div className="text-center text-muted-foreground">
                 <RotateCcw className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <h3 className="text-lg font-medium mb-2">对话历史</h3>
                 <p className="text-sm">对话历史功能即将推出</p>
               </div>
             </TabsContent>
-          </Tabs>
-        </div>
+            </Tabs>
+          </div>
 
-        {/* 配置面板 */}
-        {showConfig && (
-          <div className="w-80 border-l bg-card">
-            <div className="p-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center space-x-2">
-                    <Settings className="h-5 w-5" />
-                    <span>智能体配置</span>
-                  </CardTitle>
-                  <CardDescription>
-                    配置 OpenManus 智能体的参数和功能
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+          {/* 配置面板 */}
+          {showConfig && (
+            <div className="hidden w-80 border-l bg-card lg:block">
+              <div className="p-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-lg">
+                      <Settings className="h-5 w-5" />
+                      <span>智能体配置</span>
+                    </CardTitle>
+                    <CardDescription>
+                      配置 OpenManus 智能体的参数和功能
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">AI模型</label>
                     <select
@@ -592,11 +590,12 @@ export default function AgentsPage() {
                       </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

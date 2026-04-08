@@ -3,7 +3,7 @@ import { Sidebar } from "@/components/sidebar"
 
 export default function DiscoverPage() {
   return (
-    <div className="flex h-[calc(100vh-3.5rem)]">
+    <div className="flex h-full min-h-0">
       {/* 左侧边栏 */}
       <Sidebar />
 

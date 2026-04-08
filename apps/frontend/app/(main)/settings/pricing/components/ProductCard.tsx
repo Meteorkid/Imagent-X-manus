@@ -61,20 +61,20 @@ export function ProductCard({ product, modelName }: ProductCardProps) {
         {pricingConfig.examples.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Calculator className="h-4 w-4 text-blue-600" />
+              <Calculator className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">费用示例</span>
             </div>
             <div className="space-y-2">
               {pricingConfig.examples.slice(0, 2).map((example, index) => (
                 <div 
                   key={index} 
-                  className="flex justify-between items-center text-sm p-3 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                  className="flex justify-between items-center text-sm p-3 bg-primary/10 rounded-md hover:bg-primary/10 transition-colors"
                 >
                   <div>
                     <div className="font-medium">{example.usage}</div>
                     <div className="text-xs text-muted-foreground">{example.description}</div>
                   </div>
-                  <div className="font-semibold text-blue-700">{example.cost}</div>
+                  <div className="font-semibold text-primary">{example.cost}</div>
                 </div>
               ))}
             </div>

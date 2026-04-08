@@ -98,12 +98,12 @@ get_slow_query_stats() {
             SELECT 
                 query,
                 calls,
-                total_time,
-                mean_time,
+                total_exec_time,
+                mean_exec_time,
                 rows
             FROM pg_stat_statements 
-            WHERE mean_time > 1000
-            ORDER BY mean_time DESC
+            WHERE mean_exec_time > 1000
+            ORDER BY mean_exec_time DESC
             LIMIT 5;
         ")
         
@@ -226,7 +226,7 @@ check_performance_alerts() {
     
     # 检查慢查询告警
     local slow_query_count=$(psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -t -c "
-        SELECT count(*) FROM pg_stat_statements WHERE mean_time > 1000;
+        SELECT count(*) FROM pg_stat_statements WHERE mean_exec_time > 1000;
     " | tr -d ' ')
     
     if [ "$slow_query_count" -gt 10 ]; then
@@ -281,30 +281,30 @@ generate_performance_report() {
         
         echo "慢查询统计:"
         psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "
-            SELECT 
-                query,
-                calls,
-                total_time,
-                mean_time,
-                rows
-            FROM pg_stat_statements 
-            WHERE mean_time > 1000
-            ORDER BY mean_time DESC
-            LIMIT 10;
+                    SELECT 
+            query,
+            calls,
+            total_exec_time,
+            mean_exec_time,
+            rows
+        FROM pg_stat_statements 
+        WHERE mean_exec_time > 1000
+        ORDER BY mean_exec_time DESC
+        LIMIT 10;
         "
         echo ""
         
         echo "索引使用情况:"
         psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "
-            SELECT 
-                schemaname,
-                tablename,
-                indexname,
-                idx_scan,
-                idx_tup_read
-            FROM pg_stat_user_indexes 
-            ORDER BY idx_scan DESC
-            LIMIT 15;
+                    SELECT 
+            schemaname,
+            relname as tablename,
+            indexrelname as indexname,
+            idx_scan,
+            idx_tup_read
+        FROM pg_stat_user_indexes 
+        ORDER BY idx_scan DESC
+        LIMIT 15;
         "
         
     } > "$report_file"

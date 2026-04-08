@@ -361,10 +361,10 @@ export default function ProvidersPage() {
 
   const getProtocolBadge = (protocol: ProviderProtocol) => {
     const protocolMap = {
-      [ProviderProtocol.OPENAI]: { label: "OpenAI", color: "bg-blue-100 text-blue-800" },
+      [ProviderProtocol.OPENAI]: { label: "OpenAI", color: "bg-primary/10 text-primary" },
       [ProviderProtocol.ANTHROPIC]: { label: "Anthropic", color: "bg-purple-100 text-purple-800" },
     };
-    const config = protocolMap[protocol] || { label: protocol, color: "bg-gray-100 text-gray-800" };
+    const config = protocolMap[protocol] || { label: protocol, color: "bg-muted text-foreground" };
     return <Badge variant="outline" className={config.color}>{config.label}</Badge>;
   };
 
@@ -376,11 +376,11 @@ export default function ProvidersPage() {
 
   const getModelTypeBadge = (type: ModelType) => {
     const typeMap = {
-      [ModelType.CHAT]: { label: "对话模型", color: "bg-blue-100 text-blue-800" },
+      [ModelType.CHAT]: { label: "对话模型", color: "bg-primary/10 text-primary" },
       [ModelType.EMBEDDING]: { label: "嵌入模型", color: "bg-purple-100 text-purple-800" },
       [ModelType.IMAGE]: { label: "图像模型", color: "bg-pink-100 text-pink-800" },
     };
-    const config = typeMap[type] || { label: type, color: "bg-gray-100 text-gray-800" };
+    const config = typeMap[type] || { label: type, color: "bg-muted text-foreground" };
     return <Badge variant="outline" className={config.color}>{config.label}</Badge>;
   };
 
@@ -433,8 +433,8 @@ export default function ProvidersPage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{selectedProvider.name}</h1>
-              <p className="text-gray-600">{selectedProvider.description || "无描述"}</p>
+              <h1 className="text-2xl font-bold text-foreground">{selectedProvider.name}</h1>
+              <p className="text-muted-foreground">{selectedProvider.description || "无描述"}</p>
             </div>
           </div>
         </div>
@@ -451,21 +451,21 @@ export default function ProvidersPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">协议</Label>
+                  <Label className="text-sm font-medium text-foreground">协议</Label>
                   <div className="mt-1">
                     {getProtocolBadge(selectedProvider.protocol)}
                   </div>
                 </div>
                 
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">状态</Label>
+                  <Label className="text-sm font-medium text-foreground">状态</Label>
                   <div className="mt-1">
                     {getStatusBadge(selectedProvider.status)}
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">API地址</Label>
+                  <Label className="text-sm font-medium text-foreground">API地址</Label>
                   <div className="mt-1 flex items-center space-x-2">
                     <Input 
                       value={selectedProvider.config.baseUrl || "默认地址"} 
@@ -483,7 +483,7 @@ export default function ProvidersPage() {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">API Key</Label>
+                  <Label className="text-sm font-medium text-foreground">API Key</Label>
                   <div className="mt-1 flex items-center space-x-2">
                     <Input 
                       type={showApiKey ? "text" : "password"}
@@ -509,8 +509,8 @@ export default function ProvidersPage() {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">创建时间</Label>
-                  <div className="mt-1 text-sm text-gray-600">
+                  <Label className="text-sm font-medium text-foreground">创建时间</Label>
+                  <div className="mt-1 text-sm text-muted-foreground">
                     {new Date(selectedProvider.createdAt).toLocaleString()}
                   </div>
                 </div>
@@ -640,7 +640,7 @@ export default function ProvidersPage() {
                 {/* 模型搜索 */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       placeholder="搜索模型名称..."
                       value={modelSearchQuery}
@@ -666,17 +666,17 @@ export default function ProvidersPage() {
                       <TableRow key={model.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <Bot className="w-4 h-4 text-blue-600" />
+                            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                              <Bot className="w-4 h-4 text-primary" />
                             </div>
                             <div>
                               <div className="font-medium">{model.name}</div>
-                              <div className="text-sm text-gray-500">{model.modelId}</div>
+                              <div className="text-sm text-muted-foreground">{model.modelId}</div>
                               {model.modelEndpoint && (
-                                <div className="text-xs text-blue-600">部署: {model.modelEndpoint}</div>
+                                <div className="text-xs text-primary">部署: {model.modelEndpoint}</div>
                               )}
                               {model.description && (
-                                <div className="text-xs text-gray-400">{model.description}</div>
+                                <div className="text-xs text-muted-foreground">{model.description}</div>
                               )}
                             </div>
                           </div>
@@ -875,8 +875,8 @@ export default function ProvidersPage() {
       {/* 页面标题和操作 */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">服务商管理</h1>
-          <p className="text-gray-600 mt-1">管理AI服务提供商和相关模型</p>
+          <h1 className="text-2xl font-bold text-foreground">服务商管理</h1>
+          <p className="text-muted-foreground mt-1">管理AI服务提供商和相关模型</p>
         </div>
         <Dialog open={isAddProviderOpen} onOpenChange={setIsAddProviderOpen}>
           <DialogTrigger asChild>
@@ -967,7 +967,7 @@ export default function ProvidersPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="搜索服务商名称或描述..."
               value={searchQuery}
@@ -997,7 +997,7 @@ export default function ProvidersPage() {
                   </Avatar>
                   <div>
                     <CardTitle className="text-lg">{provider.name}</CardTitle>
-                    <p className="text-sm text-gray-500">{getProtocolText(provider.protocol)}</p>
+                    <p className="text-sm text-muted-foreground">{getProtocolText(provider.protocol)}</p>
                   </div>
                 </div>
                 {getStatusBadge(provider.status)}
@@ -1005,18 +1005,18 @@ export default function ProvidersPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <p className="text-sm text-gray-600 line-clamp-2">
+                <p className="text-sm text-muted-foreground line-clamp-2">
                   {provider.description || "无描述"}
                 </p>
                 
                 <div className="flex items-center justify-between">
                   {getProtocolBadge(provider.protocol)}
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-muted-foreground">
                     {provider.models?.length || 0} 个模型
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>官方服务商</span>
                   <span>创建于: {new Date(provider.createdAt).toLocaleDateString()}</span>
                 </div>
@@ -1029,9 +1029,9 @@ export default function ProvidersPage() {
       {filteredProviders.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
-            <Server className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">没有找到服务商</h3>
-            <p className="text-gray-500">请尝试调整搜索条件或添加新的服务商</p>
+            <Server className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">没有找到服务商</h3>
+            <p className="text-muted-foreground">请尝试调整搜索条件或添加新的服务商</p>
           </CardContent>
         </Card>
       )}

@@ -1,4 +1,4 @@
-// File: /Users/Meteorkid/Downloads/Imagent-X/apps/frontend/app/(main)/tools/page.tsx
+// File: /Users/meteor/github项目/Imagent X/apps/frontend/app/(main)/tools/page.tsx
 import * as entry from '../../../../../app/(main)/tools/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

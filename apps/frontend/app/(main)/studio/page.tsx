@@ -214,8 +214,8 @@ export default function StudioPage() {
         </div>
       ) : agents.length === 0 ? (
         // 空状态
-        <div className="text-center py-16 border rounded-lg bg-gray-50">
-          <Bot className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+        <div className="rounded-lg border bg-muted/30 py-16 text-center">
+          <Bot className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-lg font-medium mb-2">{searchQuery ? "未找到匹配的助理" : "还没有创建任何助理"}</h3>
           <p className="text-muted-foreground mb-6">
             {searchQuery ? "尝试使用不同的搜索词" : "创建您的第一个AI助理，开始智能对话"}
@@ -294,9 +294,9 @@ export default function StudioPage() {
                 </div>
                 <CardDescription className="text-xs flex items-center gap-2 mt-1">
                   <span>{getAgentTypeText()}</span>
-                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span className="h-1 w-1 rounded-full bg-muted-foreground/40"></span>
                   <span>{agent.enabled ? "已启用" : "已禁用"}</span>
-                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span className="h-1 w-1 rounded-full bg-muted-foreground/40"></span>
                   <span>更新于 {new Date(agent.updatedAt).toLocaleDateString()}</span>
                 </CardDescription>
               </CardHeader>

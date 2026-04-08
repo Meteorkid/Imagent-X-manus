@@ -393,7 +393,7 @@ export default function ProvidersPage() {
         
         <TabsContent value="全部" className="space-y-6">
           {filteredProviders.length === 0 ? (
-            <div className="text-center py-10 border rounded-md bg-gray-50">
+            <div className="text-center py-10 border rounded-md bg-muted/30">
               <p className="text-muted-foreground">暂无服务商数据</p>
             </div>
           ) : (
@@ -407,7 +407,7 @@ export default function ProvidersPage() {
                   <CardHeader className="pb-2 relative">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-100 text-blue-600">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
                           {provider.protocol.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -479,12 +479,12 @@ export default function ProvidersPage() {
                           <p className="text-xs text-muted-foreground mb-1">可用模型:</p>
                           <div className="flex flex-wrap gap-1">
                             {provider.models.slice(0, 3).map((model, index) => (
-                              <Badge key={index} variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              <Badge key={index} variant="outline" className="bg-primary/10 text-primary border-primary/30">
                                 {model.name}
                               </Badge>
                             ))}
                             {provider.models.length > 3 && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                                 +{provider.models.length - 3}
                               </Badge>
                             )}
@@ -501,7 +501,7 @@ export default function ProvidersPage() {
         
         <TabsContent value="官方服务" className="space-y-6">
           {filteredProviders.length === 0 ? (
-            <div className="text-center py-10 border rounded-md bg-gray-50">
+            <div className="text-center py-10 border rounded-md bg-muted/30">
               <p className="text-muted-foreground">暂无官方服务商数据</p>
             </div>
           ) : (
@@ -515,7 +515,7 @@ export default function ProvidersPage() {
                   <CardHeader className="pb-2 relative">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-100 text-blue-600">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
                           {provider.protocol.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -551,12 +551,12 @@ export default function ProvidersPage() {
                           <p className="text-xs text-muted-foreground mb-1">可用模型:</p>
                           <div className="flex flex-wrap gap-1">
                             {provider.models.slice(0, 3).map((model, index) => (
-                              <Badge key={index} variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              <Badge key={index} variant="outline" className="bg-primary/10 text-primary border-primary/30">
                                 {model.name}
                               </Badge>
                             ))}
                             {provider.models.length > 3 && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                                 +{provider.models.length - 3}
                               </Badge>
                             )}
@@ -573,7 +573,7 @@ export default function ProvidersPage() {
         
         <TabsContent value="自定义服务" className="space-y-6">
           {filteredProviders.length === 0 ? (
-            <div className="text-center py-10 border rounded-md bg-gray-50">
+            <div className="text-center py-10 border rounded-md bg-muted/30">
               <p className="text-muted-foreground">暂无自定义服务商数据</p>
             </div>
           ) : (
@@ -587,7 +587,7 @@ export default function ProvidersPage() {
                   <CardHeader className="pb-2 relative">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-100 text-blue-600">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
                           {provider.protocol.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -659,12 +659,12 @@ export default function ProvidersPage() {
                           <p className="text-xs text-muted-foreground mb-1">可用模型:</p>
                           <div className="flex flex-wrap gap-1">
                             {provider.models.slice(0, 3).map((model, index) => (
-                              <Badge key={index} variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              <Badge key={index} variant="outline" className="bg-primary/10 text-primary border-primary/30">
                                 {model.name}
                               </Badge>
                             ))}
                             {provider.models.length > 3 && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                                 +{provider.models.length - 3}
                               </Badge>
                             )}
@@ -700,7 +700,7 @@ export default function ProvidersPage() {
             ) : selectedProvider ? (
               <div className="flex flex-col space-y-4 h-full overflow-hidden">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-blue-100 text-blue-600">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10 text-primary">
                     {selectedProvider.protocol.charAt(0).toUpperCase()}
                   </div>
                   <div>

@@ -27,8 +27,21 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const hasAuthToken = useCallback(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(localStorage.getItem("auth_token"));
+  }, []);
+
   // 刷新账户数据
   const refreshAccount = useCallback(async () => {
+    // 未登录状态不请求账户接口，避免全局Provider在登录页触发401噪音
+    if (!hasAuthToken()) {
+      setAccount(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     console.log('[AccountContext] 开始刷新账户数据');
     setLoading(true);
     setError(null);
@@ -39,6 +52,10 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       if (response.code === 200) {
         console.log('[AccountContext] 账户数据获取成功', response.data);
         setAccount(response.data);
+      } else if (response.code === 401) {
+        // 登录失效时静默清理，不在控制台/页面显示“获取账户失败”
+        setAccount(null);
+        setError(null);
       } else {
         console.error('[AccountContext] 获取账户数据失败', response.message);
         setError(response.message);
@@ -50,7 +67,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hasAuthToken]);
 
   // 直接更新账户数据（用于支付成功后的即时更新）
   const updateAccountData = useCallback((accountData: Account) => {

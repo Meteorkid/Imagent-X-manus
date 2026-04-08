@@ -284,14 +284,14 @@ export default function OrdersPage() {
                   // 加载骨架屏
                   Array.from({ length: 5 }).map((_, index) => (
                     <TableRow key={index}>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                      <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
                     </TableRow>
                   ))
                 ) : orders.length === 0 ? (
@@ -396,9 +396,9 @@ export default function OrdersPage() {
           
           {detailLoading ? (
             <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
             </div>
           ) : selectedOrder && (
             <div className="space-y-4">

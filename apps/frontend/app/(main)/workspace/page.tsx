@@ -177,7 +177,7 @@ export default function WorkspacePage() {
   const multiModal = currentSession?.multiModal || false
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] w-full">
+    <div className="flex h-full min-h-0 w-full">
       {/* 左侧边栏 */}
       <Sidebar />
 
@@ -185,7 +185,7 @@ export default function WorkspacePage() {
       {selectedWorkspaceId ? (
         <ConversationList workspaceId={selectedWorkspaceId} />
       ) : (
-        <div className="flex-1 flex items-center justify-center bg-gray-50 border-r">
+        <div className="flex flex-1 items-center justify-center border-r bg-muted/30">
           <EmptyState title="选择一个工作区" description="从左侧选择一个工作区来查看对话" />
         </div>
       )}
@@ -193,10 +193,10 @@ export default function WorkspacePage() {
       {/* 右侧聊天面板 */}
       <div className="flex-1 flex">
         {!selectedConversationId ? (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
+          <div className="flex flex-1 items-center justify-center bg-muted/30">
             {loadingAgents ? (
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
                 <p className="text-muted-foreground">加载中...</p>
               </div>
             ) : selectedWorkspaceId ? (
@@ -219,7 +219,7 @@ export default function WorkspacePage() {
                   {agents.map((agent) => (
                     <div
                       key={agent.id}
-                      className="border rounded-lg p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 group relative"
+                      className="group relative flex cursor-pointer items-start gap-3 rounded-lg border p-4 hover:bg-muted/30"
                     >
                       <div 
                         className="flex-1 flex items-start gap-3"
@@ -230,7 +230,7 @@ export default function WorkspacePage() {
                           handleCreateSession(agent.id)
                         }}
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-900 overflow-hidden">
+                        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary">
                           {agent.avatar ? (
                             <img
                               src={agent.avatar || "/placeholder.svg"}

@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # Nginx反向代理 - Cloudflare优化
+  nginx:
+    image: nginx:alpine
+    container_name: imagentx-nginx-cloudflare
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/imagent.top.cloudflare.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+    environment:
+      - TZ=Asia/Shanghai
+
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: imagentx-postgres
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: imagentx_user
+      POSTGRES_PASSWORD: imagentx_password
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/database:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U imagentx_user -d imagentx"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # RabbitMQ消息队列
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: imagentx-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: imagentx
+      RABBITMQ_DEFAULT_PASS: imagentx_password
+      TZ: Asia/Shanghai
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Spring Boot后端
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: ../../config/docker/docker/backend/Dockerfile
+    container_name: imagentx-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/imagentx
+      SPRING_DATASOURCE_USERNAME: imagentx_user
+      SPRING_DATASOURCE_PASSWORD: imagentx_password
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: imagentx
+      SPRING_RABBITMQ_PASSWORD: imagentx_password
+      TZ: Asia/Shanghai
+      # Cloudflare相关配置
+      SERVER_FORWARDED_HEADERS_STRATEGY: native
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js前端
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: ../../config/docker/docker/frontend/Dockerfile
+    container_name: imagentx-frontend
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://imagent.top/api
+      TZ: Asia/Shanghai
+      # Cloudflare相关配置
+      NEXT_PUBLIC_CDN_URL: https://imagent.top
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis缓存（可选，用于会话存储）
+  redis:
+    image: redis:7-alpine
+    container_name: imagentx-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 监控服务（可选）
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: imagentx-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:
+  nginx_cache:
+  prometheus_data:
+
+networks:
+  imagentx-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+
+

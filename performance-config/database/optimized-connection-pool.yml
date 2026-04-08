@@ -1,0 +1,67 @@
+# ImagentX 连接池优化配置
+# 生成时间: Tue Sep  2 14:11:04 CST 2025
+# 基于实际负载分析优化
+
+spring:
+  datasource:
+    hikari:
+      # 连接池核心配置
+      pool-name: ImagentXHikariCP
+      maximum-pool-size: 20                              # 最大连接数 (基于利用率调整)
+      minimum-idle: 6                                    # 最小空闲连接
+      
+      # 连接生命周期配置
+      connection-timeout: 20000                          # 连接超时 20秒
+      idle-timeout: 300000                               # 空闲超时 5分钟
+      max-lifetime: 1200000                              # 最大生命周期 20分钟
+      
+      # 连接验证配置
+      connection-test-query: SELECT 1                    # 连接测试查询
+      validation-timeout: 5000                           # 验证超时 5秒
+      
+      # 性能监控配置
+      leak-detection-threshold: 60000                    # 泄漏检测阈值 1分钟
+      register-mbeans: true                              # 启用JMX监控
+      
+      # 连接初始化配置
+      connection-init-sql: SET time_zone = '+08:00'      # 设置时区
+      auto-commit: true                                  # 自动提交
+      
+  # JPA配置优化
+  jpa:
+    properties:
+      hibernate:
+        # 批处理配置
+        jdbc:
+          batch_size: 50                                 # 批处理大小
+          batch_versioned_data: true                     # 批处理版本化数据
+          
+        # 缓存配置
+        cache:
+          use_second_level_cache: true                   # 启用二级缓存
+          use_query_cache: true                          # 启用查询缓存
+          
+        # 查询优化
+        order_inserts: true                              # 排序插入
+        order_updates: true                              # 排序更新
+        
+        # 统计信息
+        generate_statistics: true                        # 生成统计信息
+        
+        # 慢查询监控
+        session_factory:
+          observer_class: org.hibernate.stat.Statistics  # 统计观察者
+
+# 监控端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,hikaricp # 暴露的端点
+  endpoint:
+    health:
+      show-details: always                               # 显示健康检查详情
+  metrics:
+    export:
+      prometheus:
+        enabled: true                                    # 启用Prometheus导出

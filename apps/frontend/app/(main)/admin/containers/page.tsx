@@ -136,10 +136,10 @@ export default function ContainersPage() {
     const statusMap: { [key: number]: { color: string; text: string } } = {
       1: { color: 'bg-yellow-100 text-yellow-800', text: '创建中' },
       2: { color: 'bg-green-100 text-green-800', text: '运行中' },
-      3: { color: 'bg-gray-100 text-gray-800', text: '已停止' },
+      3: { color: 'bg-muted text-foreground', text: '已停止' },
       4: { color: 'bg-red-100 text-red-800', text: '错误状态' },
       5: { color: 'bg-orange-100 text-orange-800', text: '删除中' },
-      6: { color: 'bg-gray-100 text-gray-500', text: '已删除' },
+      6: { color: 'bg-muted text-muted-foreground', text: '已删除' },
       7: { color: 'bg-purple-100 text-purple-800', text: '已暂停' }
     };
     
@@ -168,7 +168,7 @@ export default function ContainersPage() {
 
   const getTypeBadge = (type: any) => {
     const typeMap: { [key: number]: { color: string; text: string } } = {
-      1: { color: 'bg-blue-100 text-blue-800', text: '用户容器' },
+      1: { color: 'bg-primary/10 text-primary', text: '用户容器' },
       2: { color: 'bg-purple-100 text-purple-800', text: '审核容器' }
     };
     
@@ -380,8 +380,8 @@ export default function ContainersPage() {
       {/* 页面标题 */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">容器管理</h1>
-          <p className="text-gray-600 mt-1">管理系统中的所有Docker容器</p>
+          <h1 className="text-2xl font-bold text-foreground">容器管理</h1>
+          <p className="text-muted-foreground mt-1">管理系统中的所有Docker容器</p>
         </div>
         <div className="flex gap-2">
           <Link href="/admin/container-templates">
@@ -403,11 +403,11 @@ export default function ContainersPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">总容器数</p>
-                <p className="text-3xl font-bold text-gray-900">{statistics.totalContainers}</p>
+                <p className="text-sm font-medium text-muted-foreground">总容器数</p>
+                <p className="text-3xl font-bold text-foreground">{statistics.totalContainers}</p>
               </div>
-              <div className="p-3 bg-blue-50 rounded-full">
-                <RefreshCw className="w-6 h-6 text-blue-600" />
+              <div className="p-3 bg-primary/10 rounded-full">
+                <RefreshCw className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -417,7 +417,7 @@ export default function ContainersPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">运行中</p>
+                <p className="text-sm font-medium text-muted-foreground">运行中</p>
                 <p className="text-3xl font-bold text-green-600">{statistics.runningContainers}</p>
               </div>
               <div className="p-3 bg-green-50 rounded-full">
@@ -431,7 +431,7 @@ export default function ContainersPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">停止/错误</p>
+                <p className="text-sm font-medium text-muted-foreground">停止/错误</p>
                 <p className="text-3xl font-bold text-red-600">
                   {statistics.totalContainers - statistics.runningContainers}
                 </p>
@@ -449,7 +449,7 @@ export default function ContainersPage() {
         <CardContent className="pt-6">
           <div className="flex justify-between items-center">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="搜索容器名称、用户ID或Docker ID..."
                 value={searchQuery}
@@ -496,12 +496,12 @@ export default function ContainersPage() {
                   <TableCell>
                     <div>
                       <div className="font-medium">{container.name}</div>
-                      <div className="text-sm text-gray-500">{container.image}</div>
+                      <div className="text-sm text-muted-foreground">{container.image}</div>
                       {container.userId && (
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           用户: {container.userNickname || container.userId.substring(0, 8) + '...'}
                           {container.userNickname && (
-                            <span className="ml-1 text-gray-500">({container.userId.substring(0, 8)}...)</span>
+                            <span className="ml-1 text-muted-foreground">({container.userId.substring(0, 8)}...)</span>
                           )}
                         </div>
                       )}
@@ -523,7 +523,7 @@ export default function ContainersPage() {
                         <div>外部: {container.externalPort}</div>
                       )}
                       {container.ipAddress && (
-                        <div className="text-xs text-gray-500">IP: {container.ipAddress}</div>
+                        <div className="text-xs text-muted-foreground">IP: {container.ipAddress}</div>
                       )}
                     </div>
                   </TableCell>
@@ -536,18 +536,18 @@ export default function ContainersPage() {
                         <div>内存: {container.memoryUsage.toFixed(1)}%</div>
                       )}
                       {(!container.cpuUsage && !container.memoryUsage) && (
-                        <div className="text-gray-400">-</div>
+                        <div className="text-muted-foreground">-</div>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
                       {container.lastAccessedAt ? (
-                        <span className="text-blue-600">
+                        <span className="text-primary">
                           {formatDate(container.lastAccessedAt)}
                         </span>
                       ) : (
-                        <span className="text-gray-400">从未使用</span>
+                        <span className="text-muted-foreground">从未使用</span>
                       )}
                     </div>
                   </TableCell>
@@ -630,7 +630,7 @@ export default function ContainersPage() {
           </Table>
           
           {containers.length === 0 && !loading && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               {searchQuery ? "没有找到匹配的容器" : "暂无容器数据"}
             </div>
           )}

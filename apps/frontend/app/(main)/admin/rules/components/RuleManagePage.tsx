@@ -269,7 +269,7 @@ export function RuleManagePage() {
                   {rules.filter(rule => rule && rule.id).map((rule) => (
                     <TableRow key={rule.id}>
                       <TableCell className="font-medium">
-                        <div className="cursor-pointer hover:text-blue-600" 
+                        <div className="cursor-pointer hover:text-primary" 
                              onClick={() => handleViewDetail(rule)}>
                           {rule?.name || "未知规则"}
                         </div>

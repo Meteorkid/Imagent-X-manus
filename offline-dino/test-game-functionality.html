@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏功能测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        #gameCanvas {
+            border: 2px solid #333;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 离线小游戏功能测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 基础环境检测</h2>
+        <div id="env-test"></div>
+        <button onclick="runEnvironmentTest()">运行环境检测</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 游戏类加载检测</h2>
+        <div id="class-test"></div>
+        <button onclick="runClassTest()">检测游戏类</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Canvas功能检测</h2>
+        <div id="canvas-test"></div>
+        <button onclick="runCanvasTest()">检测Canvas</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 游戏实例化测试</h2>
+        <div id="instance-test"></div>
+        <button onclick="runInstanceTest()">测试游戏实例</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. 离线功能检测</h2>
+        <div id="offline-test"></div>
+        <button onclick="runOfflineTest()">检测离线功能</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>6. 游戏画布</h2>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div id="canvas-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>7. 完整功能测试</h2>
+        <div id="full-test"></div>
+        <button onclick="runFullTest()">运行完整测试</button>
+    </div>
+
+    <script src="dino-game-fixed.js"></script>
+    <script>
+        let testResults = {};
+        
+        function logTest(section, message, type = 'success') {
+            const div = document.getElementById(section + '-test');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.textContent = message;
+            div.appendChild(resultDiv);
+            console.log(`[${section.toUpperCase()}] ${message}`);
+        }
+        
+        function clearTestResults(section) {
+            const div = document.getElementById(section + '-test');
+            div.innerHTML = '';
+        }
+        
+        function runEnvironmentTest() {
+            clearTestResults('env');
+            logTest('env', '开始环境检测...', 'warning');
+            
+            // 检测浏览器环境
+            if (typeof window !== 'undefined') {
+                logTest('env', '✅ 浏览器环境正常');
+            } else {
+                logTest('env', '❌ 浏览器环境异常', 'error');
+            }
+            
+            // 检测JavaScript版本
+            if (typeof Promise !== 'undefined') {
+                logTest('env', '✅ ES6+ 支持正常');
+            } else {
+                logTest('env', '❌ ES6+ 支持异常', 'error');
+            }
+            
+            // 检测Canvas支持
+            if (typeof HTMLCanvasElement !== 'undefined') {
+                logTest('env', '✅ Canvas API 支持正常');
+            } else {
+                logTest('env', '❌ Canvas API 支持异常', 'error');
+            }
+            
+            // 检测Service Worker支持
+            if ('serviceWorker' in navigator) {
+                logTest('env', '✅ Service Worker 支持正常');
+            } else {
+                logTest('env', '❌ Service Worker 支持异常', 'warning');
+            }
+            
+            logTest('env', '环境检测完成', 'success');
+        }
+        
+        function runClassTest() {
+            clearTestResults('class');
+            logTest('class', '开始检测游戏类...', 'warning');
+            
+            if (typeof DinoGame !== 'undefined') {
+                logTest('class', '✅ DinoGame 类已加载');
+                
+                // 检查类的方法
+                const methods = ['constructor', 'startGame', 'restart', 'update', 'render'];
+                methods.forEach(method => {
+                    if (typeof DinoGame.prototype[method] === 'function') {
+                        logTest('class', `✅ 方法 ${method} 存在`);
+                    } else {
+                        logTest('class', `❌ 方法 ${method} 缺失`, 'error');
+                    }
+                });
+                
+                logTest('class', '游戏类检测完成', 'success');
+            } else {
+                logTest('class', '❌ DinoGame 类未加载', 'error');
+            }
+        }
+        
+        function runCanvasTest() {
+            clearTestResults('canvas');
+            logTest('canvas', '开始Canvas检测...', 'warning');
+            
+            const canvas = document.getElementById('gameCanvas');
+            if (canvas) {
+                logTest('canvas', '✅ Canvas 元素存在');
+                
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    logTest('canvas', '✅ Canvas 2D 上下文获取成功');
+                    
+                    // 测试基本绘制功能
+                    try {
+                        ctx.fillStyle = '#87CEEB';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        logTest('canvas', '✅ 基本绘制功能正常');
+                        
+                        // 绘制测试图形
+                        ctx.fillStyle = '#FF6B6B';
+                        ctx.fillRect(100, 100, 50, 50);
+                        logTest('canvas', '✅ 图形绘制功能正常');
+                        
+                    } catch (error) {
+                        logTest('canvas', `❌ 绘制功能异常: ${error.message}`, 'error');
+                    }
+                } else {
+                    logTest('canvas', '❌ Canvas 2D 上下文获取失败', 'error');
+                }
+            } else {
+                logTest('canvas', '❌ Canvas 元素不存在', 'error');
+            }
+            
+            logTest('canvas', 'Canvas检测完成', 'success');
+        }
+        
+        function runInstanceTest() {
+            clearTestResults('instance');
+            logTest('instance', '开始游戏实例化测试...', 'warning');
+            
+            if (typeof DinoGame === 'undefined') {
+                logTest('instance', '❌ DinoGame 类未加载，无法测试实例化', 'error');
+                return;
+            }
+            
+            try {
+                const game = new DinoGame();
+                logTest('instance', '✅ 游戏实例创建成功');
+                
+                // 检查实例属性
+                if (game.canvas) {
+                    logTest('instance', '✅ Canvas 引用正常');
+                } else {
+                    logTest('instance', '❌ Canvas 引用异常', 'error');
+                }
+                
+                if (game.ctx) {
+                    logTest('instance', '✅ 绘图上下文正常');
+                } else {
+                    logTest('instance', '❌ 绘图上下文异常', 'error');
+                }
+                
+                if (typeof game.startGame === 'function') {
+                    logTest('instance', '✅ startGame 方法可用');
+                } else {
+                    logTest('instance', '❌ startGame 方法不可用', 'error');
+                }
+                
+                logTest('instance', '游戏实例化测试完成', 'success');
+                
+            } catch (error) {
+                logTest('instance', `❌ 游戏实例化失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function runOfflineTest() {
+            clearTestResults('offline');
+            logTest('offline', '开始离线功能检测...', 'warning');
+            
+            // 检测网络状态
+            if (navigator.onLine) {
+                logTest('offline', '✅ 当前在线状态');
+            } else {
+                logTest('offline', '✅ 当前离线状态');
+            }
+            
+            // 检测Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    if (registrations.length > 0) {
+                        logTest('offline', `✅ 发现 ${registrations.length} 个Service Worker`);
+                    } else {
+                        logTest('offline', '⚠️ 未发现已注册的Service Worker', 'warning');
+                    }
+                }).catch(error => {
+                    logTest('offline', `❌ Service Worker 检测失败: ${error.message}`, 'error');
+                });
+            }
+            
+            // 检测缓存API
+            if ('caches' in window) {
+                logTest('offline', '✅ Cache API 支持正常');
+            } else {
+                logTest('offline', '❌ Cache API 不支持', 'warning');
+            }
+            
+            // 检测IndexedDB
+            if ('indexedDB' in window) {
+                logTest('offline', '✅ IndexedDB 支持正常');
+            } else {
+                logTest('offline', '❌ IndexedDB 不支持', 'warning');
+            }
+            
+            logTest('offline', '离线功能检测完成', 'success');
+        }
+        
+        function runFullTest() {
+            clearTestResults('full');
+            logTest('full', '开始完整功能测试...', 'warning');
+            
+            // 运行所有测试
+            setTimeout(() => runEnvironmentTest(), 100);
+            setTimeout(() => runClassTest(), 200);
+            setTimeout(() => runCanvasTest(), 300);
+            setTimeout(() => runInstanceTest(), 400);
+            setTimeout(() => runOfflineTest(), 500);
+            
+            setTimeout(() => {
+                logTest('full', '🎉 所有测试完成！', 'success');
+                logTest('full', '请查看上方各测试结果', 'warning');
+            }, 1000);
+        }
+        
+        // 页面加载完成后自动运行基础测试
+        window.addEventListener('load', function() {
+            logTest('full', '页面加载完成，准备开始测试...', 'warning');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

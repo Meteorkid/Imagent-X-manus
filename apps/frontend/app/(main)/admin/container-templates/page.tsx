@@ -381,7 +381,7 @@ export default function ContainerTemplatesPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">容器模板管理</h1>
-          <p className="text-gray-600 mt-2">管理Docker容器模板，配置容器创建规格</p>
+          <p className="text-muted-foreground mt-2">管理Docker容器模板，配置容器创建规格</p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -633,7 +633,7 @@ export default function ContainerTemplatesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="搜索模板名称、描述或镜像..."
                   value={searchQuery}
@@ -680,22 +680,22 @@ export default function ContainerTemplatesPage() {
           Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
               <CardHeader>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="h-3 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-3 bg-muted rounded"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
                 </div>
               </CardContent>
             </Card>
           ))
         ) : templates.length === 0 ? (
           <div className="col-span-full text-center py-12">
-            <Settings className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900">暂无模板</h3>
-            <p className="mt-2 text-gray-500">创建第一个容器模板来开始使用</p>
+            <Settings className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-medium text-foreground">暂无模板</h3>
+            <p className="mt-2 text-muted-foreground">创建第一个容器模板来开始使用</p>
           </div>
         ) : (
           templates.map((template) => (
@@ -730,28 +730,28 @@ export default function ContainerTemplatesPage() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">镜像:</span>
-                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    <span className="text-muted-foreground">镜像:</span>
+                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
                       {template.fullImageName}
                     </span>
                   </div>
                   
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">端口:</span>
+                      <span className="text-muted-foreground">端口:</span>
                       <div className="font-medium">{template.internalPort}</div>
                     </div>
                     <div>
-                      <span className="text-gray-600">CPU:</span>
+                      <span className="text-muted-foreground">CPU:</span>
                       <div className="font-medium">{template.cpuLimit}核</div>
                     </div>
                     <div>
-                      <span className="text-gray-600">内存:</span>
+                      <span className="text-muted-foreground">内存:</span>
                       <div className="font-medium">{template.memoryLimit}MB</div>
                     </div>
                   </div>
                   
-                  <div className="flex justify-between items-center text-xs text-gray-500">
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
                     <span>创建者: {template.createdBy}</span>
                     <span>{new Date(template.createdAt).toLocaleString('zh-CN')}</span>
                   </div>
@@ -772,7 +772,7 @@ export default function ContainerTemplatesPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleCreateContainer(template)}
-                      className="text-blue-600 hover:text-blue-700"
+                      className="text-primary hover:text-primary"
                     >
                       <Container className="w-4 h-4 mr-1" />
                       创建容器

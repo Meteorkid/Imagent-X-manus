@@ -322,18 +322,18 @@ export default function RagManagementPage() {
     <div className="space-y-6">
       {/* 页面标题 */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">RAG管理</h1>
-        <p className="text-gray-600 mt-1">管理平台中的所有RAG数据集和审核流程</p>
+        <h1 className="text-2xl font-bold text-foreground">RAG管理</h1>
+        <p className="text-muted-foreground mt-1">管理平台中的所有RAG数据集和审核流程</p>
       </div>
 
       {/* 统计卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-primary">
               {statistics.totalRags}
             </div>
-            <div className="text-sm text-gray-600">总RAG数</div>
+            <div className="text-sm text-muted-foreground">总RAG数</div>
           </CardContent>
         </Card>
         <Card>
@@ -341,7 +341,7 @@ export default function RagManagementPage() {
             <div className="text-2xl font-bold text-orange-600">
               {statistics.pendingReview}
             </div>
-            <div className="text-sm text-gray-600">待审核</div>
+            <div className="text-sm text-muted-foreground">待审核</div>
           </CardContent>
         </Card>
         <Card>
@@ -349,7 +349,7 @@ export default function RagManagementPage() {
             <div className="text-2xl font-bold text-green-600">
               {statistics.approved}
             </div>
-            <div className="text-sm text-gray-600">已发布</div>
+            <div className="text-sm text-muted-foreground">已发布</div>
           </CardContent>
         </Card>
         <Card>
@@ -357,15 +357,15 @@ export default function RagManagementPage() {
             <div className="text-2xl font-bold text-red-600">
               {statistics.rejected}
             </div>
-            <div className="text-sm text-gray-600">已拒绝</div>
+            <div className="text-sm text-muted-foreground">已拒绝</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-gray-600">
+            <div className="text-2xl font-bold text-muted-foreground">
               {statistics.removed}
             </div>
-            <div className="text-sm text-gray-600">已下架</div>
+            <div className="text-sm text-muted-foreground">已下架</div>
           </CardContent>
         </Card>
       </div>
@@ -375,7 +375,7 @@ export default function RagManagementPage() {
         <CardContent className="pt-6">
           <div className="flex items-center space-x-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="搜索RAG名称、描述..."
                 value={searchInput}
@@ -411,7 +411,7 @@ export default function RagManagementPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 已选择 {selectedRags.length} 个RAG版本
               </div>
               <div className="flex space-x-2">
@@ -445,7 +445,7 @@ export default function RagManagementPage() {
                 checked={selectedRags.length === rags.length && rags.length > 0}
                 onCheckedChange={handleSelectAll}
               />
-              <span className="text-sm text-gray-600">全选</span>
+              <span className="text-sm text-muted-foreground">全选</span>
             </div>
           </CardTitle>
         </CardHeader>
@@ -473,16 +473,16 @@ export default function RagManagementPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
                         {rag.icon ? (
                           <img src={rag.icon} alt={rag.name} className="w-8 h-8 rounded" />
                         ) : (
-                          <Database className="h-5 w-5 text-gray-400" />
+                          <Database className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
                       <div>
                         <div className="font-medium">{rag.name}</div>
-                        <div className="text-sm text-gray-500 max-w-xs truncate">
+                        <div className="text-sm text-muted-foreground max-w-xs truncate">
                           {rag.description || "暂无描述"}
                         </div>
                       </div>
@@ -503,10 +503,10 @@ export default function RagManagementPage() {
                   <TableCell>
                     <div className="space-y-1">
                       <div className="text-sm font-medium">v{rag.version}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {rag.fileCount} 文件 • {rag.documentCount} 文档
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {formatFileSize(rag.totalSize)}
                       </div>
                     </div>
@@ -527,7 +527,7 @@ export default function RagManagementPage() {
                     <div className="text-sm space-y-1">
                       <div>创建: {new Date(rag.createdAt).toLocaleDateString()}</div>
                       {rag.reviewTime && (
-                        <div className="text-gray-500">
+                        <div className="text-muted-foreground">
                           审核: {new Date(rag.reviewTime).toLocaleDateString()}
                         </div>
                       )}
@@ -566,7 +566,7 @@ export default function RagManagementPage() {
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-primary hover:text-primary"
                             title="详细审核"
                             onClick={() => handleReviewRag(rag)}
                           >
@@ -593,7 +593,7 @@ export default function RagManagementPage() {
           </Table>
           
           {rags.length === 0 && !loading && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               {searchQuery ? "没有找到匹配的RAG版本" : "暂无RAG版本数据"}
             </div>
           )}

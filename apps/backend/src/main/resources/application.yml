@@ -52,12 +52,18 @@ spring:
     username: imagentx_user
     password: imagentx_pass
     hikari:
-      maximum-pool-size: 20 # 最大连接池大小
-      minimum-idle: 5 # 最小空闲连接数
-      connection-timeout: 30000 # 连接超时时间
-      idle-timeout: 600000 # 空闲超时时间
-      max-lifetime: 1800000 # 最大生命周期
+      pool-name: ImagentXHikariCP
+      maximum-pool-size: 20 # 最大连接池大小（优化后建议 20）
+      minimum-idle: 6 # 最小空闲连接数（优化后建议 6）
+      connection-timeout: 20000 # 连接超时时间（优化后 20s）
+      idle-timeout: 300000 # 空闲超时时间（优化后 5min）
+      max-lifetime: 1200000 # 最大生命周期（优化后 20min）
       leak-detection-threshold: 60000 # 泄漏检测阈值
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      register-mbeans: true
+      connection-init-sql: SET TIME ZONE 'Asia/Shanghai'
+      auto-commit: true
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8

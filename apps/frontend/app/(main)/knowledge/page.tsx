@@ -19,12 +19,12 @@ export default function KnowledgePage() {
   }
 
   return (
-    <div className="py-6 min-h-screen bg-gray-50">
-      <div className="container max-w-7xl mx-auto px-2">
+    <div className="min-h-full bg-background py-6">
+      <div className="container mx-auto max-w-7xl px-2">
         {/* 页面头部 */}
-        <div className="flex items-center justify-between mb-8 bg-white p-6 rounded-lg shadow-sm">
+        <div className="mb-8 flex items-center justify-between rounded-lg border bg-card p-6 shadow-sm">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">知识库</h1>
+            <h1 className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-3xl font-bold tracking-tight text-transparent">知识库</h1>
             <p className="text-muted-foreground mt-1">管理您的RAG数据集，发现和使用优质知识库</p>
           </div>
           

@@ -323,7 +323,7 @@ export function ProductManagePage() {
                   {products.filter(product => product && product.id).map((product) => (
                     <TableRow key={product.id}>
                       <TableCell className="font-medium">
-                        <div className="cursor-pointer hover:text-blue-600" 
+                        <div className="cursor-pointer hover:text-primary" 
                              onClick={() => handleViewDetail(product)}>
                           {product?.name || "未知商品"}
                         </div>

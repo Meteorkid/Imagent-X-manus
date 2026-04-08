@@ -122,7 +122,7 @@ export function NavigationBar() {
           <SheetContent side="left" className="pr-0">
             <div className="px-7">
               <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
-                <Home className="mr-2 h-5 w-5 text-blue-600" />
+                <Home className="mr-2 h-5 w-5 text-primary" />
                 <span className="font-bold">Imagent X Plus</span>
               </Link>
             </div>
@@ -145,7 +145,7 @@ export function NavigationBar() {
           </SheetContent>
         </Sheet>
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Home className="h-6 w-6 text-blue-600" />
+          <Home className="h-6 w-6 text-primary" />
           <span className="hidden font-bold sm:inline-block">Imagent X</span>
         </Link>
         <div className="flex flex-1 items-center justify-between">
@@ -157,7 +157,7 @@ export function NavigationBar() {
                 className={cn(
                   "flex items-center gap-1 text-sm font-medium transition-colors",
                   isActiveRoute(item.href)
-                    ? "text-blue-600 font-semibold"
+                    ? "text-primary font-semibold"
                     : "text-foreground/60 hover:text-foreground/80",
                 )}
               >

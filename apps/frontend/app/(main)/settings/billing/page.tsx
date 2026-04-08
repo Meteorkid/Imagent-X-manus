@@ -384,7 +384,7 @@ export default function BillingPage() {
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-muted-foreground">信用额度</p>
-                      <p className="text-2xl font-bold text-blue-600">{formatAmount(account.credit)}</p>
+                      <p className="text-2xl font-bold text-primary">{formatAmount(account.credit)}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-muted-foreground">可用余额</p>
@@ -460,10 +460,10 @@ export default function BillingPage() {
             )}
 
             {/* 价格说明快速链接 */}
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-primary/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Tag className="h-5 w-5 text-blue-600" />
+                  <Tag className="h-5 w-5 text-primary" />
                   价格说明
                 </CardTitle>
                 <CardDescription>了解各项服务的详细价格和计费方式</CardDescription>

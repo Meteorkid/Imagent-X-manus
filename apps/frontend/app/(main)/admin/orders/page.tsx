@@ -288,7 +288,7 @@ export default function AdminOrdersPage() {
                     <TableRow key={index}>
                       {Array.from({ length: 9 }).map((_, cellIndex) => (
                         <TableCell key={cellIndex}>
-                          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-4 bg-muted rounded animate-pulse"></div>
                         </TableCell>
                       ))}
                     </TableRow>
@@ -396,9 +396,9 @@ export default function AdminOrdersPage() {
           
           {detailLoading ? (
             <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
             </div>
           ) : selectedOrder && (
             <div className="space-y-6">
@@ -516,7 +516,7 @@ export default function AdminOrdersPage() {
               {selectedOrder.metadata && Object.keys(selectedOrder.metadata).length > 0 && (
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">扩展信息</Label>
-                  <pre className="mt-1 p-2 bg-gray-100 rounded text-xs">
+                  <pre className="mt-1 p-2 bg-muted rounded text-xs">
                     {JSON.stringify(selectedOrder.metadata, null, 2)}
                   </pre>
                 </div>

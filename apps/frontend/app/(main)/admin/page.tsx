@@ -15,7 +15,7 @@ export default function AdminPage() {
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-4">管理后台</h1>
-        <p className="text-gray-600">正在跳转到用户列表...</p>
+        <p className="text-muted-foreground">正在跳转到用户列表...</p>
       </div>
     </div>
   );

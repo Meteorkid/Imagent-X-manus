@@ -337,8 +337,8 @@ export default function ToolsPage() {
       {/* 页面标题和操作 */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">工具管理</h1>
-          <p className="text-gray-600 mt-1">管理平台中的所有开发工具和审核流程</p>
+          <h1 className="text-2xl font-bold text-foreground">工具管理</h1>
+          <p className="text-muted-foreground mt-1">管理平台中的所有开发工具和审核流程</p>
         </div>
         <Button asChild>
           <Link href="/admin/tools/upload">
@@ -352,10 +352,10 @@ export default function ToolsPage() {
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-primary">
               {statistics.totalTools}
             </div>
-            <div className="text-sm text-gray-600">总工具数</div>
+            <div className="text-sm text-muted-foreground">总工具数</div>
           </CardContent>
         </Card>
         <Card>
@@ -363,7 +363,7 @@ export default function ToolsPage() {
             <div className="text-2xl font-bold text-orange-600">
               {statistics.pendingReviewTools}
             </div>
-            <div className="text-sm text-gray-600">待审核</div>
+            <div className="text-sm text-muted-foreground">待审核</div>
           </CardContent>
         </Card>
         <Card>
@@ -371,7 +371,7 @@ export default function ToolsPage() {
             <div className="text-2xl font-bold text-yellow-600">
               {statistics.manualReviewTools}
             </div>
-            <div className="text-sm text-gray-600">人工审核</div>
+            <div className="text-sm text-muted-foreground">人工审核</div>
           </CardContent>
         </Card>
         <Card>
@@ -379,7 +379,7 @@ export default function ToolsPage() {
             <div className="text-2xl font-bold text-green-600">
               {statistics.approvedTools}
             </div>
-            <div className="text-sm text-gray-600">已通过</div>
+            <div className="text-sm text-muted-foreground">已通过</div>
           </CardContent>
         </Card>
         <Card>
@@ -387,7 +387,7 @@ export default function ToolsPage() {
             <div className="text-2xl font-bold text-red-600">
               {statistics.failedTools}
             </div>
-            <div className="text-sm text-gray-600">审核失败</div>
+            <div className="text-sm text-muted-foreground">审核失败</div>
           </CardContent>
         </Card>
         <Card>
@@ -395,7 +395,7 @@ export default function ToolsPage() {
             <div className="text-2xl font-bold text-purple-600">
               {statistics.officialTools}
             </div>
-            <div className="text-sm text-gray-600">官方工具</div>
+            <div className="text-sm text-muted-foreground">官方工具</div>
           </CardContent>
         </Card>
       </div>
@@ -405,7 +405,7 @@ export default function ToolsPage() {
         <CardContent className="pt-6">
           <div className="flex items-center space-x-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="搜索工具名称、描述..."
                 value={searchInput}
@@ -472,16 +472,16 @@ export default function ToolsPage() {
                 <TableRow key={tool.id}>
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
                         {tool.icon ? (
                           <img src={tool.icon} alt={tool.name} className="w-8 h-8 rounded" />
                         ) : (
-                          <Code className="h-5 w-5 text-gray-400" />
+                          <Code className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
                       <div>
                         <div className="font-medium">{tool.name}</div>
-                        <div className="text-sm text-gray-500 max-w-xs truncate">
+                        <div className="text-sm text-muted-foreground max-w-xs truncate">
                           {tool.description || "暂无描述"}
                         </div>
                       </div>
@@ -505,7 +505,7 @@ export default function ToolsPage() {
                       <Badge variant={tool.isOffice ? "default" : "outline"}>
                         {tool.isOffice ? "官方" : "第三方"}
                       </Badge>
-                      <div className="text-xs text-gray-500">{tool.toolType}</div>
+                      <div className="text-xs text-muted-foreground">{tool.toolType}</div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -516,7 +516,7 @@ export default function ToolsPage() {
                         disabled={updatingToolIds.has(tool.id)}
                         size="sm"
                       />
-                      <span className={`text-sm ${updatingToolIds.has(tool.id) ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <span className={`text-sm ${updatingToolIds.has(tool.id) ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
                         {updatingToolIds.has(tool.id) ? '更新中...' : (tool.isGlobal ? "全局" : "用户")}
                       </span>
                     </div>

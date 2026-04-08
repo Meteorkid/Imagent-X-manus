@@ -104,15 +104,15 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] w-full">
+    <div className="flex h-full min-h-0 w-full">
       {/* 左侧边栏 */}
       <Sidebar />
 
       {/* 右侧内容区域 */}
       <div className="flex-1 overflow-auto">
-        <div className="container py-6 px-4">
+        <div className="container px-4 py-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold tracking-tight text-blue-600">探索 Imagent X 的应用</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-primary">探索 Imagent X 的应用</h1>
             <p className="text-muted-foreground mt-1">使用这些模板应用程序，或根据模板自定义您自己的应用程序。</p>
           </div>
 
@@ -184,8 +184,8 @@ export default function ExplorePage() {
                   </div>
                 ) : getFilteredAgents(tab).length === 0 ? (
                   // 空状态
-                  <div className="text-center py-16 border rounded-lg bg-gray-50">
-                    <Search className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <div className="rounded-lg border bg-muted/30 py-16 text-center">
+                    <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                     <h3 className="text-lg font-medium mb-2">
                       {searchQuery ? "未找到匹配的助理" : `暂无${tab}类型的助理`}
                     </h3>
@@ -216,12 +216,12 @@ export default function ExplorePage() {
                               <div className="text-xs text-muted-foreground uppercase font-medium mt-1">AGENT</div>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 line-clamp-3">{agent.description || "无描述"}</p>
+                          <p className="line-clamp-3 text-sm text-muted-foreground">{agent.description || "无描述"}</p>
 
                           <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
                             {agent.addWorkspace ? (
                               <Button 
-                                className="w-full bg-green-500 text-white cursor-default" 
+                                className="w-full cursor-default bg-primary text-primary-foreground" 
                                 disabled
                               >
                                 <Check className="h-4 w-4 mr-2" />
@@ -229,7 +229,7 @@ export default function ExplorePage() {
                               </Button>
                             ) : (
                               <Button 
-                                className="w-full bg-blue-500 hover:bg-blue-600 text-white" 
+                                className="w-full" 
                                 onClick={() => handleAddToWorkspace(agent.agentId)}
                                 disabled={addingAgentId === agent.agentId}
                               >

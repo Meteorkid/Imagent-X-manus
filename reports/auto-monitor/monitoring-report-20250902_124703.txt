@@ -1,0 +1,29 @@
+ImagentX 自动化性能监控报告
+生成时间: Tue Sep  2 12:47:03 CST 2025
+监控间隔: 3600秒
+==================================
+
+服务状态:
+- 数据库: 正常
+- 后端服务: 正常
+
+数据库性能指标:
+ total_connections | active_connections | idle_connections 
+-------------------+--------------------+------------------
+                11 |                  1 |                5
+(1 row)
+
+
+缓存命中率:
+ cache_hit_ratio 
+-----------------
+           86.96
+(1 row)
+
+
+索引使用情况:
+ schemaname |    tablename    |         indexname          | idx_scan 
+------------+-----------------+----------------------------+----------
+ public     | scheduled_tasks | idx_scheduled_tasks_status |        1
+(1 row)
+

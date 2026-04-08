@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: imagentx-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/imagent.top.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx
+      - /var/www/certbot:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+
+  # Certbot for SSL certificates
+  certbot:
+    image: certbot/certbot
+    container_name: imagentx-certbot
+    volumes:
+      - /var/www/certbot:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@imagent.top --agree-tos --no-eff-email -d imagent.top -d www.imagent.top
+    depends_on:
+      - nginx
+    networks:
+      - imagentx-network
+
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: imagentx-postgres
+    environment:
+      POSTGRES_DB: imagentx
+      POSTGRES_USER: imagentx_user
+      POSTGRES_PASSWORD: imagentx_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/database:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+
+  # RabbitMQ消息队列
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: imagentx-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: imagentx
+      RABBITMQ_DEFAULT_PASS: imagentx_password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+
+  # Spring Boot后端
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: ../../config/docker/docker/backend/Dockerfile
+    container_name: imagentx-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/imagentx
+      SPRING_DATASOURCE_USERNAME: imagentx_user
+      SPRING_DATASOURCE_PASSWORD: imagentx_password
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: imagentx
+      SPRING_RABBITMQ_PASSWORD: imagentx_password
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+
+  # Next.js前端
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: ../../config/docker/docker/frontend/Dockerfile
+    container_name: imagentx-frontend
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://imagent.top/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - imagentx-network
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+
+networks:
+  imagentx-network:
+    driver: bridge
+
+
+

@@ -45,7 +45,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const multiModal = currentSession?.multiModal || false
   
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] w-full">
+    <div className="flex h-full min-h-0 w-full">
       {/* 左侧边栏 */}
       <AgentSidebar />
 

@@ -33,11 +33,11 @@ function MenuItem({ href, icon: Icon, label, isActive }: MenuItemProps) {
       className={cn(
         "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors",
         isActive
-          ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+          ? "border-r-2 border-primary bg-primary/10 text-primary"
+          : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
       )}
     >
-      <Icon className={cn("mr-3 h-5 w-5", isActive ? "text-blue-700" : "text-gray-400")} />
+      <Icon className={cn("mr-3 h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
       {label}
     </Link>
   );
@@ -105,14 +105,14 @@ export function AdminSidebar() {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col" style={{ height: '100vh' }}>
+    <div className="flex h-full min-h-svh w-64 flex-col border-r border-border bg-card shadow-sm">
       {/* Logo区域 */}
-      <div className="p-6 border-b border-gray-200 flex-shrink-0">
+      <div className="p-6 border-b border-border flex-shrink-0">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <Settings className="w-5 h-5 text-white" />
           </div>
-          <span className="ml-3 text-lg font-semibold text-gray-900">Imagent X Admin</span>
+          <span className="ml-3 text-lg font-semibold text-foreground">Imagent X Admin</span>
         </div>
       </div>
 
@@ -134,8 +134,8 @@ export function AdminSidebar() {
       </nav>
 
       {/* 底部信息 */}
-      <div className="p-4 border-t border-gray-200 flex-shrink-0">
-        <div className="text-xs text-gray-500 text-center">
+      <div className="p-4 border-t border-border flex-shrink-0">
+        <div className="text-xs text-muted-foreground text-center">
           Imagent X 管理后台
           <br />
           v1.0.0

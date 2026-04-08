@@ -54,7 +54,7 @@ export default function TemplatesPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">容器模板</h1>
-          <p className="text-gray-600 mt-2">查看可用的容器模板配置</p>
+          <p className="text-muted-foreground mt-2">查看可用的容器模板配置</p>
         </div>
         <Button onClick={fetchTemplates} variant="outline">
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -67,13 +67,13 @@ export default function TemplatesPage() {
           {Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
               <CardHeader>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="h-3 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-3 bg-muted rounded"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
                 </div>
               </CardContent>
             </Card>
@@ -81,9 +81,9 @@ export default function TemplatesPage() {
         </div>
       ) : templates.length === 0 ? (
         <div className="text-center py-12">
-          <Settings className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">暂无可用模板</h3>
-          <p className="mt-2 text-gray-500">系统中还没有启用的容器模板</p>
+          <Settings className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-medium text-foreground">暂无可用模板</h3>
+          <p className="mt-2 text-muted-foreground">系统中还没有启用的容器模板</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -121,8 +121,8 @@ export default function TemplatesPage() {
                 <div className="space-y-4">
                   {/* 镜像信息 */}
                   <div>
-                    <div className="text-sm text-gray-600 mb-1">容器镜像</div>
-                    <div className="font-mono text-xs bg-gray-100 px-3 py-2 rounded border">
+                    <div className="text-sm text-muted-foreground mb-1">容器镜像</div>
+                    <div className="font-mono text-xs bg-muted px-3 py-2 rounded border">
                       {template.fullImageName}
                     </div>
                   </div>
@@ -130,12 +130,12 @@ export default function TemplatesPage() {
                   {/* 资源配置 */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
-                      <div className="flex items-center justify-center gap-1 text-blue-600 mb-1">
+                      <div className="flex items-center justify-center gap-1 text-primary mb-1">
                         <Cpu className="w-4 h-4" />
                         <span className="text-sm font-medium">CPU</span>
                       </div>
                       <div className="text-lg font-bold">{template.cpuLimit}</div>
-                      <div className="text-xs text-gray-500">核心</div>
+                      <div className="text-xs text-muted-foreground">核心</div>
                     </div>
                     
                     <div className="text-center">
@@ -144,21 +144,21 @@ export default function TemplatesPage() {
                         <span className="text-sm font-medium">内存</span>
                       </div>
                       <div className="text-lg font-bold">{template.memoryLimit}</div>
-                      <div className="text-xs text-gray-500">MB</div>
+                      <div className="text-xs text-muted-foreground">MB</div>
                     </div>
                   </div>
                   
                   {/* 网络配置 */}
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <div className="flex items-center gap-1 text-gray-600 mb-1">
+                      <div className="flex items-center gap-1 text-muted-foreground mb-1">
                         <Network className="w-3 h-3" />
                         <span>端口</span>
                       </div>
                       <div className="font-medium">{template.internalPort}</div>
                     </div>
                     <div>
-                      <div className="text-gray-600 mb-1">网络模式</div>
+                      <div className="text-muted-foreground mb-1">网络模式</div>
                       <div className="font-medium">{template.networkMode}</div>
                     </div>
                   </div>
@@ -166,8 +166,8 @@ export default function TemplatesPage() {
                   {/* 数据卷 */}
                   {template.volumeMountPath && (
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">数据卷</div>
-                      <div className="font-mono text-xs bg-gray-50 px-2 py-1 rounded border">
+                      <div className="text-sm text-muted-foreground mb-1">数据卷</div>
+                      <div className="font-mono text-xs bg-muted/30 px-2 py-1 rounded border">
                         {template.volumeMountPath}
                       </div>
                     </div>
@@ -176,11 +176,11 @@ export default function TemplatesPage() {
                   {/* 环境变量 */}
                   {template.environment && Object.keys(template.environment).length > 0 && (
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">环境变量</div>
+                      <div className="text-sm text-muted-foreground mb-1">环境变量</div>
                       <div className="max-h-20 overflow-y-auto">
                         {Object.entries(template.environment).map(([key, value]) => (
-                          <div key={key} className="font-mono text-xs bg-gray-50 px-2 py-1 rounded border mb-1">
-                            <span className="text-blue-600">{key}</span>=<span className="text-green-600">{value}</span>
+                          <div key={key} className="font-mono text-xs bg-muted/30 px-2 py-1 rounded border mb-1">
+                            <span className="text-primary">{key}</span>=<span className="text-green-600">{value}</span>
                           </div>
                         ))}
                       </div>
@@ -188,8 +188,8 @@ export default function TemplatesPage() {
                   )}
                   
                   {/* 创建信息 */}
-                  <div className="pt-3 border-t border-gray-100">
-                    <div className="flex justify-between items-center text-xs text-gray-500">
+                  <div className="pt-3 border-t border-border">
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
                       <span>创建者: {template.createdBy}</span>
                       <span>{new Date(template.createdAt).toLocaleDateString('zh-CN')}</span>
                     </div>
@@ -203,7 +203,7 @@ export default function TemplatesPage() {
       
       {/* 提示信息 */}
       {!loading && templates.length > 0 && (
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>这些是系统中可用的容器模板。管理员可以配置和管理这些模板。</p>
         </div>
       )}

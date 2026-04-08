@@ -1,0 +1,73 @@
+[0;34m🐌 ImagentX 慢查询监控[0m
+慢查询阈值: 1000ms
+监控时间: Tue Sep  2 12:47:02 CST 2025
+
+==================================
+[0;32m✅ pg_stat_statements 扩展已启用[0m
+
+[0;34m📊 慢查询统计 (阈值: 1000ms)[0m
+
+暂无慢查询
+[2025-09-02 12:47:02] [INFO] 无慢查询
+
+[0;34m📈 查询性能趋势[0m
+
+查询执行时间分布:
+pg_stat_statements 数据不足
+
+[0;34m📋 表访问统计[0m
+
+表访问频率 (按扫描次数排序):
+ schemaname |        tablename        | seq_scan | seq_tup_read | idx_scan | idx_tup_fetch 
+------------+-------------------------+----------+--------------+----------+---------------
+ public     | users                   |       25 |           29 |        0 |             0
+ public     | agents                  |       12 |            0 |        0 |             0
+ public     | container_templates     |       10 |            0 |        0 |             0
+ public     | sessions                |        7 |            0 |        0 |             0
+ public     | user_containers         |        7 |            0 |        0 |             0
+ public     | file_detail             |        7 |            0 |        0 |             0
+ public     | agent_execution_summary |        6 |            0 |        0 |             0
+ public     | scheduled_tasks         |        5 |            0 |        1 |             0
+ public     | agent_execution_details |        6 |            0 |        0 |             0
+ public     | messages                |        5 |            0 |        0 |             0
+(10 rows)
+
+
+[0;34m🔍 索引使用统计[0m
+
+索引使用情况:
+ schemaname |        tablename        |              indexname               | idx_scan | idx_tup_read | idx_tup_fetch 
+------------+-------------------------+--------------------------------------+----------+--------------+---------------
+ public     | scheduled_tasks         | idx_scheduled_tasks_status           |        1 |            0 |             0
+ public     | agent_execution_details | idx_agent_exec_details_trace_seq     |        0 |            0 |             0
+ public     | agent_execution_summary | agent_execution_summary_trace_id_key |        0 |            0 |             0
+ public     | agent_execution_details | idx_agent_exec_details_tool          |        0 |            0 |             0
+ public     | agent_execution_details | idx_agent_exec_details_model         |        0 |            0 |             0
+ public     | agent_execution_summary | agent_execution_summary_pkey         |        0 |            0 |             0
+ public     | agent_execution_details | idx_agent_exec_details_trace_type    |        0 |            0 |             0
+ public     | agent_execution_summary | idx_agent_exec_summary_user_time     |        0 |            0 |             0
+ public     | agent_execution_summary | idx_agent_exec_summary_session       |        0 |            0 |             0
+ public     | agent_execution_summary | idx_agent_exec_summary_agent         |        0 |            0 |             0
+ public     | agent_execution_summary | idx_agent_exec_summary_trace         |        0 |            0 |             0
+ public     | agent_tasks             | agent_tasks_pkey                     |        0 |            0 |             0
+ public     | agent_tasks             | idx_agent_tasks_session_id           |        0 |            0 |             0
+ public     | agent_tasks             | idx_agent_tasks_user_id              |        0 |            0 |             0
+ public     | agent_execution_details | agent_execution_details_pkey         |        0 |            0 |             0
+(15 rows)
+
+
+[0;34m💡 优化建议[0m
+
+[1;33m⚠️  发现 107 个未使用的索引，建议评估是否需要[0m
+[0;32m✅ 缓存命中率良好 (86.96%)[0m
+
+==================================
+[0;32m🎉 慢查询监控完成！[0m
+
+[1;33m📋 监控结果：[0m
+- 日志文件: logs/slow-queries-20250902.log
+
+[1;33m📅 建议监控频率：[0m
+- 开发环境: 每小时
+- 测试环境: 每4小时
+- 生产环境: 每天

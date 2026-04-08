@@ -1,0 +1,187 @@
+# ImagentX Cloudflare配置 - imagentx.top
+# 专为Cloudflare CDN优化的Nginx配置
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # 日志格式 - 包含Cloudflare真实IP
+    log_format cloudflare '$remote_addr - $remote_user [$time_local] "$request" '
+                         '$status $body_bytes_sent "$http_referer" '
+                         '"$http_user_agent" "$http_x_forwarded_for" '
+                         'cf-connecting-ip="$http_cf_connecting_ip" '
+                         'cf-ray="$http_cf_ray" '
+                         'cf-country="$http_cf_ipcountry"';
+
+    access_log /var/log/nginx/access.log cloudflare;
+    error_log /var/log/nginx/error.log;
+
+    # 基本设置
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    client_max_body_size 100M;
+
+    # Gzip压缩
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+
+    # 缓存设置
+    proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=STATIC:10m inactive=7d use_temp_path=off;
+
+    # 上游服务器配置
+    upstream frontend {
+        # 指向Docker Compose中的前端服务
+        server frontend:3000;
+        keepalive 32;
+    }
+    
+    upstream backend {
+        # 指向Docker Compose中的后端服务
+        server backend:8088;
+        keepalive 32;
+    }
+
+    # Cloudflare IP范围（用于真实IP获取）
+    set_real_ip_from 103.21.244.0/22;
+    set_real_ip_from 103.22.200.0/22;
+    set_real_ip_from 103.31.4.0/22;
+    set_real_ip_from 104.16.0.0/13;
+    set_real_ip_from 104.24.0.0/14;
+    set_real_ip_from 108.162.192.0/18;
+    set_real_ip_from 131.0.72.0/22;
+    set_real_ip_from 141.101.64.0/18;
+    set_real_ip_from 162.158.0.0/15;
+    set_real_ip_from 172.64.0.0/13;
+    set_real_ip_from 173.245.48.0/20;
+    set_real_ip_from 188.114.96.0/20;
+    set_real_ip_from 190.93.240.0/20;
+    set_real_ip_from 197.234.240.0/22;
+    set_real_ip_from 198.41.128.0/17;
+    set_real_ip_from 2400:cb00::/32;
+    set_real_ip_from 2606:4700::/32;
+    set_real_ip_from 2803:f800::/32;
+    set_real_ip_from 2405:b500::/32;
+    set_real_ip_from 2405:8100::/32;
+    set_real_ip_from 2a06:98c0::/29;
+    set_real_ip_from 2c0f:f248::/32;
+    real_ip_header CF-Connecting-IP;
+
+    # HTTP服务器配置 - Cloudflare会处理HTTPS
+    server {
+        listen 80;
+        server_name imagentx.top www.imagentx.top;
+        
+        # 安全头 - Cloudflare兼容
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        
+        # Cloudflare安全头
+        add_header CF-Cache-Status $upstream_cache_status always;
+        
+        # 前端静态文件
+        location / {
+            proxy_pass http://frontend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # Cloudflare真实IP
+            proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+            proxy_set_header CF-Ray $http_cf_ray;
+            proxy_set_header CF-Country $http_cf_ipcountry;
+            
+            # 支持WebSocket
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            
+            # 缓存静态资源
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                proxy_pass http://frontend;
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+                add_header Vary "Accept-Encoding";
+                
+                # Cloudflare缓存控制
+                add_header CF-Cache-Status $upstream_cache_status always;
+            }
+        }
+        
+        # API代理到后端
+        location /api/ {
+            proxy_pass http://backend/api/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # Cloudflare真实IP
+            proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+            proxy_set_header CF-Ray $http_cf_ray;
+            proxy_set_header CF-Country $http_cf_ipcountry;
+            
+            # 支持WebSocket
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            
+            # 超时设置
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+            
+            # API缓存设置
+            proxy_cache STATIC;
+            proxy_cache_valid 200 1h;
+            proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+            proxy_cache_lock on;
+            
+            # 不缓存POST/PUT/DELETE请求
+            proxy_cache_methods GET HEAD;
+        }
+        
+        # 健康检查
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+        
+        # Cloudflare Bot Fight Mode支持
+        location /robots.txt {
+            return 200 "User-agent: *\nDisallow: /api/\nDisallow: /admin/\n";
+            add_header Content-Type text/plain;
+        }
+        
+        # 错误页面
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+    }
+}

@@ -83,9 +83,9 @@ export default function UsersPage() {
 
   const formatPlatform = (platform?: string) => {
     const platformMap: { [key: string]: { name: string; color: string } } = {
-      normal: { name: '普通登录', color: 'bg-gray-100 text-gray-800' },
-      github: { name: 'GitHub', color: 'bg-gray-900 text-white' },
-      community: { name: '敲鸭', color: 'bg-blue-100 text-blue-800' },
+      normal: { name: '普通登录', color: 'bg-muted text-foreground' },
+      github: { name: 'GitHub', color: 'bg-foreground text-background' },
+      community: { name: '敲鸭', color: 'bg-primary/10 text-primary' },
       google: { name: 'Google', color: 'bg-red-100 text-red-800' },
       wechat: { name: '微信', color: 'bg-green-100 text-green-800' }
     };
@@ -158,15 +158,15 @@ export default function UsersPage() {
     <div className="space-y-6">
       {/* 页面标题 */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">用户管理</h1>
-        <p className="text-gray-600 mt-1">查看系统中的所有用户账户信息</p>
+        <h1 className="text-2xl font-bold text-foreground">用户管理</h1>
+        <p className="text-muted-foreground mt-1">查看系统中的所有用户账户信息</p>
       </div>
 
       {/* 搜索和过滤 */}
       <Card>
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="搜索用户邮箱或用户名..."
               value={searchQuery}
@@ -207,9 +207,9 @@ export default function UsersPage() {
                       )}
                       <div>
                         <div className="font-medium">{user.nickname}</div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm text-muted-foreground">{user.email}</div>
                         {user.phone && (
-                          <div className="text-sm text-gray-400">{user.phone}</div>
+                          <div className="text-sm text-muted-foreground">{user.phone}</div>
                         )}
                       </div>
                     </div>
@@ -221,10 +221,10 @@ export default function UsersPage() {
                     {user.githubLogin ? (
                       <div className="text-sm">
                         <div className="font-medium">{user.githubLogin}</div>
-                        <div className="text-gray-500">ID: {user.githubId}</div>
+                        <div className="text-muted-foreground">ID: {user.githubId}</div>
                       </div>
                     ) : (
-                      <div className="text-sm text-gray-400">未绑定</div>
+                      <div className="text-sm text-muted-foreground">未绑定</div>
                     )}
                   </TableCell>
                   <TableCell>
@@ -239,7 +239,7 @@ export default function UsersPage() {
           </Table>
           
           {users.length === 0 && !loading && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               {searchQuery ? "没有找到匹配的用户" : "暂无用户数据"}
             </div>
           )}

@@ -1,31 +1,28 @@
-// 响应式断点配置
+import { useEffect, useState } from "react"
 
+// 与 Tailwind 默认断点保持一致
 export const breakpoints = {
-  xs: '320px',
-  sm: '576px',
-  md: '768px',
-  lg: '992px',
-  xl: '1200px',
-  xxl: '1400px',
+  sm: "640px",
+  md: "768px",
+  lg: "1024px",
+  xl: "1280px",
+  "2xl": "1536px",
 } as const
 
 export const mediaQueries = {
-  xs: `@media (min-width: ${breakpoints.xs})`,
   sm: `@media (min-width: ${breakpoints.sm})`,
   md: `@media (min-width: ${breakpoints.md})`,
   lg: `@media (min-width: ${breakpoints.lg})`,
   xl: `@media (min-width: ${breakpoints.xl})`,
-  xxl: `@media (min-width: ${breakpoints.xxl})`,
+  "2xl": `@media (min-width: ${breakpoints["2xl"]})`,
 } as const
 
-// 设备类型检测
 export const deviceTypes = {
-  mobile: 'mobile',
-  tablet: 'tablet',
-  desktop: 'desktop',
+  mobile: "mobile",
+  tablet: "tablet",
+  desktop: "desktop",
 } as const
 
-// 响应式工具函数
 export const useResponsive = () => {
   const [deviceType, setDeviceType] = useState(deviceTypes.desktop)
   const [isMobile, setIsMobile] = useState(false)
@@ -35,7 +32,7 @@ export const useResponsive = () => {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
-      
+
       if (width < 768) {
         setDeviceType(deviceTypes.mobile)
         setIsMobile(true)
@@ -55,9 +52,9 @@ export const useResponsive = () => {
     }
 
     handleResize()
-    window.addEventListener('resize', handleResize)
-    
-    return () => window.removeEventListener('resize', handleResize)
+    window.addEventListener("resize", handleResize)
+
+    return () => window.removeEventListener("resize", handleResize)
   }, [])
 
   return {

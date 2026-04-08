@@ -185,7 +185,7 @@ export default function AgentsPage() {
             🕒 {stats.pending}个待审核
           </Badge>
           {latestPending && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground">
               最新: v{latestPending.versionNumber}
             </div>
           )}
@@ -286,8 +286,8 @@ export default function AgentsPage() {
       {/* 页面标题和操作 */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Agent管理</h1>
-          <p className="text-gray-600 mt-1">管理平台中的所有AI助手</p>
+          <h1 className="text-2xl font-bold text-foreground">Agent管理</h1>
+          <p className="text-muted-foreground mt-1">管理平台中的所有AI助手</p>
         </div>
       </div>
 
@@ -295,10 +295,10 @@ export default function AgentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-primary">
               {statistics.totalAgents}
             </div>
-            <div className="text-sm text-gray-600">总Agent数</div>
+            <div className="text-sm text-muted-foreground">总Agent数</div>
           </CardContent>
         </Card>
         <Card>
@@ -306,7 +306,7 @@ export default function AgentsPage() {
             <div className="text-2xl font-bold text-green-600">
               {statistics.enabledAgents}
             </div>
-            <div className="text-sm text-gray-600">启用中</div>
+            <div className="text-sm text-muted-foreground">启用中</div>
           </CardContent>
         </Card>
         <Card>
@@ -314,7 +314,7 @@ export default function AgentsPage() {
             <div className="text-2xl font-bold text-red-600">
               {statistics.disabledAgents}
             </div>
-            <div className="text-sm text-gray-600">已禁用</div>
+            <div className="text-sm text-muted-foreground">已禁用</div>
           </CardContent>
         </Card>
         <Card>
@@ -322,7 +322,7 @@ export default function AgentsPage() {
             <div className="text-2xl font-bold text-orange-600">
               {statistics.pendingVersions}
             </div>
-            <div className="text-sm text-gray-600">待审核</div>
+            <div className="text-sm text-muted-foreground">待审核</div>
           </CardContent>
         </Card>
       </div>
@@ -332,7 +332,7 @@ export default function AgentsPage() {
         <CardContent className="pt-6">
           <div className="flex items-center space-x-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="搜索Agent名称、描述..."
                 value={searchInput}
@@ -389,10 +389,10 @@ export default function AgentsPage() {
                       </Avatar>
                       <div>
                         <div className="font-medium">{agent.name}</div>
-                        <div className="text-sm text-gray-500 max-w-xs truncate">
+                        <div className="text-sm text-muted-foreground max-w-xs truncate">
                           {agent.description || "暂无描述"}
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">
+                        <div className="text-xs text-muted-foreground mt-1">
                           版本数: {agent.versions?.length || 0}
                         </div>
                       </div>
@@ -410,7 +410,7 @@ export default function AgentsPage() {
                         <div className="text-sm font-medium">
                           {agent.userNickname || agent.userEmail || '未知用户'}
                         </div>
-                        <div className="text-xs text-gray-400 font-mono">
+                        <div className="text-xs text-muted-foreground font-mono">
                           {agent.userId}
                         </div>
                       </div>
@@ -425,7 +425,7 @@ export default function AgentsPage() {
                         总版本: {agent.versions?.length || 0}
                       </div>
                       {agent.versions && agent.versions.length > 0 && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                           {(() => {
                             const stats = getVersionStats(agent.versions);
                             const parts = [];

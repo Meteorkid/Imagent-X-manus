@@ -36,6 +36,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/explore/page.js"
     ],
+    "/api/health/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/health/route.js"
+    ],
     "/(auth)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -46,10 +51,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(auth)/login/page.js"
     ],
-    "/(auth)/register/page": [
+    "/api/[...path]/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(auth)/register/page.js"
+      "static/chunks/app/api/[...path]/route.js"
     ],
     "/(main)/studio/layout": [
       "static/chunks/webpack.js",
@@ -76,6 +81,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/knowledge/page.js"
     ],
+    "/(main)/agents/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/agents/page.js"
+    ],
     "/(main)/tools/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -85,16 +95,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/tools/page.js"
-    ],
-    "/(main)/agents/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(main)/agents/page.js"
-    ],
-    "/api/agents/openmanus/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/agents/openmanus/route.js"
     ],
     "/(main)/settings/profile/page": [
       "static/chunks/webpack.js",
@@ -106,40 +106,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/settings/general/page.js"
     ],
-    "/(main)/traces/page": [
+    "/(main)/settings/pricing/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/traces/page.js"
-    ],
-    "/(main)/settings/orders/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(main)/settings/orders/page.js"
+      "static/chunks/app/(main)/settings/pricing/page.js"
     ],
     "/(main)/settings/providers/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/settings/providers/page.js"
     ],
-    "/(main)/settings/api-keys/page": [
+    "/(main)/traces/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/settings/api-keys/page.js"
-    ],
-    "/(main)/settings/pricing/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(main)/settings/pricing/page.js"
+      "static/chunks/app/(main)/traces/page.js"
     ],
     "/(main)/settings/billing/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(main)/settings/billing/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
