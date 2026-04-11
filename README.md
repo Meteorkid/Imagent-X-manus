@@ -1,6 +1,6 @@
 # ImagentX - AI Agent Platform
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/Meteor-kid/ImagentX)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](https://github.com/Meteorkid/Imagent-X-manus/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
@@ -56,15 +56,24 @@ ImagentX 是一个完整的AI智能体平台，集成了OpenManus技术，提供
 
 ## 📦 版本信息
 
-### v1.0.1 (当前版本)
-- ✅ 完整的平台基础架构
-- ✅ OpenManus智能体集成
-- ✅ 高级UI组件系统
-- ✅ 全面的文档和指南
-- ✅ 部署脚本和配置
-- ✅ 性能优化工具
-- ✅ 安全增强功能
-- ✅ 多语言国际化支持
+当前发布版本：**v1.0.3**（Git 标签与 `package.json` / `apps/backend/pom.xml` 一致）。  
+完整标签与发行说明见：[Releases](https://github.com/Meteorkid/Imagent-X-manus/releases)。
+
+### v1.0.3（当前）
+
+- 将 monorepo 与后端制品版本统一为 **1.0.3**（根目录与 `apps/frontend` 的 `package.json`、`apps/backend` 的 Maven 版本、Docker / 手动安全扫描 workflow 中的 `imagent-x-1.0.3.jar` 命名一致）。
+- 在 **v1.0.2** 之后的 CI 修复基础上发版：Tests 工作流中「集成测试」步骤在无 `*IntegrationTest` 用例时不再误报失败；CI 通过 `docker build` 对前后端镜像做冒烟构建；推送 semver 标签时的镜像构建指向 **`apps/backend/Dockerfile`**。
+- 建议以 **`v1.0.3` 标签** 作为 Docker 镜像构建与自动化发布的参考版本（优于早期仅修复 CI、未打新标签的提交）。
+
+### v1.0.2
+
+- 首次在发布流程中将**可安装制品版本**与 Git **semver 标签**对齐（后端由 `0.0.1-SNAPSHOT` 转为 **`1.0.2`**，并同步根目录与前端包版本、Docker 与 workflow 中的 JAR 文件名）。
+- 后端接入 **JaCoCo**，`mvn test` / `mvn jacoco:report` 在 CI 中可稳定执行；Codecov 上传失败默认不再拖垮整次流水线。
+- **Tests** 工作流：OWASP ZAP 改为在需要时 **手动触发**（`workflow_dispatch`），并在该流程中补充启动后端与依赖说明；**性能测试** job 在仓库尚未纳入 `integration-tests/performance` 前保持跳过，避免无效失败。
+
+### v1.0.1
+
+- 完整的平台基础架构与 OpenManus 智能体集成、UI 与文档、部署与脚本、安全与国际化等基线能力（详见历史提交与首版标签说明）。
 
 ## 🚀 快速开始
 
@@ -78,8 +87,8 @@ ImagentX 是一个完整的AI智能体平台，集成了OpenManus技术，提供
 ### 本地开发
 ```bash
 # 克隆仓库
-git clone https://github.com/Meteor-kid/ImagentX.git
-cd ImagentX
+git clone https://github.com/Meteorkid/Imagent-X-manus.git
+cd "Imagent-X-manus"
 
 # 启动所有服务
 ./start-all-services.sh
@@ -144,9 +153,9 @@ docker-compose -f docker-compose-production.yml up -d
 
 ## 📞 联系我们
 
-- **项目主页**: [https://github.com/Meteor-kid/ImagentX](https://github.com/Meteor-kid/ImagentX)
-- **问题反馈**: [GitHub Issues](https://github.com/Meteor-kid/ImagentX/issues)
-- **讨论交流**: [GitHub Discussions](https://github.com/Meteor-kid/ImagentX/discussions)
+- **项目主页**: [Imagent-X-manus](https://github.com/Meteorkid/Imagent-X-manus)
+- **问题反馈**: [GitHub Issues](https://github.com/Meteorkid/Imagent-X-manus/issues)
+- **讨论交流**: [GitHub Discussions](https://github.com/Meteorkid/Imagent-X-manus/discussions)
 
 ## 🙏 致谢
 
@@ -154,4 +163,4 @@ docker-compose -f docker-compose-production.yml up -d
 
 ---
 
-**ImagentX v1.0.1** - 让AI智能体开发更简单、更强大！ 🚀
+**ImagentX v1.0.3** - 让AI智能体开发更简单、更强大！ 🚀
