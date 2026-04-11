@@ -63,10 +63,11 @@ jobs:
         cd apps/backend
         mvn test -Dtest="**/*Test" -DfailIfNoTests=false
 
+    # 尚无 *IntegrationTest 时 Surefire 会因「无匹配用例」失败，需显式允许
     - name: Run integration tests
       run: |
         cd apps/backend
-        mvn test -Dtest="**/*IntegrationTest" -DfailIfNoTests=false
+        mvn test -Dtest="**/*IntegrationTest" -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
 
     - name: Generate coverage report
       run: |
