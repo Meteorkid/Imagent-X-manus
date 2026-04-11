@@ -1,6 +1,6 @@
 {
   "name": "imagentx-master",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "ImagentX是一个基于Spring Boot和React的智能AI助手平台，提供强大的AI对话、知识管理和工具集成功能。",
   "main": "mock-server.js",
   "directories": {
