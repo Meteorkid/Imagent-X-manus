@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 
@@ -45,8 +45,16 @@ const QiaoyaLogo = ({ className }: { className?: string }) => (
   />
 )
 
-export default function LoginPage() {
+function safePostLoginPath(raw: string | null): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) {
+    return "/"
+  }
+  return raw
+}
+
+function LoginPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
     account: "",
     password: ""
@@ -100,7 +108,7 @@ export default function LoginPage() {
       if (res.code === 200 && res.data?.token) {
         localStorage.setItem("auth_token", res.data.token)
         setCookie("token", res.data.token, 30)
-        router.push("/")
+        router.push(safePostLoginPath(searchParams.get("callbackUrl")))
       }
     } catch (error: any) {
       // 错误已由API处理
@@ -329,4 +337,18 @@ export default function LoginPage() {
       <Toaster />
     </>
   )
-} 
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+          加载中…
+        </div>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
+  )
+}

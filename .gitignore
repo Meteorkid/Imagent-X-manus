@@ -33,6 +33,7 @@ target/
 build/
 dist/
 **/.next/
+coverage/
 
 # 数据库文件
 *.db

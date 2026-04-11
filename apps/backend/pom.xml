@@ -28,6 +28,7 @@
         <fastjson.version>2.0.47</fastjson.version>
         <hutool.version>5.8.26</hutool.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <!-- JitPack 自定义 fork（-SNAPSHOT）；升级时请固定 tag/commit 并在 CI 缓存 ~/.m2 以提升可复现性 -->
         <langchain4j.version>1.0.4.3-beta7-SNAPSHOT</langchain4j.version>
         <spotless.version>2.37.0</spotless.version>
         <x-file-storage.version>2.2.0</x-file-storage.version>

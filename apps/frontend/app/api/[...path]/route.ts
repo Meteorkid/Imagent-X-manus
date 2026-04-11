@@ -51,16 +51,27 @@ async function handleApiRequest(
     const searchParams = request.nextUrl.searchParams.toString();
     const fullUrl = searchParams ? `${targetUrl}?${searchParams}` : targetUrl;
     
-    // 获取请求头
+    // 获取请求头（显式保留 Cookie / Authorization，与后端鉴权一致）
     const headers = new Headers();
     request.headers.forEach((value, key) => {
-      // 跳过一些Next.js特定的头部
-      if (!key.startsWith('x-') && key !== 'host') {
-        headers.set(key, value);
+      const lower = key.toLowerCase();
+      if (lower.startsWith('x-forwarded') || lower === 'x-middleware-prefetch' || lower === 'x-nextjs-data') {
+        return;
       }
+      if (lower === 'host') {
+        return;
+      }
+      headers.set(key, value);
     });
-    
-    // 设置后端请求头
+    const cookie = request.headers.get('cookie');
+    if (cookie) {
+      headers.set('cookie', cookie);
+    }
+    const authorization = request.headers.get('authorization');
+    if (authorization) {
+      headers.set('authorization', authorization);
+    }
+
     headers.set('host', new URL(backendUrl).host);
     
     // 获取请求体

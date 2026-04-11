@@ -8,7 +8,7 @@ Imagent-X/
 ├── 🎯 应用层 (apps/)
 │   ├── 🖥️ 后端 (backend/) - Java Spring Boot
 │   ├── 🎨 前端 (frontend/) - React + TypeScript
-│   └── 🔄 前端增强版 (frontend-current/)
+│   └── 🗂️ frontend-current/（已废弃，仅历史快照；主前端为 apps/frontend）
 ├── ⚙️ 配置层 (config/)
 │   ├── 🐳 Docker配置 (docker/)
 │   ├── 🗄️ 数据库配置 (database/)

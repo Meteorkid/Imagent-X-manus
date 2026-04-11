@@ -25,7 +25,8 @@ Imagent-X/
 ├── 🛠️ tools/                   # 工具目录
 ├── 🎯 apps/                    # 应用代码
 │   ├── 🖥️ backend/            # 后端应用
-│   └── 🎨 frontend/           # 前端应用
+│   ├── 🎨 frontend/           # **唯一主前端**（Next.js，生产与 CI 入口）
+│   └── 🗂️ frontend-current/   # **已废弃**：历史快照，勿用于构建；见该目录 README
 ├── 🤖 OpenManus/              # OpenManus集成
 ├── 📦 deploy/                  # 部署配置
 ├── 🚀 production/              # 生产环境配置

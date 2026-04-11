@@ -1,3 +1,4 @@
+# 主前端目录：apps/frontend（与 apps/frontend-current 无关）
 name: Tests
 
 on:

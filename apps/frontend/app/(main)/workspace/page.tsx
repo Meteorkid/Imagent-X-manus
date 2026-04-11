@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import dynamic from "next/dynamic"
 import { useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/sidebar"
-import { ChatPanel } from "@/components/chat-panel"
 import { EmptyState } from "@/components/empty-state"
 import { ConversationList } from "@/components/conversation-list"
 import { useWorkspace } from "@/contexts/workspace-context"
@@ -11,7 +11,7 @@ import { getWorkspaceAgents, deleteWorkspaceAgent, deleteWorkspaceAgentWithToast
 import { getAgentSessions, createAgentSession, type SessionDTO, getAgentSessionsWithToast, createAgentSessionWithToast, updateAgentSessionWithToast } from "@/lib/agent-session-service"
 import type { Agent } from "@/types/agent"
 import { toast } from "@/hooks/use-toast"
-import { MoreHorizontal, Trash2, Settings, Grid, Terminal } from 'lucide-react'
+import { MoreHorizontal, Trash2, Settings, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -28,12 +28,27 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-// 导入模型选择对话框组件
-import { ModelSelectDialog } from "@/components/model-select-dialog"
-import { ScheduledTaskPanel } from "@/components/scheduled-task-panel"
+const ChatPanel = dynamic(
+  () => import("@/components/chat-panel").then((m) => m.ChatPanel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-1 items-center justify-center bg-muted/30">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+      </div>
+    ),
+  }
+)
 
-import { Metadata } from "next"
-import { redirect } from "next/navigation"
+const ScheduledTaskPanel = dynamic(
+  () => import("@/components/scheduled-task-panel").then((m) => m.ScheduledTaskPanel),
+  { ssr: false }
+)
+
+const ModelSelectDialog = dynamic(
+  () => import("@/components/model-select-dialog").then((m) => m.ModelSelectDialog),
+  { ssr: false }
+)
 
 export default function WorkspacePage() {
   const { selectedWorkspaceId, selectedConversationId, setSelectedWorkspaceId, setSelectedConversationId } =

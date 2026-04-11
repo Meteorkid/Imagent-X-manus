@@ -99,7 +99,8 @@ docker-compose -f docker-compose-production.yml up -d
 
 ## 📖 详细文档
 
-- [🚀 启动指南](docs/START_GUIDE.md)
+- [🚀 启动指南](docs/guides/START_GUIDE.md)
+- [📦 Monorepo 说明](MONOREPO.md)（主前端：`apps/frontend`）
 - [🔧 开发文档](docs/develop_document.md)
 - [📚 API参考](docs/api-reference/README.md)
 - [🐳 Docker部署](docs/deployment/docker/DOCKER_SETUP.md)

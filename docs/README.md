@@ -61,17 +61,13 @@
 
 ## 🔗 相关链接
 
-- [官方网站](https://imagentx.ai)
-- [GitHub仓库](https://github.com/imagentx/imagentx)
-- [在线演示](https://demo.imagentx.ai)
-- [社区论坛](https://community.imagentx.ai)
+- [GitHub 仓库](https://github.com/Meteorkid/Imagent-X)（本仓库主入口）
+- [仓库内 Monorepo 说明](../MONOREPO.md)（`apps/frontend` 为唯一主前端）
 
 ## 📞 联系我们
 
-- **技术支持**: support@imagentx.ai
-- **文档反馈**: docs@imagentx.ai
-- **商务合作**: business@imagentx.ai
+文档与代码不一致时，以仓库内 `README.md`、`MONOREPO.md` 与 `apps/` 下实际代码为准。
 
 ---
 
-*最后更新: 2024年8月25日*
+*最后更新: 2026年4月11日*

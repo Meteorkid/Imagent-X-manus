@@ -1,3 +1,4 @@
+# 前端唯一入口：apps/frontend（勿使用 apps/frontend-current）
 name: CI
 
 on:

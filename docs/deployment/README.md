@@ -4,6 +4,8 @@
 
 本指南介绍如何部署ImagentX项目到不同环境。
 
+**可选监控栈**（Grafana / Prometheus / Kibana 等，仓库内 `mcp-config/`）与**最小运行集**的说明见 [MONITORING_OPTIONAL.md](./MONITORING_OPTIONAL.md)。
+
 ## 🐳 Docker部署
 
 ### 环境要求
