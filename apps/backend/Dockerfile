@@ -41,4 +41,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8088/api/health || exit 1
 
 # 启动应用
-CMD ["java", "-jar", "target/imagent-x-1.0.2.jar"]
+CMD ["java", "-jar", "target/imagent-x-1.0.3.jar"]
