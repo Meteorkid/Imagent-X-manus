@@ -32,8 +32,21 @@ Thumbs.db
 target/
 build/
 dist/
+# Next.js（勿提交构建产物；若曾被跟踪，需 git rm -r --cached apps/frontend/.next）
 **/.next/
+apps/frontend/.next/
+out/
 coverage/
+
+# Playwright / 测试产物（勿提交）
+**/playwright-report/
+**/test-results/
+
+# 本地 smoke 报告（勿提交）
+reports/smoke/
+
+# 本地截图素材（勿提交）
+智能体平台截图/
 
 # 数据库文件
 *.db

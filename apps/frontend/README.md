@@ -111,3 +111,24 @@ async function handleCustomAction() {
 1. 对于不需要展示成功提示的API（如获取列表等），已经预设`showSuccessToast: false`
 2. Toast会自动使用API响应中的`message`字段作为提示内容
 3. 错误状态的Toast会使用红色样式
+
+## 离线事件与配置审计（环境变量）
+
+为启用 **PostgreSQL 持久化**（生产环境推荐），请配置：
+
+- **`OFFLINE_EVENTS_DATABASE_URL`**（推荐）或 **`DATABASE_URL`**  
+  用于离线埋点表、实验/SW 配置表及管理员审计表（`offline_admin_audit_logs`）等。
+- 可选：**`OFFLINE_EVENTS_RETENTION_DAYS`**（默认 **30**）  
+  用于控制埋点事件表 `offline_events` 的保留天数（定期清理）；审计日志不依赖该值。
+- 可选：下载中心告警外发通道（Webhook/企业IM）
+  - **`OFFLINE_ALERT_WEBHOOK_ENABLED`**：是否启用外发（默认 `true`）
+  - **`OFFLINE_ALERT_WEBHOOK_URL`**：单个 Webhook 地址
+  - **`OFFLINE_ALERT_WEBHOOK_URLS`**：多个 Webhook 地址，英文逗号分隔（优先于单个 URL）
+  - **`OFFLINE_ALERT_WEBHOOK_PROVIDER`**：`generic` / `wecom` / `feishu` / `dingtalk`
+  - **`OFFLINE_ALERT_WEBHOOK_MIN_LEVEL`**：`warn` / `critical`（默认 `critical`）
+  - **`OFFLINE_ALERT_WEBHOOK_TIMEOUT_MS`**：请求超时毫秒（默认 `5000`）
+  - **`OFFLINE_ALERT_RETRY_MAX_ATTEMPTS`**：最大尝试次数（含首次发送，默认 `3`）
+  - **`OFFLINE_ALERT_RETRY_BASE_DELAY_MS`**：指数退避基准延迟（默认 `1200`）
+  - **`OFFLINE_ALERT_RETRY_MAX_DELAY_MS`**：指数退避最大延迟（默认 `30000`）
+
+未配置数据库时，埋点与审计可在内存中短期保留，不适合生产核对「谁改了配置」。

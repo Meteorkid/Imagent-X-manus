@@ -1,12 +1,9 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
 export default function TestServiceWorkerPage() {
-  // 读取HTML文件内容
-  const htmlPath = join(process.cwd(), 'public', 'offline-dino', 'test-service-worker.html');
-  const htmlContent = readFileSync(htmlPath, 'utf-8');
-  
   return (
-    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <iframe
+      src="/offline-dino/test-service-worker.html"
+      title="Test Service Worker"
+      className="h-[calc(100vh-4rem)] w-full border-0"
+    />
   );
 }

@@ -110,6 +110,10 @@ docker-compose -f docker-compose-production.yml up -d
 
 - [🚀 启动指南](docs/guides/START_GUIDE.md)
 - [📦 Monorepo 说明](MONOREPO.md)（主前端：`apps/frontend`）
+- [🛠️ 工程改进基线](docs/guides/ENGINEERING_BASELINE.md)
+- [🏛️ 架构治理基线（2026Q2）](docs/guides/ARCHITECTURE_GOVERNANCE_BASELINE.md)
+- [🗃️ 数据库变更治理（Flyway Core）](docs/guides/DB_CHANGE_GOVERNANCE.md)
+- [🔁 LangChain4j 迁移方案 A](docs/guides/LANGCHAIN4J_MIGRATION_PLAN_A.md)
 - [🔧 开发文档](docs/develop_document.md)
 - [📚 API参考](docs/api-reference/README.md)
 - [🐳 Docker部署](docs/deployment/docker/DOCKER_SETUP.md)

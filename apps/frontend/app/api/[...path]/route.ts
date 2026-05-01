@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+function resolveRequestId(request: NextRequest): string {
+  const existing = request.headers.get('x-request-id');
+  if (existing && existing.trim()) return existing;
+  return crypto.randomUUID();
+}
+
+function resolveAuthChannel(request: NextRequest): string {
+  if (request.headers.get('authorization')) return 'authorization-header';
+  if (request.headers.get('cookie')?.includes('token=')) return 'cookie-token';
+  return 'anonymous';
+}
+
 // API代理路由 - 支持内网和公网部署
 export async function GET(
   request: NextRequest,
@@ -41,6 +53,9 @@ async function handleApiRequest(
   pathSegments: string[],
   method: string
 ) {
+  const requestId = resolveRequestId(request);
+  const authChannel = resolveAuthChannel(request);
+
   try {
     // 获取后端地址 - 支持环境变量配置
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:8088';
@@ -71,6 +86,8 @@ async function handleApiRequest(
     if (authorization) {
       headers.set('authorization', authorization);
     }
+    headers.set('x-request-id', requestId);
+    headers.set('x-auth-channel', authChannel);
 
     headers.set('host', new URL(backendUrl).host);
     
@@ -91,10 +108,11 @@ async function handleApiRequest(
     const responseHeaders = new Headers();
     response.headers.forEach((value, key) => {
       // 跳过一些可能导致问题的头部
-      if (!key.startsWith('x-') && key !== 'transfer-encoding') {
+      if (key !== 'transfer-encoding') {
         responseHeaders.set(key, value);
       }
     });
+    responseHeaders.set('x-request-id', requestId);
     
     // 返回响应
     return new NextResponse(response.body, {
@@ -105,11 +123,13 @@ async function handleApiRequest(
     
   } catch (error) {
     console.error('API代理错误:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
       { 
         error: 'Internal Server Error', 
         message: 'API代理服务异常',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        requestId,
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
       },
       { status: 500 }
     );

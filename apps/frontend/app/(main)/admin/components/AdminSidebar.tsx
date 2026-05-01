@@ -16,7 +16,9 @@ import {
   CreditCard,
   BookOpen,
   Database,
-  Package
+  Package,
+  FileText,
+  FlaskConical
 } from "lucide-react";
 
 interface MenuItemProps {
@@ -96,6 +98,16 @@ export function AdminSidebar() {
       href: "/admin/rules",
       icon: BookOpen,
       label: "规则管理",
+    },
+    {
+      href: "/admin/offline-audit",
+      icon: FileText,
+      label: "离线配置审计",
+    },
+    {
+      href: "/admin/offline-experiments",
+      icon: FlaskConical,
+      label: "离线实验配置",
     },
     {
       href: "/admin/auth-settings",

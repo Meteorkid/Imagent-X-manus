@@ -42,9 +42,13 @@ public class JsonUtils {
         }
 
         try {
-            System.out.println("JsonUtils Debug - toJsonString input: " + obj + " (type: " + obj.getClass() + ")");
+            if (log.isDebugEnabled()) {
+                log.debug("toJsonString input type={}", obj.getClass().getName());
+            }
             String result = objectMapper.writeValueAsString(obj);
-            System.out.println("JsonUtils Debug - toJsonString result: " + result);
+            if (log.isTraceEnabled()) {
+                log.trace("toJsonString result: {}", result);
+            }
             return result;
         } catch (Exception e) {
             log.error("JSON序列化失败: {}, 错误: {}", obj.getClass().getSimpleName(), e.getMessage(), e);
@@ -97,19 +101,17 @@ public class JsonUtils {
      * @return 转换后的Map，失败返回null */
     public static Map<String, Object> parseMap(String json) {
         if (json == null || json.isEmpty()) {
-            System.out.println("JsonUtils Debug - parseMap input is null or empty");
             return null;
         }
 
         try {
-            System.out.println("JsonUtils Debug - parseMap input: " + json);
-            Map<String, Object> result = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            if (log.isTraceEnabled()) {
+                log.trace("parseMap input: {}", json);
+            }
+            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
             });
-            System.out.println("JsonUtils Debug - parseMap result: " + result);
-            return result;
         } catch (Exception e) {
             log.error("JSON Map反序列化失败: {}", e.getMessage(), e);
-            System.out.println("JsonUtils Debug - parseMap failed for input: " + json + ", error: " + e.getMessage());
             return null;
         }
     }

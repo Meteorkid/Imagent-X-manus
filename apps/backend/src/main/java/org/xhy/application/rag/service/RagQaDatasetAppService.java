@@ -1057,6 +1057,7 @@ public class RagQaDatasetAppService {
             final boolean[] thinkingStarted = {false};
             final boolean[] thinkingEnded = {false};
             final boolean[] hasThinkingProcess = {false};
+            final StringBuilder fullThinking = new StringBuilder();
 
             // 普通模型的流式处理方式
             tokenStream.onPartialResponse(fragment -> {
@@ -1077,7 +1078,8 @@ public class RagQaDatasetAppService {
                 }
 
                 sendSseData(emitter, AgentChatResponse.build(fragment, MessageType.RAG_ANSWER_PROGRESS));
-            }).onPartialReasoning(reasoning -> {
+            }).onPartialThinking(partialThinking -> {
+                String reasoning = partialThinking.text();
 
                 // 标记有思考过程
                 hasThinkingProcess[0] = true;
@@ -1090,13 +1092,15 @@ public class RagQaDatasetAppService {
 
                 // 发送思考进行中的状态（可选择是否发送思考内容）
                 sendSseData(emitter, AgentChatResponse.build(reasoning, MessageType.RAG_THINKING_PROGRESS));
-            }).onCompleteReasoning(completeReasoning -> {
-                log.info("思维链生成完成，长度: {}", completeReasoning.length());
-                log.info("完整思维链内容:\n{}", completeReasoning);
+                fullThinking.append(reasoning);
             }).onCompleteResponse(chatResponse -> {
                 String fullAnswer = chatResponse.aiMessage().text();
                 log.info("RAG回答生成完成，用户: {}, 响应长度: {}", userId, fullAnswer.length());
                 log.info("完整RAG回答内容:\n{}", fullAnswer);
+                if (fullThinking.length() > 0) {
+                    log.info("思维链生成完成，长度: {}", fullThinking.length());
+                    log.info("完整思维链内容:\n{}", fullThinking);
+                }
 
                 // 上报调用成功结果
                 long latency = System.currentTimeMillis() - startTime;

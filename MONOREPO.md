@@ -10,7 +10,7 @@
 
 根目录 `package.json` 提供便捷脚本（通过 `npm --prefix apps/frontend` 调用），无需在仓库根安装前端依赖即可从根目录运行测试/构建。
 
-前端目录含 **`.npmrc`**（`legacy-peer-deps=true`），用于在 `date-fns` 与 `react-day-picker` 的 peer 声明不一致时稳定安装；CI 中请使用 `npm ci`（会读取该文件）。
+前端已将 `date-fns` 对齐为 `3.x`（与 `react-day-picker@8` 兼容），`npm ci` 可直接安装，不再依赖 `legacy-peer-deps`。
 
 ## 历史目录名
 

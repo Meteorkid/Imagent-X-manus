@@ -64,6 +64,12 @@ spring:
       register-mbeans: true
       connection-init-sql: SET TIME ZONE 'Asia/Shanghai'
       auto-commit: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    clean-disabled: true
+    locations: classpath:db/migration/core
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -111,8 +117,8 @@ logging:
     org.springframework.web: debug
     org.hibernate.SQL: debug
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level trace=%X{traceId:-na} auth=%X{authChannel:-na} idem=%X{idempotencyKey:-na} %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level trace=%X{traceId:-na} auth=%X{authChannel:-na} idem=%X{idempotencyKey:-na} %logger{36} - %msg%n"
   file:
     name: logs/agent-x.log
     max-size: 100MB
@@ -131,7 +137,7 @@ github:
   target:
     repo-name: ${GITHUB_REPO_NAME:agent-mcp-community}
     username: ${GITHUB_USERNAME:lucky-aeon}
-    token: ${GITHUB_TOKEN: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}
+    token: ${GITHUB_TOKEN:}
 
 # 高可用网关配置
 high-availability:

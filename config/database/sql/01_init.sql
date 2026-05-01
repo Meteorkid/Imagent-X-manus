@@ -19,79 +19,79 @@ comment on column public.accounts.credit is '信用额度';
 comment on column public.accounts.total_consumed is '总消费金额';
 comment on column public.accounts.last_transaction_at is '最后交易时间';
 
+-- 与 apps/backend AgentExecutionDetailEntity / AgentExecutionSummaryEntity 对齐（按 session 维度追踪）
 create table public.agent_execution_details (
                                                 id bigserial primary key not null,
-                                                trace_id character varying(64) not null, -- 关联汇总表的追踪ID
-                                                sequence_no integer not null, -- 执行序号，同一trace_id内递增
-                                                step_type character varying(32) not null, -- 步骤类型：USER_MESSAGE, AI_RESPONSE, TOOL_CALL
-                                                message_content text, -- 统一的消息内容（用户消息/AI响应/工具调用描述）
-                                                message_type character varying(32), -- 消息类型：USER_MESSAGE, AI_RESPONSE, TOOL_CALL
-                                                model_id character varying(128), -- 此次使用的模型ID
+                                                message_content text,
+                                                message_type character varying(32) not null,
+                                                model_endpoint character varying(128),
                                                 provider_name character varying(64),
                                                 message_tokens integer,
                                                 model_call_time integer,
                                                 tool_name character varying(128),
-                                                tool_request_args text, -- 工具调用入参(JSON格式)
-                                                tool_response_data text, -- 工具调用出参(JSON格式)
+                                                tool_request_args text,
+                                                tool_response_data text,
                                                 tool_execution_time integer,
                                                 tool_success boolean,
-                                                is_fallback_used boolean default false, -- 是否触发了平替/降级
+                                                is_fallback_used boolean default false,
                                                 fallback_reason text,
-                                                fallback_from_model character varying(128),
-                                                fallback_to_model character varying(128),
+                                                fallback_from_endpoint character varying(128),
+                                                fallback_to_endpoint character varying(128),
                                                 step_cost numeric(10,6),
                                                 step_success boolean not null,
                                                 step_error_message text,
                                                 created_at timestamp without time zone default CURRENT_TIMESTAMP,
                                                 updated_at timestamp without time zone default CURRENT_TIMESTAMP,
-                                                deleted_at timestamp without time zone
+                                                deleted_at timestamp without time zone,
+                                                session_id character varying(64) not null default '',
+                                                fallback_from_provider character varying(255),
+                                                fallback_to_provider character varying(255)
 );
-create index idx_agent_exec_details_trace_seq on agent_execution_details using btree (trace_id, sequence_no);
-create index idx_agent_exec_details_trace_type on agent_execution_details using btree (trace_id, step_type);
 create index idx_agent_exec_details_tool on agent_execution_details using btree (tool_name);
-create index idx_agent_exec_details_model on agent_execution_details using btree (model_id);
+create index idx_agent_exec_details_model on agent_execution_details using btree (model_endpoint);
+create index idx_agent_exec_details_session_type on agent_execution_details using btree (session_id, message_type);
+create index idx_agent_execution_details_model_endpoint on agent_execution_details using btree (model_endpoint);
+create index idx_agent_execution_details_fallback on agent_execution_details using btree (is_fallback_used) WHERE (is_fallback_used = true);
 comment on table public.agent_execution_details is 'Agent执行链路详细记录表，记录每次执行的详细过程';
-comment on column public.agent_execution_details.trace_id is '关联汇总表的追踪ID';
-comment on column public.agent_execution_details.sequence_no is '执行序号，同一trace_id内递增';
-comment on column public.agent_execution_details.step_type is '步骤类型：USER_MESSAGE, AI_RESPONSE, TOOL_CALL';
 comment on column public.agent_execution_details.message_content is '统一的消息内容（用户消息/AI响应/工具调用描述）';
 comment on column public.agent_execution_details.message_type is '消息类型：USER_MESSAGE, AI_RESPONSE, TOOL_CALL';
-comment on column public.agent_execution_details.model_id is '此次使用的模型ID';
+comment on column public.agent_execution_details.model_endpoint is '此次使用的模型部署名称';
 comment on column public.agent_execution_details.tool_request_args is '工具调用入参(JSON格式)';
 comment on column public.agent_execution_details.tool_response_data is '工具调用出参(JSON格式)';
 comment on column public.agent_execution_details.is_fallback_used is '是否触发了平替/降级';
+comment on column public.agent_execution_details.fallback_from_endpoint is '降级前的模型部署名称';
+comment on column public.agent_execution_details.fallback_to_endpoint is '降级后的模型部署名称';
+comment on column public.agent_execution_details.session_id is '关联汇总表的会话ID';
+comment on column public.agent_execution_details.fallback_from_provider is '降级前的服务商名称';
+comment on column public.agent_execution_details.fallback_to_provider is '降级后的服务商名称';
 
 create table public.agent_execution_summary (
                                                 id bigserial primary key not null,
-                                                trace_id character varying(64) not null, -- 执行追踪ID，唯一标识一次完整执行
-                                                user_id character varying(64) not null, -- 用户ID (String类型UUID)
-                                                session_id character varying(64) not null, -- 会话ID
-                                                agent_id character varying(64) not null, -- Agent ID (String类型UUID)
+                                                user_id character varying(64) not null,
+                                                session_id character varying(64) not null,
+                                                agent_id character varying(64) not null,
                                                 execution_start_time timestamp without time zone not null,
                                                 execution_end_time timestamp without time zone,
-                                                total_execution_time integer, -- 总执行时间(毫秒)
+                                                total_execution_time integer,
                                                 total_input_tokens integer default 0,
                                                 total_output_tokens integer default 0,
-                                                total_tokens integer default 0, -- 总Token数
-                                                tool_call_count integer default 0, -- 工具调用总次数
+                                                total_tokens integer default 0,
+                                                tool_call_count integer default 0,
                                                 total_tool_execution_time integer default 0,
-                                                total_cost numeric(10,6) default 0, -- 总成本费用
-                                                execution_success boolean not null, -- 执行是否成功
+                                                total_cost numeric(10,6) default 0,
+                                                execution_success boolean not null,
                                                 error_phase character varying(64),
                                                 error_message text,
                                                 created_at timestamp without time zone default CURRENT_TIMESTAMP,
                                                 updated_at timestamp without time zone default CURRENT_TIMESTAMP,
                                                 deleted_at timestamp without time zone
 );
-create unique index agent_execution_summary_trace_id_key on agent_execution_summary using btree (trace_id);
 create index idx_agent_exec_summary_user_time on agent_execution_summary using btree (user_id, execution_start_time);
 create index idx_agent_exec_summary_session on agent_execution_summary using btree (session_id);
 create index idx_agent_exec_summary_agent on agent_execution_summary using btree (agent_id);
-create index idx_agent_exec_summary_trace on agent_execution_summary using btree (trace_id);
 comment on table public.agent_execution_summary is 'Agent执行链路汇总表，记录每次Agent执行的汇总信息';
-comment on column public.agent_execution_summary.trace_id is '执行追踪ID，唯一标识一次完整执行';
 comment on column public.agent_execution_summary.user_id is '用户ID (String类型UUID)';
-comment on column public.agent_execution_summary.session_id is '会话ID';
+comment on column public.agent_execution_summary.session_id is '会话ID，作为追踪的唯一标识';
 comment on column public.agent_execution_summary.agent_id is 'Agent ID (String类型UUID)';
 comment on column public.agent_execution_summary.total_execution_time is '总执行时间(毫秒)';
 comment on column public.agent_execution_summary.total_tokens is '总Token数';
@@ -1128,84 +1128,3 @@ INSERT INTO auth_settings (id, feature_type, feature_key, feature_name, enabled,
                                                                                                                  ('auth-github-login', 'LOGIN', 'GITHUB_LOGIN', 'GitHub登录', TRUE, 2, 'GitHub OAuth登录'),
                                                                                                                  ('auth-community-login', 'LOGIN', 'COMMUNITY_LOGIN', '敲鸭登录', TRUE, 3, '敲鸭社区OAuth登录'),
                                                                                                                  ('auth-user-register', 'REGISTER', 'USER_REGISTER', '用户注册', TRUE, 1, '允许新用户注册账号');
-
-
-create table public.agent_execution_details (
-                                                id bigint primary key not null default nextval('agent_execution_details_id_seq'::regclass),
-                                                message_content text, -- 统一的消息内容（用户消息/AI响应/工具调用描述）
-                                                message_type character varying(32) not null, -- 消息类型：USER_MESSAGE, AI_RESPONSE, TOOL_CALL
-                                                model_endpoint character varying(128), -- 此次使用的模型部署名称
-                                                provider_name character varying(64),
-                                                message_tokens integer,
-                                                model_call_time integer,
-                                                tool_name character varying(128),
-                                                tool_request_args text, -- 工具调用入参(JSON格式)
-                                                tool_response_data text, -- 工具调用出参(JSON格式)
-                                                tool_execution_time integer,
-                                                tool_success boolean,
-                                                is_fallback_used boolean default false, -- 是否触发了平替/降级
-                                                fallback_reason text,
-                                                fallback_from_endpoint character varying(128), -- 降级前的模型部署名称
-                                                fallback_to_endpoint character varying(128), -- 降级后的模型部署名称
-                                                step_cost numeric(10,6),
-                                                step_success boolean not null,
-                                                step_error_message text,
-                                                created_at timestamp without time zone default CURRENT_TIMESTAMP,
-                                                updated_at timestamp without time zone default CURRENT_TIMESTAMP,
-                                                deleted_at timestamp without time zone,
-                                                session_id character varying(64) not null default '', -- 关联汇总表的会话ID
-                                                fallback_from_provider character varying(255), -- 降级前的服务商名称
-                                                fallback_to_provider character varying(255) -- 降级后的服务商名称
-);
-create index idx_agent_exec_details_tool on agent_execution_details using btree (tool_name);
-create index idx_agent_exec_details_model on agent_execution_details using btree (model_endpoint);
-create index idx_agent_exec_details_session_type on agent_execution_details using btree (session_id, message_type);
-create index idx_agent_execution_details_model_endpoint on agent_execution_details using btree (model_endpoint);
-create index idx_agent_execution_details_fallback on agent_execution_details using btree (is_fallback_used) WHERE (is_fallback_used = true);
-comment on table public.agent_execution_details is 'Agent执行链路详细记录表，记录每次执行的详细过程';
-comment on column public.agent_execution_details.message_content is '统一的消息内容（用户消息/AI响应/工具调用描述）';
-comment on column public.agent_execution_details.message_type is '消息类型：USER_MESSAGE, AI_RESPONSE, TOOL_CALL';
-comment on column public.agent_execution_details.model_endpoint is '此次使用的模型部署名称';
-comment on column public.agent_execution_details.tool_request_args is '工具调用入参(JSON格式)';
-comment on column public.agent_execution_details.tool_response_data is '工具调用出参(JSON格式)';
-comment on column public.agent_execution_details.is_fallback_used is '是否触发了平替/降级';
-comment on column public.agent_execution_details.fallback_from_endpoint is '降级前的模型部署名称';
-comment on column public.agent_execution_details.fallback_to_endpoint is '降级后的模型部署名称';
-comment on column public.agent_execution_details.session_id is '关联汇总表的会话ID';
-comment on column public.agent_execution_details.fallback_from_provider is '降级前的服务商名称';
-comment on column public.agent_execution_details.fallback_to_provider is '降级后的服务商名称';
-
-create table public.agent_execution_summary (
-                                                id bigint primary key not null default nextval('agent_execution_summary_id_seq'::regclass),
-                                                user_id character varying(64) not null, -- 用户ID (String类型UUID)
-                                                session_id character varying(64) not null, -- 会话ID，作为追踪的唯一标识
-                                                agent_id character varying(64) not null, -- Agent ID (String类型UUID)
-                                                execution_start_time timestamp without time zone not null,
-                                                execution_end_time timestamp without time zone,
-                                                total_execution_time integer, -- 总执行时间(毫秒)
-                                                total_input_tokens integer default 0,
-                                                total_output_tokens integer default 0,
-                                                total_tokens integer default 0, -- 总Token数
-                                                tool_call_count integer default 0, -- 工具调用总次数
-                                                total_tool_execution_time integer default 0,
-                                                total_cost numeric(10,6) default 0, -- 总成本费用
-                                                execution_success boolean not null, -- 执行是否成功
-                                                error_phase character varying(64),
-                                                error_message text,
-                                                created_at timestamp without time zone default CURRENT_TIMESTAMP,
-                                                updated_at timestamp without time zone default CURRENT_TIMESTAMP,
-                                                deleted_at timestamp without time zone
-);
-create index idx_agent_exec_summary_user_time on agent_execution_summary using btree (user_id, execution_start_time);
-create index idx_agent_exec_summary_session on agent_execution_summary using btree (session_id);
-create index idx_agent_exec_summary_agent on agent_execution_summary using btree (agent_id);
-comment on table public.agent_execution_summary is 'Agent执行链路汇总表，记录每次Agent执行的汇总信息';
-comment on column public.agent_execution_summary.user_id is '用户ID (String类型UUID)';
-comment on column public.agent_execution_summary.session_id is '会话ID，作为追踪的唯一标识';
-comment on column public.agent_execution_summary.agent_id is 'Agent ID (String类型UUID)';
-comment on column public.agent_execution_summary.total_execution_time is '总执行时间(毫秒)';
-comment on column public.agent_execution_summary.total_tokens is '总Token数';
-comment on column public.agent_execution_summary.tool_call_count is '工具调用总次数';
-comment on column public.agent_execution_summary.total_cost is '总成本费用';
-comment on column public.agent_execution_summary.execution_success is '执行是否成功';
-

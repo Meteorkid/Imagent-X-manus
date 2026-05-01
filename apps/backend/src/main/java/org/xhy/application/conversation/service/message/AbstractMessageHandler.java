@@ -17,6 +17,9 @@ import org.xhy.application.conversation.dto.AgentChatResponse;
 import org.xhy.application.conversation.service.handler.context.AgentPromptTemplates;
 import org.xhy.application.conversation.service.handler.context.ChatContext;
 import org.xhy.application.conversation.service.message.agent.tool.RagToolManager;
+import org.xhy.application.conversation.service.message.pipeline.ModelCompletionStage;
+import org.xhy.application.conversation.service.message.pipeline.ModelErrorStage;
+import org.xhy.application.conversation.service.message.pipeline.ToolExecutionStage;
 import org.xhy.domain.agent.model.AgentEntity;
 import org.xhy.domain.conversation.constant.MessageType;
 import org.xhy.domain.conversation.constant.Role;
@@ -69,12 +72,17 @@ public abstract class AbstractMessageHandler {
     protected final UserSettingsDomainService userSettingsDomainService;
     protected final LLMDomainService llmDomainService;
     protected final RagToolManager ragToolManager;
+    protected final ModelCompletionStage modelCompletionStage;
+    protected final ModelErrorStage modelErrorStage;
+    protected final ToolExecutionStage toolExecutionStage;
     protected final BillingService billingService;
     protected final AccountDomainService accountDomainService;
     public AbstractMessageHandler(LLMServiceFactory llmServiceFactory, MessageDomainService messageDomainService,
             HighAvailabilityDomainService highAvailabilityDomainService, SessionDomainService sessionDomainService,
             UserSettingsDomainService userSettingsDomainService, LLMDomainService llmDomainService,
-            RagToolManager ragToolManager, BillingService billingService, AccountDomainService accountDomainService) {
+            RagToolManager ragToolManager, ModelCompletionStage modelCompletionStage,
+            ModelErrorStage modelErrorStage, ToolExecutionStage toolExecutionStage, BillingService billingService,
+            AccountDomainService accountDomainService) {
         this.llmServiceFactory = llmServiceFactory;
         this.messageDomainService = messageDomainService;
         this.highAvailabilityDomainService = highAvailabilityDomainService;
@@ -82,6 +90,9 @@ public abstract class AbstractMessageHandler {
         this.userSettingsDomainService = userSettingsDomainService;
         this.llmDomainService = llmDomainService;
         this.ragToolManager = ragToolManager;
+        this.modelCompletionStage = modelCompletionStage;
+        this.modelErrorStage = modelErrorStage;
+        this.toolExecutionStage = toolExecutionStage;
         this.billingService = billingService;
         this.accountDomainService = accountDomainService;
     }
@@ -255,17 +266,10 @@ public abstract class AbstractMessageHandler {
             onChatCompleted(chatContext, true, null);
 
         } catch (Exception e) {
-            // 错误处理
-            AgentChatResponse errorResponse = AgentChatResponse.buildEndMessage(e.getMessage(), MessageType.TEXT);
-            transport.sendMessage(connection, errorResponse);
-
             long latency = System.currentTimeMillis() - startTime;
-            highAvailabilityDomainService.reportCallResult(chatContext.getInstanceId(), chatContext.getModel().getId(),
-                    false, latency, e.getMessage());
-
-            // 调用错误处理钩子
-            onChatError(chatContext, ExecutionPhase.MODEL_CALL, e);
-            onChatCompleted(chatContext, false, e.getMessage());
+            modelErrorStage.handle(chatContext, e, latency, transport, connection,
+                    (errorPhase, errorThrowable) -> onChatError(chatContext, errorPhase, errorThrowable),
+                    errorMessage -> onChatCompleted(chatContext, false, errorMessage));
         }
     }
 
@@ -301,17 +305,10 @@ public abstract class AbstractMessageHandler {
         long startTime = System.currentTimeMillis();
 
         tokenStream.onError(throwable -> {
-            transport.sendMessage(connection,
-                    AgentChatResponse.buildEndMessage(throwable.getMessage(), MessageType.TEXT));
-
-            // 上报调用失败结果
             long latency = System.currentTimeMillis() - startTime;
-            highAvailabilityDomainService.reportCallResult(chatContext.getInstanceId(), chatContext.getModel().getId(),
-                    false, latency, throwable.getMessage());
-
-            // 调用错误处理钩子
-            onChatError(chatContext, ExecutionPhase.MODEL_CALL, throwable);
-            onChatCompleted(chatContext, false, throwable.getMessage());
+            modelErrorStage.handle(chatContext, throwable, latency, transport, connection,
+                    (errorPhase, errorThrowable) -> onChatError(chatContext, errorPhase, errorThrowable),
+                    errorMessage -> onChatCompleted(chatContext, false, errorMessage));
         });
 
         // 部分响应处理
@@ -329,22 +326,10 @@ public abstract class AbstractMessageHandler {
 
             this.setMessageTokenCount(chatContext.getMessageHistory(), userEntity, llmEntity, chatResponse);
 
-            messageDomainService.updateMessage(userEntity);
-            // 保存AI消息
-            messageDomainService.saveMessageAndUpdateContext(Collections.singletonList(llmEntity),
-                    chatContext.getContextEntity());
-
-            // 发送结束消息
-            transport.sendEndMessage(connection, AgentChatResponse.buildEndMessage(MessageType.TEXT));
-
-            // 上报调用成功结果
             long latency = System.currentTimeMillis() - startTime;
-            highAvailabilityDomainService.reportCallResult(chatContext.getInstanceId(), chatContext.getModel().getId(),
-                    true, latency, null);
-
-            // 调用模型调用完成钩子
-            ModelCallInfo modelCallInfo = buildModelCallInfo(chatContext, chatResponse, latency, true);
-            onModelCallCompleted(chatContext, chatResponse, modelCallInfo);
+            modelCompletionStage.handle(chatContext, chatResponse, latency, userEntity, llmEntity, transport,
+                    connection, (response, callLatency) -> buildModelCallInfo(chatContext, response, callLatency, true),
+                    modelCallInfo -> onModelCallCompleted(chatContext, chatResponse, modelCallInfo));
 
             // 执行模型调用计费
             performBillingWithErrorHandling(chatContext, chatResponse.tokenUsage().inputTokenCount(),
@@ -363,25 +348,8 @@ public abstract class AbstractMessageHandler {
 
         // 工具执行处理
         tokenStream.onToolExecuted(toolExecution -> {
-            if (!messageBuilder.get().isEmpty()) {
-                transport.sendMessage(connection, AgentChatResponse.buildEndMessage(MessageType.TEXT));
-                llmEntity.setContent(messageBuilder.get().toString());
-                messageDomainService.saveMessageAndUpdateContext(Collections.singletonList(llmEntity),
-                        chatContext.getContextEntity());
-                messageBuilder.set(new StringBuilder());
-            }
-            String message = "执行工具：" + toolExecution.request().name();
-            MessageEntity toolMessage = createLlmMessage(chatContext);
-            toolMessage.setMessageType(MessageType.TOOL_CALL);
-            toolMessage.setContent(message);
-            messageDomainService.saveMessageAndUpdateContext(Collections.singletonList(toolMessage),
-                    chatContext.getContextEntity());
-
-            transport.sendMessage(connection, AgentChatResponse.buildEndMessage(message, MessageType.TOOL_CALL));
-
-            // 调用工具调用完成钩子
-            ToolCallInfo toolCallInfo = buildToolCallInfo(toolExecution);
-            onToolCallCompleted(chatContext, toolCallInfo);
+            toolExecutionStage.handle(chatContext, toolExecution, messageBuilder, llmEntity, transport, connection,
+                    this::buildToolCallInfo, toolCallInfo -> onToolCallCompleted(chatContext, toolCallInfo));
         });
 
         // 启动流处理

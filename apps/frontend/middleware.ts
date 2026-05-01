@@ -5,9 +5,18 @@ import type { NextRequest } from "next/server"
  * 无需登录即可访问的路径（精确匹配或前缀）。
  * 管理员权限仍以服务端 API 校验为准；此处仅保证「已登录」壳层。
  */
-const PUBLIC_EXACT = new Set<string>(["/login", "/register", "/reset-password"])
+const PUBLIC_EXACT = new Set<string>([
+  "/login",
+  "/register",
+  "/reset-password",
+  "/offline-demo",
+  "/offline-report",
+  "/offline-dino/dino",
+  "/offline-dino/verify-offline",
+  "/offline-dino/test-service-worker",
+])
 
-const PUBLIC_PREFIXES = ["/sso/"]
+const PUBLIC_PREFIXES = ["/sso/", "/offline-dino/"]
 
 function isPublicPath(pathname: string): boolean {
   if (PUBLIC_EXACT.has(pathname)) return true

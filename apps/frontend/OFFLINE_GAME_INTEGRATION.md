@@ -37,6 +37,18 @@ OfflineGameProvider (根提供者)
 - `components/offline/NetworkStatusIndicator.tsx` - 状态指示器
 - `app/api/health/route.ts` - 健康检查API
 
+### 多版本游戏脚本（切换）
+
+面向程序员/管理员的配置能力：**不会在 Service Worker `install` 阶段预缓存所有候选脚本**，`sw.js` 的预缓存列表只包含默认的 `dino-game-fixed.js` 等核心离线页资源。其它版本在联网访问时由现有 `fetch` 逻辑按需写入运行时缓存；纯离线场景下未预缓存的脚本可能不可用，这是预期行为。
+
+- 将新版本放到 `public/offline-dino/`，文件名仅允许字母、数字、`._-`，且以 `.js` 结尾（例如 `dino-game-v2.js`）。
+- 通过 **`GET /api/offline-experiments/script-versions`** 获取版本注册表（`id -> scriptPath`、兼容性、离线可用性）。
+- 通过 **`PUT /api/offline-experiments/config`**（管理员）设置字段 **`activeGameVersion`**（如 `v1`、`v2`），由服务端映射到脚本路径并校验；兼容旧字段 `activeGameScript` 但不建议再直接写路径。
+- 默认兜底策略：指定版本脚本加载失败时，前端会自动回落到默认版本 `v2`（`dino-game-fixed.js`），并在 UI 提示“当前版本不可用，已自动切换默认版本”。
+- 独立页面 **`/offline-dino/dino?game=dino-game.js`** 可在 iframe 中预览指定脚本（与 `dino.html?game=...` 等价）。
+- **静态页 `dino.html` 与完整版脚本**：`dino-game-fixed.js` 末尾**不会**自动 `new DinoGame()`，必须由 `dino.html` 在脚本 `onload` 里创建实例，空格/点击才会触发 `startGame()`。精简版 `dino-game.js` 仍在文件末尾自行 `new DinoGame()`，`dino.html` 已对两种脚本区分处理，避免重复创建。
+- 生产环境使用 PostgreSQL 时，字段持久化在表 **`offline_experiment_config.active_game_version` / `active_game_script`**；新库也会在 `ensureSchema` / 迁移中自动补列。
+
 ## 📦 安装和配置
 
 ### 1. 复制游戏文件

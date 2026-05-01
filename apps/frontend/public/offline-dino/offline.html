@@ -130,24 +130,24 @@
     </div>
 
     <script>
-        // 网络状态检测
-        function checkNetworkStatus() {
+        async function checkNetworkStatus() {
             const statusEl = document.getElementById('status');
-            
-            // 尝试加载一个小的资源来检测网络
-            const img = new Image();
-            img.onload = function() {
-                statusEl.innerHTML = '网络已恢复，正在重定向...';
-                setTimeout(() => {
-                    window.location.href = 'http://localhost:3000';
-                }, 1000);
-            };
-            
-            img.onerror = function() {
+            try {
+                const response = await fetch('/api/health', {
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+                if (response.ok) {
+                    statusEl.innerHTML = '网络已恢复，正在返回...';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 800);
+                } else {
+                    statusEl.innerHTML = '网络仍未连接，继续游戏吧！';
+                }
+            } catch (_) {
                 statusEl.innerHTML = '网络仍未连接，继续游戏吧！';
-            };
-            
-            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?' + Date.now();
+            }
         }
 
         // 每3秒检查一次网络状态

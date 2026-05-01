@@ -9,6 +9,9 @@ import org.xhy.application.conversation.service.message.AbstractMessageHandler;
 import org.xhy.application.conversation.service.message.Agent;
 import org.xhy.application.conversation.service.message.agent.AgentToolManager;
 import org.xhy.application.conversation.service.message.agent.tool.RagToolManager;
+import org.xhy.application.conversation.service.message.pipeline.ModelCompletionStage;
+import org.xhy.application.conversation.service.message.pipeline.ModelErrorStage;
+import org.xhy.application.conversation.service.message.pipeline.ToolExecutionStage;
 import org.xhy.domain.conversation.constant.MessageType;
 import org.xhy.domain.conversation.model.MessageEntity;
 import org.xhy.domain.conversation.service.MessageDomainService;
@@ -21,7 +24,6 @@ import org.xhy.infrastructure.transport.MessageTransport;
 import org.xhy.application.billing.service.BillingService;
 import org.xhy.domain.user.service.AccountDomainService;
 
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** 预览消息处理器 专门用于Agent预览功能，不会保存消息到数据库 */
@@ -34,9 +36,11 @@ public class PreviewMessageHandler extends AbstractMessageHandler {
             HighAvailabilityDomainService highAvailabilityDomainService, SessionDomainService sessionDomainService,
             UserSettingsDomainService userSettingsDomainService, LLMDomainService llmDomainService,
             RagToolManager ragToolManager, BillingService billingService, AccountDomainService accountDomainService,
-            AgentToolManager agentToolManager) {
+            ModelCompletionStage modelCompletionStage, ModelErrorStage modelErrorStage,
+            ToolExecutionStage toolExecutionStage, AgentToolManager agentToolManager) {
         super(llmServiceFactory, messageDomainService, highAvailabilityDomainService, sessionDomainService,
-                userSettingsDomainService, llmDomainService, ragToolManager, billingService, accountDomainService);
+                userSettingsDomainService, llmDomainService, ragToolManager, modelCompletionStage, modelErrorStage,
+                toolExecutionStage, billingService, accountDomainService);
         this.agentToolManager = agentToolManager;
     }
 

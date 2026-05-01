@@ -8014,7 +8014,4 @@ class DinoGame {
     }
 }
 
-// 初始化游戏 - 移除自动初始化，由HTML控制
-// window.addEventListener('load', () => {
-//     new DinoGame();
-// });
+// 不在此自动 new DinoGame()：由 public/offline-dino/dino.html 在对应脚本 onload 后创建实例（与精简版 dino-game.js 自行初始化区分）。

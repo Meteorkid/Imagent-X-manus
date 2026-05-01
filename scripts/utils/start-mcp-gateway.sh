@@ -5,6 +5,11 @@
 
 set -e
 
+HOST_PORT="${MCP_GATEWAY_HOST_PORT:-8081}"
+CONTAINER_PORT="${MCP_GATEWAY_CONTAINER_PORT:-8080}"
+API_KEY="${MCP_GATEWAY_API_KEY:-default-api-key-1234567890}"
+ALLOW_401_AS_HEALTHY="${MCP_GATEWAY_ALLOW_401_AS_HEALTHY:-true}"
+
 # 颜色定义
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -56,10 +61,9 @@ start_mcp_gateway() {
     # 启动MCP网关容器
     docker run -d \
         --name mcp-gateway \
-        --network host \
-        -p 8081:8081 \
-        -e MCP_GATEWAY_API_KEY=default-api-key-1234567890 \
-        -e MCP_GATEWAY_PORT=8081 \
+        -p "${HOST_PORT}:${CONTAINER_PORT}" \
+        -e MCP_GATEWAY_API_KEY="${API_KEY}" \
+        -e MCP_GATEWAY_PORT="${CONTAINER_PORT}" \
         ghcr.io/lucky-aeon/mcp-gateway:latest
     
     echo -e "${GREEN}✅ MCP网关容器已启动${NC}"
@@ -71,10 +75,31 @@ check_mcp_gateway() {
     
     # 等待服务启动
     for i in {1..30}; do
-        if curl -s http://localhost:8081/health >/dev/null 2>&1; then
+        status=""
+
+        status="$(curl -sS -o /dev/null -w '%{http_code}' "http://localhost:${HOST_PORT}/health" || true)"
+        if [ "$status" = "200" ]; then
             echo -e "${GREEN}✅ MCP网关服务已启动并正常运行${NC}"
-            echo -e "${BLUE}🌐 MCP网关地址: http://localhost:8081${NC}"
-            echo -e "${BLUE}🔍 健康检查: http://localhost:8081/health${NC}"
+            echo -e "${BLUE}🌐 MCP网关地址: http://localhost:${HOST_PORT}${NC}"
+            echo -e "${BLUE}🔍 健康检查: http://localhost:${HOST_PORT}/health${NC}"
+            return 0
+        fi
+        if [ "$status" = "401" ] && [ "$ALLOW_401_AS_HEALTHY" != "false" ]; then
+            echo -e "${GREEN}✅ MCP网关已启动（鉴权开启，401 视为可达）${NC}"
+            echo -e "${BLUE}🌐 MCP网关地址: http://localhost:${HOST_PORT}${NC}"
+            return 0
+        fi
+
+        status="$(curl -sS -o /dev/null -w '%{http_code}' "http://localhost:${HOST_PORT}/api/health" || true)"
+        if [ "$status" = "200" ]; then
+            echo -e "${GREEN}✅ MCP网关服务已启动并正常运行${NC}"
+            echo -e "${BLUE}🌐 MCP网关地址: http://localhost:${HOST_PORT}${NC}"
+            echo -e "${BLUE}🔍 健康检查: http://localhost:${HOST_PORT}/api/health${NC}"
+            return 0
+        fi
+        if [ "$status" = "401" ] && [ "$ALLOW_401_AS_HEALTHY" != "false" ]; then
+            echo -e "${GREEN}✅ MCP网关已启动（鉴权开启，401 视为可达）${NC}"
+            echo -e "${BLUE}🌐 MCP网关地址: http://localhost:${HOST_PORT}${NC}"
             return 0
         fi
         
@@ -90,10 +115,15 @@ check_mcp_gateway() {
 
 # 显示使用说明
 show_usage() {
+    local api_key_display="(已配置)"
+    if [ "$API_KEY" = "default-api-key-1234567890" ]; then
+        api_key_display="$API_KEY"
+    fi
+
     echo -e "\n${BLUE}📖 MCP网关使用说明:${NC}"
-    echo -e "${GREEN}• 网关地址: http://localhost:8081${NC}"
-    echo -e "${GREEN}• API密钥: default-api-key-1234567890${NC}"
-    echo -e "${GREEN}• 健康检查: http://localhost:8081/health${NC}"
+    echo -e "${GREEN}• 网关地址: http://localhost:${HOST_PORT}${NC}"
+    echo -e "${GREEN}• API密钥: ${api_key_display}${NC}"
+    echo -e "${GREEN}• 健康检查: http://localhost:${HOST_PORT}/health${NC}"
     echo -e "\n${YELLOW}常用命令:${NC}"
     echo -e "${YELLOW}• 查看日志: docker logs -f mcp-gateway${NC}"
     echo -e "${YELLOW}• 停止服务: docker stop mcp-gateway${NC}"

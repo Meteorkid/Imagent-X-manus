@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`networkStateMachine transition snapshots matches core transition matrix snapshots 1`] = `
+[
+  {
+    "name": "online + failure => unstable",
+    "next": {
+      "consecutiveFailures": 1,
+      "consecutiveSuccesses": 0,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:10.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:10.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": false,
+      "state": "unstable",
+    },
+  },
+  {
+    "name": "unstable + failure below threshold => unstable",
+    "next": {
+      "consecutiveFailures": 1,
+      "consecutiveSuccesses": 0,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:11.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:00.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": false,
+      "state": "unstable",
+    },
+  },
+  {
+    "name": "unstable + failure reach threshold => offline",
+    "next": {
+      "consecutiveFailures": 2,
+      "consecutiveSuccesses": 0,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:12.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:12.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": true,
+      "state": "offline",
+    },
+  },
+  {
+    "name": "offline + success below recovery threshold => recovering",
+    "next": {
+      "consecutiveFailures": 0,
+      "consecutiveSuccesses": 1,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:13.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:13.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": false,
+      "state": "recovering",
+    },
+  },
+  {
+    "name": "offline + success reach threshold => online",
+    "next": {
+      "consecutiveFailures": 0,
+      "consecutiveSuccesses": 2,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:14.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:14.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": false,
+      "state": "online",
+    },
+  },
+  {
+    "name": "recovering + failure within dwell => recovering",
+    "next": {
+      "consecutiveFailures": 1,
+      "consecutiveSuccesses": 0,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:16.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:15.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": false,
+      "state": "recovering",
+    },
+  },
+  {
+    "name": "recovering + failure after dwell => offline",
+    "next": {
+      "consecutiveFailures": 3,
+      "consecutiveSuccesses": 0,
+      "isConnecting": false,
+      "lastChecked": "2026-04-14T00:00:20.000Z",
+      "lastTransitionAt": "2026-04-14T00:00:20.000Z",
+      "nextPromptAllowedAt": 1776124800000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": true,
+      "state": "offline",
+    },
+  },
+  {
+    "name": "ack offline prompt sets cooldown window",
+    "next": {
+      "consecutiveFailures": 0,
+      "consecutiveSuccesses": 1,
+      "isConnecting": false,
+      "lastChecked": null,
+      "lastTransitionAt": "2026-04-14T00:00:00.000Z",
+      "nextPromptAllowedAt": 1776124920000,
+      "offlinePollStep": 0,
+      "pendingOfflinePrompt": false,
+      "state": "offline",
+    },
+  },
+]
+`;

@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: Imagent X
+  flyway:
+    enabled: false
   
   # H2数据库配置
   datasource:

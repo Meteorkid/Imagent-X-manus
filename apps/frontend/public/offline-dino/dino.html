@@ -114,7 +114,34 @@
         </div>
     </div>
 
-    <script src="dino-game.js"></script>
+    <script>
+        (function () {
+          var q = new URLSearchParams(location.search);
+          var name = q.get('game') || 'dino-game-fixed.js';
+          if (!/^[a-zA-Z0-9._-]+\.js$/.test(name)) name = 'dino-game-fixed.js';
+          var s = document.createElement('script');
+          s.src = name;
+          s.onload = function () {
+            if (typeof DinoGame === 'undefined') {
+              console.error('[dino] 未找到 DinoGame，请检查脚本:', name);
+              return;
+            }
+            // 精简版 dino-game.js 末尾会自行 new DinoGame()，勿重复创建
+            if (name !== 'dino-game.js') {
+              window.dinoGameInstance = new DinoGame();
+              window.restartGame = function () {
+                if (window.dinoGameInstance && typeof window.dinoGameInstance.restart === 'function') {
+                  window.dinoGameInstance.restart();
+                }
+              };
+            }
+          };
+          s.onerror = function () {
+            console.error('[dino] 脚本加载失败:', name);
+          };
+          document.body.appendChild(s);
+        })();
+    </script>
     <script>
         // 检测网络状态
         function updateOnlineStatus() {

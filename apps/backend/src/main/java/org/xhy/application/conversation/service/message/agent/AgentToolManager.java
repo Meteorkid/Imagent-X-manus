@@ -1,21 +1,14 @@
 package org.xhy.application.conversation.service.message.agent;
 
-import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.mcp.McpToolProvider;
 import dev.langchain4j.mcp.client.DefaultMcpClient;
 import dev.langchain4j.mcp.client.McpClient;
 import dev.langchain4j.mcp.client.transport.McpTransport;
-import dev.langchain4j.mcp.client.transport.PresetParameter;
 import dev.langchain4j.mcp.client.transport.http.HttpMcpTransport;
-import dev.langchain4j.service.tool.ToolExecutor;
 import dev.langchain4j.service.tool.ToolProvider;
 import org.springframework.stereotype.Component;
 import org.xhy.application.conversation.service.handler.context.ChatContext;
 import org.xhy.application.conversation.service.McpUrlProviderService;
-import org.xhy.application.conversation.service.message.agent.tool.RagToolManager;
-import org.xhy.domain.agent.model.AgentEntity;
-import org.xhy.infrastructure.utils.JsonUtils;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +19,9 @@ import java.util.Map;
 public class AgentToolManager {
 
     private final McpUrlProviderService mcpUrlProviderService;
-    private final RagToolManager ragToolManager;
 
-    public AgentToolManager(McpUrlProviderService mcpUrlProviderService, RagToolManager ragToolManager) {
+    public AgentToolManager(McpUrlProviderService mcpUrlProviderService) {
         this.mcpUrlProviderService = mcpUrlProviderService;
-        this.ragToolManager = ragToolManager;
     }
 
     /** 创建工具提供者（支持全局/用户隔离工具自动识别）
@@ -45,7 +36,7 @@ public class AgentToolManager {
             return null;
         }
 
-        List<McpClient> mcpClients = new ArrayList<>();
+        List<ToolProvider> providers = new ArrayList<>();
 
         for (String mcpServerName : mcpServerNames) {
             String sseUrl = mcpUrlProviderService.getMcpToolUrl(mcpServerName, userId);
@@ -54,20 +45,23 @@ public class AgentToolManager {
 
             McpClient mcpClient = new DefaultMcpClient.Builder().transport(transport).build();
 
-            /** 预先设置参数 */
-            if (toolPresetParams != null && toolPresetParams.containsKey(mcpServerName)) {
-                List<PresetParameter> presetParameters = new ArrayList<>();
-                for (String key : toolPresetParams.keySet()) {
-                    toolPresetParams.get(key).forEach((k, v) -> {
-                        presetParameters.add(new PresetParameter(k, JsonUtils.toJsonString(v)));
-                    });
-                }
-                mcpClient.presetParameters(presetParameters);
+            Map<String, Map<String, String>> presetByToolName =
+                    toolPresetParams == null ? Map.of() : toolPresetParams.getOrDefault(mcpServerName, Map.of());
+
+            McpToolProvider.Builder builder = McpToolProvider.builder().mcpClients(mcpClient);
+            if (!presetByToolName.isEmpty()) {
+                builder.toolWrapper(executor -> new PresetMergingToolExecutor(executor, presetByToolName));
             }
-            mcpClients.add(mcpClient);
+            providers.add(builder.build());
         }
 
-        return McpToolProvider.builder().mcpClients(mcpClients).build();
+        if (providers.isEmpty()) {
+            return null;
+        }
+        if (providers.size() == 1) {
+            return providers.get(0);
+        }
+        return new AggregatingToolProvider(providers);
     }
 
     /** 获取可用的工具列表

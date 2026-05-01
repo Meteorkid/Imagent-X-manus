@@ -1,9 +1,0 @@
-{
-  "/(main)/agents/page": "app/(main)/agents/page.js",
-  "/(main)/settings/profile/page": "app/(main)/settings/profile/page.js",
-  "/(main)/settings/providers/page": "app/(main)/settings/providers/page.js",
-  "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/(main)/explore/page": "app/(main)/explore/page.js",
-  "/(main)/studio/page": "app/(main)/studio/page.js",
-  "/(main)/knowledge/page": "app/(main)/knowledge/page.js"
-}

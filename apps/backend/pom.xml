@@ -28,8 +28,10 @@
         <fastjson.version>2.0.47</fastjson.version>
         <hutool.version>5.8.26</hutool.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <!-- JitPack 自定义 fork（-SNAPSHOT）；升级时请固定 tag/commit 并在 CI 缓存 ~/.m2 以提升可复现性 -->
-        <langchain4j.version>1.0.4.3-beta7-SNAPSHOT</langchain4j.version>
+        <!-- LangChain4j 方案 A：上游稳定版（核心模型 SDK） -->
+        <langchain4j.stable.version>1.13.0</langchain4j.stable.version>
+        <!-- 社区模块（MCP / pgvector / parser）当前仍为 beta 序列 -->
+        <langchain4j.community.version>1.13.0-beta23</langchain4j.community.version>
         <spotless.version>2.37.0</spotless.version>
         <x-file-storage.version>2.2.0</x-file-storage.version>
         <pdf-box>3.0.2</pdf-box>
@@ -54,17 +56,6 @@
             <id>central</id>
             <name>Maven Central</name>
             <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-        <!-- for langchain4j artifacts -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
@@ -151,15 +142,15 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.lucky-aeon.langchain4j</groupId>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-document-parser-apache-poi</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langchain4j.community.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.lucky-aeon.langchain4j</groupId>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-pgvector</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langchain4j.community.version}</version>
         </dependency>
 
         <!-- 文件上传服务 -->
@@ -174,6 +165,10 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
         
         <!-- H2数据库依赖 - 用于本地开发和测试 -->
@@ -207,6 +202,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--HTTP 请求工具-->
@@ -268,25 +269,35 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.lucky-aeon.langchain4j</groupId>
-            <artifactId>langchain4j-anthropic</artifactId>
-            <version>${langchain4j.version}</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.lucky-aeon.langchain4j</groupId>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-anthropic</artifactId>
+            <version>${langchain4j.stable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langchain4j.stable.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.lucky-aeon.langchain4j</groupId>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langchain4j.stable.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.lucky-aeon.langchain4j</groupId>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-mcp</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langchain4j.community.version}</version>
         </dependency>
 
 
@@ -359,17 +370,6 @@
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-transport-httpclient5</artifactId>
             <version>3.3.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.tinylog</groupId>
-            <artifactId>tinylog-impl</artifactId>
-            <version>2.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tinylog</groupId>
-            <artifactId>slf4j-tinylog</artifactId>
-            <version>2.6.2</version>
         </dependency>
 
         <!-- Apache HTTP Core 5 for Docker Java -->

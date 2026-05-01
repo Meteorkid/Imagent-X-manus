@@ -1,14 +1,14 @@
 package org.xhy.application.conversation.service.message.agent;
 
 import dev.langchain4j.service.tool.ToolProvider;
-import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xhy.application.conversation.service.handler.context.ChatContext;
-import org.xhy.application.conversation.service.message.AbstractMessageHandler;
 import org.xhy.application.conversation.service.message.TracingMessageHandler;
+import org.xhy.application.conversation.service.message.tracing.ChatTraceOrchestrator;
 import org.xhy.application.conversation.service.message.agent.tool.RagToolManager;
-import org.xhy.application.trace.collector.TraceCollector;
+import org.xhy.application.conversation.service.message.pipeline.ModelCompletionStage;
+import org.xhy.application.conversation.service.message.pipeline.ModelErrorStage;
+import org.xhy.application.conversation.service.message.pipeline.ToolExecutionStage;
+import org.springframework.stereotype.Component;
 import org.xhy.domain.conversation.service.MessageDomainService;
 import org.xhy.domain.conversation.service.SessionDomainService;
 import org.xhy.domain.llm.service.HighAvailabilityDomainService;
@@ -22,25 +22,23 @@ import org.xhy.domain.user.service.AccountDomainService;
 @Component(value = "agentMessageHandler")
 public class AgentMessageHandler extends TracingMessageHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AgentMessageHandler.class);
-    private AgentToolManager agentToolManager;
+    private final AgentToolProviderPort agentToolProviderPort;
 
     public AgentMessageHandler(LLMServiceFactory llmServiceFactory, MessageDomainService messageDomainService,
             HighAvailabilityDomainService highAvailabilityDomainService, SessionDomainService sessionDomainService,
             UserSettingsDomainService userSettingsDomainService, LLMDomainService llmDomainService,
-            RagToolManager ragToolManager, BillingService billingService, AccountDomainService accountDomainService,
-            TraceCollector traceCollector, AgentToolManager agentToolManager) {
+            RagToolManager ragToolManager, ModelCompletionStage modelCompletionStage,
+            ModelErrorStage modelErrorStage, ToolExecutionStage toolExecutionStage, BillingService billingService,
+            AccountDomainService accountDomainService, ChatTraceOrchestrator chatTraceOrchestrator,
+            AgentToolProviderPort agentToolProviderPort) {
         super(llmServiceFactory, messageDomainService, highAvailabilityDomainService, sessionDomainService,
-                userSettingsDomainService, llmDomainService, ragToolManager, billingService, accountDomainService,
-                traceCollector);
-        this.agentToolManager = agentToolManager;
+                userSettingsDomainService, llmDomainService, ragToolManager, modelCompletionStage, modelErrorStage,
+                toolExecutionStage, billingService, accountDomainService, chatTraceOrchestrator);
+        this.agentToolProviderPort = agentToolProviderPort;
     }
 
     @Override
     protected ToolProvider provideTools(ChatContext chatContext) {
-        // 关键改造：传递用户ID给工具管理器
-        return agentToolManager.createToolProvider(agentToolManager.getAvailableTools(chatContext),
-                chatContext.getAgent().getToolPresetParams(), chatContext.getUserId() // 新增：传递用户ID
-        );
+        return agentToolProviderPort.resolve(chatContext);
     }
 }
