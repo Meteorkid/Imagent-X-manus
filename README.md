@@ -1,7 +1,7 @@
 # ImagentX - AI Agent Platform
 
 [![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](https://github.com/Meteorkid/Imagent-X-manus/releases)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-red.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
 ## 🚀 项目简介
@@ -153,7 +153,7 @@ docker-compose -f docker-compose-production.yml up -d
 
 ## 📄 许可证
 
-本项目采用 [MIT 许可证](LICENSE) 开源。
+本项目采用 [AGPL-3.0 许可证](LICENSE) 开源。
 
 ## 📞 联系我们
 
