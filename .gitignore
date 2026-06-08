@@ -58,9 +58,16 @@ reports/smoke/
 *.crt
 imagentx_public_key.txt
 
+# 敏感信息文件
+ACCOUNTSAndPasswords.md
+ACCOUNTS_AND_PASSWORDS.md
+*.password
+*.secret
+
 # 嵌入的Git仓库
 offline-dino/alien-boy-game/
 
 # 部署相关
 deploy/
 production/
+.planning/
