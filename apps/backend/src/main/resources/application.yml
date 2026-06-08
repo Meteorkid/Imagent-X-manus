@@ -14,6 +14,10 @@ server:
     tcp-no-delay: true # TCP无延迟
     keep-alive-timeout: 60000 # Keep-Alive超时
 
+# JWT 配置
+jwt:
+  secret: ${JWT_SECRET:}
+
 spring:
   application:
     name: Imagent X
@@ -48,9 +52,9 @@ spring:
         size: 25
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/imagentx
-    username: imagentx_user
-    password: imagentx_pass
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:imagentx}
+    username: ${DB_USER:imagentx_user}
+    password: ${DB_PASSWORD:imagentx_pass}
     hikari:
       pool-name: ImagentXHikariCP
       maximum-pool-size: 20 # 最大连接池大小（优化后建议 20）
@@ -160,11 +164,11 @@ embedding:
   name: disabled
   vector-store:
     enabled: false
-    host: localhost
-    port: 5432
-    user: postgres
-    password: postgres
-    database: imagentx
+    host: ${PGVECTOR_HOST:localhost}
+    port: ${PGVECTOR_PORT:5432}
+    user: ${PGVECTOR_USER:postgres}
+    password: ${PGVECTOR_PASSWORD:postgres}
+    database: ${PGVECTOR_DATABASE:imagentx}
     table: public.vector_store
     dimension: 1024
     drop-table-first: false

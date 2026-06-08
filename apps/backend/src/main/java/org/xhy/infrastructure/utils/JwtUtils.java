@@ -8,15 +8,37 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+@Component
 public class JwtUtils {
 
-    private static String jwtSecret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    @Value("${jwt.secret:}")
+    private String jwtSecretConfig;
+
+    private static String jwtSecret;
 
     // token过期时间 - 24小时
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+
+    @PostConstruct
+    public void init() {
+        jwtSecret = jwtSecretConfig;
+        if (jwtSecret == null || jwtSecret.isEmpty()) {
+            throw new IllegalStateException(
+                "JWT 密钥未配置！请设置环境变量 JWT_SECRET。" +
+                "参考 .env.example 文件获取配置说明。"
+            );
+        }
+        if (jwtSecret.length() < 32) {
+            throw new IllegalStateException(
+                "JWT 密钥长度不足！至少需要 32 个字符。" +
+                "使用命令生成：openssl rand -base64 32"
+            );
+        }
+    }
 
     private static SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
