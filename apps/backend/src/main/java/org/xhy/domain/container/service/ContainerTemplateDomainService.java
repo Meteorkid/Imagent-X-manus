@@ -100,7 +100,11 @@ public class ContainerTemplateDomainService {
         }
 
         // 检查是否有容器正在使用此模板
-        // TODO: 在容器管理模块中添加检查逻辑
+        // 注意：这里需要在 ContainerRepository 中添加查询方法
+        // 暂时跳过检查，后续可以完善
+        // if (containerRepository.existsByTemplateId(templateId)) {
+        //     throw new BusinessException("模板正在被使用，无法删除");
+        // }
 
         templateRepository.deleteById(templateId);
     }

@@ -379,9 +379,9 @@ public class ContainerAppService {
             String ipAddress = extractIpAddress(containerInfo, template.getNetworkMode());
 
             // 对于host网络模式，外部端口就是内部端口
-            // TODO: 需要在ContainerDomainService中添加updateContainerExternalPort方法
             if ("host".equals(template.getNetworkMode())) {
                 logger.info("host网络模式，容器外部端口应为内部端口: {}", template.getInternalPort());
+                containerDomainService.updateContainerExternalPort(container.getId(), template.getInternalPort(), Operator.ADMIN);
             }
 
             // 更新容器状态

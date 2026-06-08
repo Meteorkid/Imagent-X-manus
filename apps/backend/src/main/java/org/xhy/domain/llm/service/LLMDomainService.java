@@ -233,7 +233,6 @@ public class LLMDomainService {
     /** 验证服务商协议是否支持
      * @param protocol 协议 */
     private void validateProviderProtocol(ProviderProtocol protocol) {
-        // TODO: 从配置或枚举中获取支持的服务商协议列表
         if (!isSupportedProvider(protocol)) {
             throw new BusinessException("不支持的服务商协议类型: " + protocol);
         }
