@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.imagentx.plugin</groupId>
+    <artifactId>imagentx-plugin-hello</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>ImagentX Hello Plugin</name>
+    <description>一个简单的示例插件</description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- ImagentX Plugin API -->
+        <dependency>
+            <groupId>org.xhy</groupId>
+            <artifactId>imagent-x-plugin-api</artifactId>
+            <version>1.0.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.imagentx.plugin.hello.HelloPlugin</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Plugin-Id>imagentx-plugin-hello</Plugin-Id>
+                            <Plugin-Version>1.0.0</Plugin-Version>
+                            <Plugin-Class>com.imagentx.plugin.hello.HelloPlugin</Plugin-Class>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
