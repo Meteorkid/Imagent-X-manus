@@ -15,17 +15,17 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    @Value("${jwt.secret:}")
-    private String jwtSecretConfig;
-
-    private static String jwtSecret;
+    private final String jwtSecret;
 
     // token过期时间 - 24小时
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;
 
+    public JwtUtils(@Value("${jwt.secret:}") String jwtSecret) {
+        this.jwtSecret = jwtSecret;
+    }
+
     @PostConstruct
     public void init() {
-        jwtSecret = jwtSecretConfig;
         if (jwtSecret == null || jwtSecret.isEmpty()) {
             throw new IllegalStateException(
                 "JWT 密钥未配置！请设置环境变量 JWT_SECRET。" +
@@ -40,13 +40,13 @@ public class JwtUtils {
         }
     }
 
-    private static SecretKey getSigningKey() {
+    private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     /** 生成JWT Token */
-    public static String generateToken(String userId) {
+    public String generateToken(String userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
 
@@ -54,14 +54,14 @@ public class JwtUtils {
     }
 
     /** 从token中获取用户ID */
-    public static String getUserIdFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         Claims claims = Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
 
         return claims.getSubject();
     }
 
     /** 验证token是否有效 */
-    public static boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
             return true;
