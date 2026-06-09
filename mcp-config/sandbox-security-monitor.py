@@ -55,16 +55,17 @@ class SandboxSecurityMonitor:
     def get_container_stats(self, container_id):
         """获取容器统计信息"""
         try:
-            cmd = f"docker stats {container_id} --no-stream --format json"
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            
+            # 使用列表形式避免命令注入
+            cmd = ["docker", "stats", container_id, "--no-stream", "--format", "json"]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
             if result.returncode == 0:
                 stats = json.loads(result.stdout.strip())
                 return stats
             else:
                 logger.warning(f"获取容器 {container_id} 统计信息失败: {result.stderr}")
                 return None
-                
+
         except Exception as e:
             logger.error(f"获取容器统计信息异常: {str(e)}")
             return None
@@ -72,29 +73,30 @@ class SandboxSecurityMonitor:
     def check_container_logs(self, container_id):
         """检查容器日志中的安全事件"""
         try:
-            cmd = f"docker logs {container_id} --since 5m 2>&1"
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            
+            # 使用列表形式避免命令注入
+            cmd = ["docker", "logs", container_id, "--since", "5m"]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
             if result.returncode == 0:
                 logs = result.stdout
-                
+
                 # 检查特权提升
                 for keyword in self.security_rules['privilege_escalation_keywords']:
                     if keyword in logs:
                         SECURITY_VIOLATIONS.labels(container_name=container_id, violation_type='privilege_escalation').inc()
                         logger.warning(f"检测到特权提升尝试: {container_id} - {keyword}")
-                
+
                 # 检查可疑命令
                 for command in self.security_rules['suspicious_commands']:
                     if command in logs:
                         SECURITY_VIOLATIONS.labels(container_name=container_id, violation_type='suspicious_command').inc()
                         logger.warning(f"检测到可疑命令: {container_id} - {command}")
-                
+
                 return logs
             else:
                 logger.warning(f"获取容器 {container_id} 日志失败: {result.stderr}")
                 return None
-                
+
         except Exception as e:
             logger.error(f"检查容器日志异常: {str(e)}")
             return None
@@ -102,23 +104,24 @@ class SandboxSecurityMonitor:
     def check_container_processes(self, container_id):
         """检查容器进程"""
         try:
-            cmd = f"docker exec {container_id} ps aux 2>/dev/null || echo 'Process check failed'"
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            
+            # 使用列表形式避免命令注入
+            cmd = ["docker", "exec", container_id, "ps", "aux"]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
             if result.returncode == 0:
                 processes = result.stdout
                 process_count = len([line for line in processes.split('\n') if line.strip() and not line.startswith('USER')])
-                
+
                 # 检查进程数
                 if process_count > self.security_rules['process_threshold']:
                     ANOMALY_DETECTIONS.labels(container_name=container_id, anomaly_type='high_process_count').inc()
                     logger.warning(f"容器进程数过多: {container_id} - {process_count}")
-                
+
                 return process_count
             else:
                 logger.warning(f"检查容器进程失败: {container_id}")
                 return 0
-                
+
         except Exception as e:
             logger.error(f"检查容器进程异常: {str(e)}")
             return 0
@@ -126,23 +129,24 @@ class SandboxSecurityMonitor:
     def check_container_network(self, container_id):
         """检查容器网络活动"""
         try:
-            cmd = f"docker exec {container_id} netstat -an 2>/dev/null || echo 'Network check failed'"
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            
+            # 使用列表形式避免命令注入
+            cmd = ["docker", "exec", container_id, "netstat", "-an"]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
             if result.returncode == 0:
                 connections = result.stdout
                 connection_count = len([line for line in connections.split('\n') if 'ESTABLISHED' in line])
-                
+
                 # 检查网络连接数
                 if connection_count > self.security_rules['network_threshold']:
                     ANOMALY_DETECTIONS.labels(container_name=container_id, anomaly_type='high_network_connections').inc()
                     logger.warning(f"容器网络连接数过多: {container_id} - {connection_count}")
-                
+
                 return connection_count
             else:
                 logger.warning(f"检查容器网络失败: {container_id}")
                 return 0
-                
+
         except Exception as e:
             logger.error(f"检查容器网络异常: {str(e)}")
             return 0
@@ -230,16 +234,17 @@ class SandboxSecurityMonitor:
     def get_sandbox_containers(self):
         """获取沙箱容器列表"""
         try:
-            cmd = "docker ps --filter 'label=sandbox=true' --format '{{.ID}}'"
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            
+            # 使用列表形式避免命令注入
+            cmd = ["docker", "ps", "--filter", "label=sandbox=true", "--format", "{{.ID}}"]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
             if result.returncode == 0:
                 containers = [line.strip() for line in result.stdout.split('\n') if line.strip()]
                 return containers
             else:
                 logger.warning("获取沙箱容器列表失败")
                 return []
-                
+
         except Exception as e:
             logger.error(f"获取沙箱容器列表异常: {str(e)}")
             return []
