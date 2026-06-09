@@ -1,0 +1,148 @@
+{
+  "api": {
+    "metrics": [
+      {
+        "name": "response_time",
+        "description": "API 响应时间",
+        "unit": "ms",
+        "thresholds": {
+          "good": 100,
+          "warning": 200,
+          "critical": 500
+        }
+      },
+      {
+        "name": "throughput",
+        "description": "吞吐量",
+        "unit": "req/s",
+        "thresholds": {
+          "good": 1000,
+          "warning": 500,
+          "critical": 100
+        }
+      },
+      {
+        "name": "error_rate",
+        "description": "错误率",
+        "unit": "%",
+        "thresholds": {
+          "good": 0.1,
+          "warning": 1,
+          "critical": 5
+        }
+      }
+    ]
+  },
+  "database": {
+    "metrics": [
+      {
+        "name": "query_time",
+        "description": "查询响应时间",
+        "unit": "ms",
+        "thresholds": {
+          "good": 10,
+          "warning": 50,
+          "critical": 100
+        }
+      },
+      {
+        "name": "connections",
+        "description": "连接数",
+        "unit": "count",
+        "thresholds": {
+          "good": 50,
+          "warning": 100,
+          "critical": 200
+        }
+      },
+      {
+        "name": "pool_usage",
+        "description": "连接池使用率",
+        "unit": "%",
+        "thresholds": {
+          "good": 50,
+          "warning": 80,
+          "critical": 95
+        }
+      }
+    ]
+  },
+  "frontend": {
+    "metrics": [
+      {
+        "name": "fcp",
+        "description": "First Contentful Paint",
+        "unit": "ms",
+        "thresholds": {
+          "good": 1500,
+          "warning": 2500,
+          "critical": 4000
+        }
+      },
+      {
+        "name": "lcp",
+        "description": "Largest Contentful Paint",
+        "unit": "ms",
+        "thresholds": {
+          "good": 2500,
+          "warning": 4000,
+          "critical": 6000
+        }
+      },
+      {
+        "name": "fid",
+        "description": "First Input Delay",
+        "unit": "ms",
+        "thresholds": {
+          "good": 100,
+          "warning": 300,
+          "critical": 500
+        }
+      },
+      {
+        "name": "cls",
+        "description": "Cumulative Layout Shift",
+        "unit": "score",
+        "thresholds": {
+          "good": 0.1,
+          "warning": 0.25,
+          "critical": 0.5
+        }
+      }
+    ]
+  },
+  "system": {
+    "metrics": [
+      {
+        "name": "cpu_usage",
+        "description": "CPU 使用率",
+        "unit": "%",
+        "thresholds": {
+          "good": 50,
+          "warning": 70,
+          "critical": 90
+        }
+      },
+      {
+        "name": "memory_usage",
+        "description": "内存使用率",
+        "unit": "%",
+        "thresholds": {
+          "good": 60,
+          "warning": 80,
+          "critical": 95
+        }
+      },
+      {
+        "name": "disk_io",
+        "description": "磁盘 I/O 等待时间",
+        "unit": "ms",
+        "thresholds": {
+          "good": 5,
+          "warning": 10,
+          "critical": 20
+        }
+      }
+    ]
+  }
+}
