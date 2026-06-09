@@ -20,13 +20,17 @@ export function PerformanceMonitor() {
   })
 
   useEffect(() => {
+    // 检查浏览器是否支持 PerformanceObserver
+    if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+      return
+    }
+
     // 监控First Contentful Paint
     const fcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries()
       const fcpEntry = entries.find(entry => entry.name === 'first-contentful-paint')
       if (fcpEntry) {
         metricsRef.current.fcp = fcpEntry.startTime
-        console.log('FCP:', fcpEntry.startTime)
       }
     })
     fcpObserver.observe({ entryTypes: ['paint'] })
@@ -37,7 +41,6 @@ export function PerformanceMonitor() {
       const lastEntry = entries[entries.length - 1]
       if (lastEntry) {
         metricsRef.current.lcp = lastEntry.startTime
-        console.log('LCP:', lastEntry.startTime)
       }
     })
     lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
@@ -47,7 +50,6 @@ export function PerformanceMonitor() {
       const entries = list.getEntries()
       entries.forEach(entry => {
         metricsRef.current.fid = entry.processingStart - entry.startTime
-        console.log('FID:', metricsRef.current.fid)
       })
     })
     fidObserver.observe({ entryTypes: ['first-input'] })
@@ -61,7 +63,6 @@ export function PerformanceMonitor() {
         }
       })
       metricsRef.current.cls = clsValue
-      console.log('CLS:', clsValue)
     })
     clsObserver.observe({ entryTypes: ['layout-shift'] })
 
@@ -69,7 +70,6 @@ export function PerformanceMonitor() {
     const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
     if (navigationEntry) {
       metricsRef.current.ttfb = navigationEntry.responseStart - navigationEntry.requestStart
-      console.log('TTFB:', metricsRef.current.ttfb)
     }
 
     // 清理函数
@@ -83,6 +83,8 @@ export function PerformanceMonitor() {
 
   // 发送性能指标到服务器
   const sendMetrics = () => {
+    if (typeof window === 'undefined') return
+
     fetch('/api/performance/metrics', {
       method: 'POST',
       headers: {
@@ -94,6 +96,8 @@ export function PerformanceMonitor() {
 
   // 页面卸载时发送指标
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     window.addEventListener('beforeunload', sendMetrics)
     return () => window.removeEventListener('beforeunload', sendMetrics)
   }, [])
