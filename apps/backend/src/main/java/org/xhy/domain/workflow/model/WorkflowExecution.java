@@ -1,83 +1,69 @@
 package org.xhy.domain.workflow.model;
 
-import lombok.Data;
 import org.xhy.domain.workflow.constant.ExecutionStatus;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
  * 工作流执行记录
  */
-@Data
 public class WorkflowExecution {
 
-    /**
-     * 执行ID
-     */
     private String id;
-
-    /**
-     * 工作流ID
-     */
     private String workflowId;
-
-    /**
-     * 执行状态
-     */
     private ExecutionStatus status;
-
-    /**
-     * 输入参数
-     */
     private Map<String, Object> inputs;
-
-    /**
-     * 输出参数
-     */
     private Map<String, Object> outputs;
-
-    /**
-     * 当前节点ID
-     */
     private String currentNodeId;
-
-    /**
-     * 错误信息
-     */
     private String errorMessage;
-
-    /**
-     * 错误堆栈
-     */
     private String errorStack;
-
-    /**
-     * 开始时间
-     */
     private LocalDateTime startTime;
-
-    /**
-     * 结束时间
-     */
     private LocalDateTime endTime;
-
-    /**
-     * 耗时（毫秒）
-     */
     private long duration;
-
-    /**
-     * 重试次数
-     */
     private int retryCount;
-
-    /**
-     * 执行者ID
-     */
     private String executedBy;
-
-    /**
-     * 执行日志
-     */
     private String logs;
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getWorkflowId() { return workflowId; }
+    public void setWorkflowId(String workflowId) { this.workflowId = workflowId; }
+
+    public ExecutionStatus getStatus() { return status; }
+    public void setStatus(ExecutionStatus status) { this.status = status; }
+
+    public Map<String, Object> getInputs() { return inputs; }
+    public void setInputs(Map<String, Object> inputs) { this.inputs = inputs; }
+
+    public Map<String, Object> getOutputs() { return outputs; }
+    public void setOutputs(Map<String, Object> outputs) { this.outputs = outputs; }
+
+    public String getCurrentNodeId() { return currentNodeId; }
+    public void setCurrentNodeId(String currentNodeId) { this.currentNodeId = currentNodeId; }
+
+    public String getErrorMessage() { return errorMessage; }
+    public void setErrorMessage(String errorMessage) { this.errorMessage = errorMessage; }
+
+    public String getErrorStack() { return errorStack; }
+    public void setErrorStack(String errorStack) { this.errorStack = errorStack; }
+
+    public LocalDateTime getStartTime() { return startTime; }
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+
+    public LocalDateTime getEndTime() { return endTime; }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+
+    public long getDuration() { return duration; }
+    public void setDuration(long duration) { this.duration = duration; }
+
+    public int getRetryCount() { return retryCount; }
+    public void setRetryCount(int retryCount) { this.retryCount = retryCount; }
+
+    public String getExecutedBy() { return executedBy; }
+    public void setExecutedBy(String executedBy) { this.executedBy = executedBy; }
+
+    public String getLogs() { return logs; }
+    public void setLogs(String logs) { this.logs = logs; }
 }

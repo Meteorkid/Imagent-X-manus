@@ -1,109 +1,92 @@
 package org.xhy.infrastructure.monitoring;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.Counter;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 指标服务
+ * 注意：完整实现需要添加 micrometer-core 依赖
+ * 当前为简化版本，使用本地计数器
  */
 @Service
 public class MetricsService {
 
-    private final MeterRegistry meterRegistry;
-    private final Counter pluginCounter;
-    private final Counter workflowExecutionCounter;
-    private final Timer apiRequestTimer;
-
-    public MetricsService(MeterRegistry meterRegistry,
-                          Counter pluginCounter,
-                          Counter workflowExecutionCounter,
-                          Timer apiRequestTimer) {
-        this.meterRegistry = meterRegistry;
-        this.pluginCounter = pluginCounter;
-        this.workflowExecutionCounter = workflowExecutionCounter;
-        this.apiRequestTimer = apiRequestTimer;
-    }
+    private final AtomicLong pluginCount = new AtomicLong(0);
+    private final AtomicLong workflowExecutionCount = new AtomicLong(0);
+    private final AtomicLong activeConnections = new AtomicLong(0);
+    private final AtomicLong apiRequestCount = new AtomicLong(0);
+    private final AtomicLong apiErrorCount = new AtomicLong(0);
 
     /**
      * 记录插件安装
      */
     public void recordPluginInstalled() {
-        pluginCounter.increment();
+        pluginCount.incrementAndGet();
     }
 
     /**
      * 记录插件卸载
      */
     public void recordPluginUninstalled() {
-        pluginCounter.decrement();
+        pluginCount.decrementAndGet();
     }
 
     /**
      * 记录工作流执行
      */
     public void recordWorkflowExecution() {
-        workflowExecutionCounter.increment();
+        workflowExecutionCount.incrementAndGet();
     }
 
     /**
      * 记录 API 请求
      */
     public void recordApiRequest(String endpoint, long duration, TimeUnit unit) {
-        apiRequestTimer.record(duration, unit);
-        meterRegistry.counter("api.requests", "endpoint", endpoint).increment();
+        apiRequestCount.incrementAndGet();
     }
 
     /**
      * 记录 API 错误
      */
     public void recordApiError(String endpoint, String error) {
-        meterRegistry.counter("api.errors", "endpoint", endpoint, "error", error).increment();
+        apiErrorCount.incrementAndGet();
     }
 
     /**
      * 记录数据库查询
      */
     public void recordDatabaseQuery(String operation, long duration, TimeUnit unit) {
-        Timer.builder("database.queries")
-            .tag("operation", operation)
-            .register(meterRegistry)
-            .record(duration, unit);
+        // 简化实现
     }
 
     /**
      * 记录缓存命中
      */
     public void recordCacheHit(String cacheName) {
-        meterRegistry.counter("cache.hits", "cache", cacheName).increment();
+        // 简化实现
     }
 
     /**
      * 记录缓存未命中
      */
     public void recordCacheMiss(String cacheName) {
-        meterRegistry.counter("cache.misses", "cache", cacheName).increment();
+        // 简化实现
     }
 
     /**
      * 增加活跃连接数
      */
     public void incrementActiveConnections() {
-        meterRegistry.gauge("connections.active",
-            meterRegistry.find("connections.active").gauge(),
-            gauge -> gauge.value() + 1);
+        activeConnections.incrementAndGet();
     }
 
     /**
      * 减少活跃连接数
      */
     public void decrementActiveConnections() {
-        meterRegistry.gauge("connections.active",
-            meterRegistry.find("connections.active").gauge(),
-            gauge -> gauge.value() - 1);
+        activeConnections.decrementAndGet();
     }
 
     /**
@@ -111,40 +94,35 @@ public class MetricsService {
      */
     public MetricsSnapshot getSnapshot() {
         return new MetricsSnapshot(
-            pluginCounter.count(),
-            workflowExecutionCounter.count(),
-            getActiveConnections()
+            pluginCount.get(),
+            workflowExecutionCount.get(),
+            activeConnections.get()
         );
-    }
-
-    private double getActiveConnections() {
-        var gauge = meterRegistry.find("connections.active").gauge();
-        return gauge != null ? gauge.value() : 0;
     }
 
     /**
      * 指标快照
      */
     public static class MetricsSnapshot {
-        private final double totalPlugins;
-        private final double totalWorkflowExecutions;
-        private final double activeConnections;
+        private final long totalPlugins;
+        private final long totalWorkflowExecutions;
+        private final long activeConnections;
 
-        public MetricsSnapshot(double totalPlugins, double totalWorkflowExecutions, double activeConnections) {
+        public MetricsSnapshot(long totalPlugins, long totalWorkflowExecutions, long activeConnections) {
             this.totalPlugins = totalPlugins;
             this.totalWorkflowExecutions = totalWorkflowExecutions;
             this.activeConnections = activeConnections;
         }
 
-        public double getTotalPlugins() {
+        public long getTotalPlugins() {
             return totalPlugins;
         }
 
-        public double getTotalWorkflowExecutions() {
+        public long getTotalWorkflowExecutions() {
             return totalWorkflowExecutions;
         }
 
-        public double getActiveConnections() {
+        public long getActiveConnections() {
             return activeConnections;
         }
     }

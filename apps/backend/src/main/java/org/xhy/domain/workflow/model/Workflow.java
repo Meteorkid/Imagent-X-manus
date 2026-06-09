@@ -1,6 +1,7 @@
 package org.xhy.domain.workflow.model;
 
-import lombok.Data;
+import org.xhy.domain.workflow.constant.WorkflowStatus;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -8,71 +9,58 @@ import java.util.Map;
 /**
  * 工作流实体
  */
-@Data
 public class Workflow {
 
-    /**
-     * 工作流ID
-     */
     private String id;
-
-    /**
-     * 工作流名称
-     */
     private String name;
-
-    /**
-     * 工作流描述
-     */
     private String description;
-
-    /**
-     * 工作流版本
-     */
     private String version;
-
-    /**
-     * 工作流定义（JSON格式）
-     */
     private String definition;
-
-    /**
-     * 工作流状态
-     */
     private WorkflowStatus status;
-
-    /**
-     * 创建者ID
-     */
     private String createdBy;
-
-    /**
-     * 标签
-     */
     private List<String> tags;
-
-    /**
-     * 配置参数
-     */
     private Map<String, Object> config;
-
-    /**
-     * 创建时间
-     */
     private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
     private LocalDateTime updatedAt;
-
-    /**
-     * 最后执行时间
-     */
     private LocalDateTime lastExecutedAt;
-
-    /**
-     * 执行次数
-     */
     private long executionCount;
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getVersion() { return version; }
+    public void setVersion(String version) { this.version = version; }
+
+    public String getDefinition() { return definition; }
+    public void setDefinition(String definition) { this.definition = definition; }
+
+    public WorkflowStatus getStatus() { return status; }
+    public void setStatus(WorkflowStatus status) { this.status = status; }
+
+    public String getCreatedBy() { return createdBy; }
+    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+
+    public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+
+    public Map<String, Object> getConfig() { return config; }
+    public void setConfig(Map<String, Object> config) { this.config = config; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public LocalDateTime getLastExecutedAt() { return lastExecutedAt; }
+    public void setLastExecutedAt(LocalDateTime lastExecutedAt) { this.lastExecutedAt = lastExecutedAt; }
+
+    public long getExecutionCount() { return executionCount; }
+    public void setExecutionCount(long executionCount) { this.executionCount = executionCount; }
 }

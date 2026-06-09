@@ -5,15 +5,15 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-public class JwtUtils {
+public class JwtUtils implements InitializingBean {
 
     private final String jwtSecret;
 
@@ -24,8 +24,8 @@ public class JwtUtils {
         this.jwtSecret = jwtSecret;
     }
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void afterPropertiesSet() {
         if (jwtSecret == null || jwtSecret.isEmpty()) {
             throw new IllegalStateException(
                 "JWT 密钥未配置！请设置环境变量 JWT_SECRET。" +

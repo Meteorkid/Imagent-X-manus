@@ -23,13 +23,16 @@ public class LoginAppService {
     private final EmailService emailService;
     private final VerificationCodeService verificationCodeService;
     private final AuthSettingDomainService authSettingDomainService;
+    private final JwtUtils jwtUtils;
 
     public LoginAppService(UserDomainService userDomainService, EmailService emailService,
-            VerificationCodeService verificationCodeService, AuthSettingDomainService authSettingDomainService) {
+            VerificationCodeService verificationCodeService, AuthSettingDomainService authSettingDomainService,
+            JwtUtils jwtUtils) {
         this.userDomainService = userDomainService;
         this.emailService = emailService;
         this.verificationCodeService = verificationCodeService;
         this.authSettingDomainService = authSettingDomainService;
+        this.jwtUtils = jwtUtils;
     }
 
     public String login(LoginRequest loginRequest) {
@@ -39,7 +42,7 @@ public class LoginAppService {
         }
 
         UserEntity userEntity = userDomainService.login(loginRequest.getAccount(), loginRequest.getPassword());
-        return JwtUtils.generateToken(userEntity.getId());
+        return jwtUtils.generateToken(userEntity.getId());
     }
 
     public void register(RegisterRequest registerRequest) {

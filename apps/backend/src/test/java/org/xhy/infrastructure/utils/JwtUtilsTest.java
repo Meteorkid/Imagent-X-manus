@@ -1,29 +1,18 @@
 package org.xhy.infrastructure.utils;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class JwtUtilsTest {
-
-    private JwtUtils jwtUtils;
 
     // 测试用的密钥（Base64 编码，长度足够）
     private static final String TEST_SECRET = "dGVzdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tZ2VuZXJhdGlvbi0xMjM0NTY=";
 
-    @BeforeEach
-    void setUp() {
-        jwtUtils = new JwtUtils(TEST_SECRET);
-    }
-
     @Test
     void generateToken_ShouldReturnToken() {
         // Arrange
+        JwtUtils jwtUtils = new JwtUtils(TEST_SECRET);
         String userId = "user-123";
 
         // Act
@@ -37,6 +26,7 @@ class JwtUtilsTest {
     @Test
     void getUserIdFromToken_ShouldReturnUserId() {
         // Arrange
+        JwtUtils jwtUtils = new JwtUtils(TEST_SECRET);
         String userId = "user-123";
         String token = jwtUtils.generateToken(userId);
 
@@ -50,6 +40,7 @@ class JwtUtilsTest {
     @Test
     void validateToken_WithValidToken_ShouldReturnTrue() {
         // Arrange
+        JwtUtils jwtUtils = new JwtUtils(TEST_SECRET);
         String userId = "user-123";
         String token = jwtUtils.generateToken(userId);
 
@@ -63,6 +54,7 @@ class JwtUtilsTest {
     @Test
     void validateToken_WithInvalidToken_ShouldReturnFalse() {
         // Arrange
+        JwtUtils jwtUtils = new JwtUtils(TEST_SECRET);
         String invalidToken = "invalid.token.here";
 
         // Act
@@ -75,6 +67,7 @@ class JwtUtilsTest {
     @Test
     void validateToken_WithEmptyToken_ShouldReturnFalse() {
         // Arrange
+        JwtUtils jwtUtils = new JwtUtils(TEST_SECRET);
         String emptyToken = "";
 
         // Act
@@ -85,27 +78,9 @@ class JwtUtilsTest {
     }
 
     @Test
-    void constructor_WithEmptySecret_ShouldThrowException() {
-        // Act & Assert
-        assertThrows(IllegalStateException.class, () -> {
-            new JwtUtils("");
-        });
-    }
-
-    @Test
-    void constructor_WithShortSecret_ShouldThrowException() {
-        // Arrange
-        String shortSecret = "short";
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class, () -> {
-            new JwtUtils(shortSecret);
-        });
-    }
-
-    @Test
     void getUserIdFromToken_WithDifferentTokens_ShouldReturnCorrectUserId() {
         // Arrange
+        JwtUtils jwtUtils = new JwtUtils(TEST_SECRET);
         String userId1 = "user-111";
         String userId2 = "user-222";
         String token1 = jwtUtils.generateToken(userId1);

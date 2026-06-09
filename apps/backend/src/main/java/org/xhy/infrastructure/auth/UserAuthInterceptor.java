@@ -18,6 +18,12 @@ public class UserAuthInterceptor implements HandlerInterceptor {
 
     private static final String BEARER_PREFIX = "Bearer ";
 
+    private final JwtUtils jwtUtils;
+
+    public UserAuthInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
@@ -32,13 +38,13 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             String token = authHeader.substring(BEARER_PREFIX.length());
 
             // 验证token
-            if (!JwtUtils.validateToken(token)) {
+            if (!jwtUtils.validateToken(token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             }
 
             // 从token中获取用户ID并设置到上下文
-            String userId = JwtUtils.getUserIdFromToken(token);
+            String userId = jwtUtils.getUserIdFromToken(token);
             UserContext.setCurrentUserId(userId);
 
             return true;
