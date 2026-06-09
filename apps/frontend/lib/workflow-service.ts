@@ -113,6 +113,13 @@ export async function executeWorkflow(workflowId: string, inputs: Record<string,
 }
 
 /**
+ * 获取所有执行记录
+ */
+export async function getExecutions() {
+  return apiRequest<WorkflowExecution[]>("/api/workflows/executions")
+}
+
+/**
  * 获取执行记录
  */
 export async function getExecution(executionId: string) {
@@ -183,6 +190,33 @@ export async function getWorkflowStatistics(workflowId: string) {
 }
 
 // 带 Toast 的版本
+export async function getExecutionsWithToast() {
+  try {
+    const response = await getExecutions()
+    return response
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function cancelExecutionWithToast(executionId: string) {
+  try {
+    const response = await cancelExecution(executionId)
+    return response
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function retryExecutionWithToast(executionId: string) {
+  try {
+    const response = await retryExecution(executionId)
+    return response
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function getWorkflowsWithToast() {
   try {
     const response = await getWorkflows()
