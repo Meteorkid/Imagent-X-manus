@@ -1,8 +1,25 @@
-# ImagentX 开发指南
+# 🛠️ ImagentX 开发者指南
 
-## 概述
+## 📋 概述
 
-欢迎加入ImagentX开发团队！本指南将帮助您快速上手项目开发。
+欢迎参与 ImagentX 开发！本指南将帮助您了解项目架构、开发环境搭建和贡献流程。
+
+## 🏗️ 架构概览
+
+### 技术栈
+
+#### 后端
+- **语言**: Java 17
+- **框架**: Spring Boot 3
+- **数据库**: PostgreSQL 15 + pgvector
+- **缓存**: Redis
+- **消息队列**: RabbitMQ
+
+#### 前端
+- **框架**: Next.js 14
+- **语言**: TypeScript
+- **样式**: Tailwind CSS
+- **UI 组件**: shadcn/ui
 
 ## 🛠️ 开发环境
 
