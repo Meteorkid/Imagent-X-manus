@@ -1,6 +1,6 @@
 # ImagentX - AI Agent Platform
 
-[![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](https://github.com/Meteorkid/Imagent-X-manus/releases)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/Meteorkid/Imagent-X-manus/releases)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-red.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
@@ -56,10 +56,20 @@ ImagentX 是一个完整的AI智能体平台，集成了OpenManus技术，提供
 
 ## 📦 版本信息
 
-当前发布版本：**v1.0.3**（Git 标签与 `package.json` / `apps/backend/pom.xml` 一致）。  
+当前发布版本：**v1.2.0**（Git 标签与 `package.json` / `apps/backend/pom.xml` 一致）。  
 完整标签与发行说明见：[Releases](https://github.com/Meteorkid/Imagent-X-manus/releases)。
 
-### v1.0.3（当前）
+### v1.2.0（当前）
+
+- 从 v2.0.0 迁移增强功能：Docker 配置、部署脚本、增强功能脚本、性能配置、集成测试
+- 新增 7 个 Docker Compose 配置文件，支持多种部署场景
+- 新增 10 个部署和管理脚本
+- 新增 11 个增强功能脚本（缓存、监控、安全、测试框架等）
+- 新增性能配置（CDN、数据库优化）
+- 新增集成测试（API、性能）
+- 新增 API 配置文档和故障排查指南
+
+### v1.0.3
 
 - 将 monorepo 与后端制品版本统一为 **1.0.3**（根目录与 `apps/frontend` 的 `package.json`、`apps/backend` 的 Maven 版本、Docker / 手动安全扫描 workflow 中的 `imagent-x-1.0.3.jar` 命名一致）。
 - 在 **v1.0.2** 之后的 CI 修复基础上发版：Tests 工作流中「集成测试」步骤在无 `*IntegrationTest` 用例时不再误报失败；CI 通过 `docker build` 对前后端镜像做冒烟构建；推送 semver 标签时的镜像构建指向 **`apps/backend/Dockerfile`**。
@@ -167,4 +177,4 @@ docker-compose -f docker-compose-production.yml up -d
 
 ---
 
-**ImagentX v1.0.3** - 让AI智能体开发更简单、更强大！ 🚀
+**ImagentX v1.2.0** - 让AI智能体开发更简单、更强大！ 🚀
